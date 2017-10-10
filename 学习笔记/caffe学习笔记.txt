@@ -1,0 +1,4 @@
+1.	caffe网络框架结构描述文件 例如：lenet_train_test.prototxt
+2.	caffe网络权重值配置文件 例如：lenet_iter_10000.caffemodel
+3.	用于CNN计算的image需要使用caffe.io.load_image来读入，其存储的是float类型的数据。而用于寻找features以及生成descriptors的image需要使用cv2.imread来读入，其存储的是uint8类型的数据
+4.	
