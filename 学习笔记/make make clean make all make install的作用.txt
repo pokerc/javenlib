@@ -1,0 +1,15 @@
+1.make
+根据makefile制定的规则，将c\c++文件编译成*.o文件，然后进一步生成可执行文件。
+2.make clean
+删除源代码（C\C++ code）生成的执行文件和所有的中间目标文件。
+3.make depend
+一种makefile的规则，通过扫描仪个目录下的所有C\C++ 代码，从而判断出文件之间的依赖关系，如a.cc文件中调用了b.h(如以形势include<b.h>)，如果之后a.cc文件被改动，那么只需要重新编译a.cc文件，不需要编译b.h文件。否则所有的文件都需要重新编译。
+ 
+补充：
+      一般来说，make其实是make all的省略；make后面跟的是target，即你要编译的目标，在makefile里面会列出这个target依赖于哪几个别的target，别的target又依赖于另外的target，如此“递归”，最终会到依赖的源文件和头文件；当然，也有可能这个target后面直接就是源文件和头文件(最简单的情况)。make all和make depend没有本质区别，都是生成某个目标，只是目标名称不同而已；至于编译的结果，就取决于makefile的写法，如果makefile中目标all和目标depend的依赖一样，那么结果也将是相同的。你完全可以修改makefile，把他们的功能完全弄反。现阶段，很多软件已经不需要或者不支持make depend了，比如编译linux 2.6的时候，根本不需要make depend，而早期的linux 2.4，则一般需要make depend这一步。总之，make的目标和功能完全由makefile决定。make 可以取代make depend.
+一般顺序：./configure;make clean;make depend;make重新编译后使用make install或者./install安装即可。
+./configure && make && make install
+./configure是用来检测你的安装平台的目标特征的。比如它会检测你是不是有CC或GCC（cc是gcc的连接.gcc是编译器.），并不是需要CC或GCC，它是个shell脚本。
+make是用来编译的，它从Makefile中读取指令，然后编译。
+make install是用来安装的，它也从Makefile中读取指令，安装到指定的位置。install 不是make的参数，而是再makefile（Makefile）中型如：install:的语句。如果用make install，那么就执行install:后面的语句
+本文出自 “那些日子” 博客，请务必保留此出处http://tototo.blog.51cto.com/4567634/823354

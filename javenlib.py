@@ -26,6 +26,13 @@ def vis_square(data):
     
     plt.imshow(data); plt.axis('off')
 
+def KeyPoint_convert_forOpencv2(keypoints):
+	length = len(keypoints)
+	points2f = np.zeros((length,2))
+	for i in range(0,length):
+		points2f[i,:] = keypoints[i].pt
+	return points2f
+
 def ph():
     print 'hello ph function!'
 	

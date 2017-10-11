@@ -1,4 +1,23 @@
 1.	caffe网络框架结构描述文件 例如：lenet_train_test.prototxt
+
 2.	caffe网络权重值配置文件 例如：lenet_iter_10000.caffemodel
+
 3.	用于CNN计算的image需要使用caffe.io.load_image来读入，其存储的是float类型的数据。而用于寻找features以及生成descriptors的image需要使用cv2.imread来读入，其存储的是uint8类型的数据
-4.	
+
+4.	安装opencv with contrib
+下载opencv-master 以及 opencv_contrib-master ，解压
+之后，按照命令
+$ cd <opencv_source_directory>
+$ mkdir build
+$ cd build
+$ cmake.. -DOPENCV_EXTRA_MODULES_PATH=<opencv_contrib>/modules <opencv_source_directory>
+$ make -j5
+之后在opencv-master/build/lib文件夹下就有cv2.so库文件了，可以不用安装，直接将路径添加给python方法如下：
+在.bashrc中加入
+export PYTHONPATH=/home/javen/opencv-master/build/lib:$PYTHONPATH
+
+5.安装最终使用的是opencv2，因为opencv3与caffe的protobuf版本存在冲突。在import的时候需要先导入cv2在导入caffe否则会出现报错的情况。同样的情况还有，在matplotlib.pyplot之前导入caffe。
+
+6.cv2.imread()读取的图片是width*columns*tunnels
+  cv2中的sift和surf得到的keypoints得到的点(x,y)，前面的x代表的是点column的位置,y代表的是width的位置,坐标轴是对应的，要注意区分防止出错。
+
