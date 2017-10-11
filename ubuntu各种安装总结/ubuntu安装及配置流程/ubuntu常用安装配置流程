@@ -1,0 +1,7 @@
+1、安装ubuntu系统
+2、更换软件中心的镜像源
+3、apt-get update 然后 apt-get upgrade
+4、安装新的语言包 然后 安装搜狗输入法包 然后 将语言里的keyboard input method system设置为fcitx 然后 重新登录系统就可以用搜狗输入法了
+5、安装shadowsocks-qt5并配置
+6、安装google chrome并配置switchomega
+7、安装proxychains4并配置
