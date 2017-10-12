@@ -84,8 +84,14 @@ def get_center_direction(img):
 		degree = 180+radian/cmath.pi*180.0
 	else:    #delta_x > 0
 		degree = radian/cmath.pi*180.0
-	print 'center degree:',degree.real
+	degree = degree.real
+	print 'center degree:',degree
 	return degree
+
+def image_rotate(img,degree):
+	#图像旋转函数，degree若大于0则表示顺时针旋转，反之表示逆时针旋转
+	row_num = img.shape[0]
+	column_num = img.shape[1]
 
 
 def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_name='pool2'):

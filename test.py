@@ -12,8 +12,7 @@ a = np.zeros((43,43,3))
 #for i in range(0,43):
 #	a[:,i,:] = i
 a[21,21,:] = 100
-a[22,22,:] = 100
-a[22,21,:] = 100
+a[19,22,:] = 100
 
 javenlib.ph()
 javenlib.get_center_direction(a)
