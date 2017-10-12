@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 import cv2
+import cmath
 
 def vis_square(data):
     """Take an array of shape (n, height, width) or (n, height, width, 3)
@@ -46,8 +47,48 @@ def convert_meanvalue():
 	npy_mean = arr[0]
 	np.save('/home/javen/javenlib/lenet5_profiles/minist_mean.npy', npy_mean )
 
+def get_center_direction(img):
+	#该函数得到的角度是图像重心与中心的连线偏离x轴的角度，后续进行逆向旋转的时候请注意是否需要加上负号作为旋转函数的参数
+	row_num = img.shape[0]
+	column_num = img.shape[1]
+	print row_num,column_num,len(img.shape)
+	if len(img.shape) == 3:
+		img_mean = np.copy(img.mean(2))
+	else:
+		img_mean = np.copy(img)
+	print img_mean.shape
+	sum_x = 0
+	sum_y = 0
+	sum_image = 0
+	for i in range(0,row_num):
+		for j in range(0,column_num):
+			sum_x += img_mean[i,j]*j
+			sum_y += img_mean[i,j]*i
+			sum_image += img_mean[i,j]
+	center_x = 1.0*sum_x/sum_image
+	center_y = 1.0*sum_y/sum_image
+	print center_x,center_y
+	delta_x = center_x-(column_num-1)/2.0
+	delta_y = center_y-(row_num-1)/2.0
+	if delta_x != 0:
+		radian = cmath.atan(1.0*delta_y/delta_x)
+	if delta_x == 0 and delta_y == 0:
+		degree = 0
+	elif delta_x ==0 and delta_y > 0:
+		degree = 90
+	elif delta_x ==0 and delta_y < 0:
+		degree = -90
+	elif delta_x < 0 and delta_y < 0:
+		degree = -180+radian/cmath.pi*180.0
+	elif delta_x < 0 and delta_y >= 0:
+		degree = 180+radian/cmath.pi*180.0
+	else:    #delta_x > 0
+		degree = radian/cmath.pi*180.0
+	print 'center degree:',degree.real
+	return degree
 
-def lenet5_compute(img,kp_pos):
+
+def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_name='pool2'):
 	caffe.set_mode_cpu()
 	model_def = '/home/javen/javenlib/lenet5_profiles/lenet.prototxt'
 	model_weights = '/home/javen/javenlib/lenet5_profiles/lenet_iter_10000.caffemodel'

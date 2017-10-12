@@ -6,9 +6,19 @@ import caffe
 import numpy as np
 import matplotlib.pyplot as plt
 import javenlib
+import cmath
+
+a = np.zeros((43,43,3))
+#for i in range(0,43):
+#	a[:,i,:] = i
+a[21,21,:] = 100
+a[22,22,:] = 100
+a[22,21,:] = 100
 
 javenlib.ph()
-javenlib.lenet5_compute(1,1)
+javenlib.get_center_direction(a)
+print cmath.pi,cmath.atan(-1).real/cmath.pi*180
+#javenlib.lenet5_compute(1,1)
 ##javenlib.convert_meanvalue()
 #img_caffe = caffe.io.load_image('/home/javen/javenlib/images/cat.jpg')
 #img_cv2 = cv2.imread('/home/javen/javenlib/images/cat.jpg')
