@@ -33,7 +33,8 @@ def KeyPoint_convert_forOpencv2(keypoints):
 	points2f = np.zeros((length,2))
 	for i in range(0,length):
 		points2f[i,:] = keypoints[i].pt
-	return points2f
+	points = np.array(np.around(points2f),dtype='int')
+	return points
 
 def ph():
     print 'hello ph function!'
@@ -51,12 +52,12 @@ def get_center_direction(img):
 	#该函数得到的角度是图像重心与中心的连线偏离x轴的角度，后续进行逆向旋转的时候请注意是否需要加上负号作为旋转函数的参数
 	row_num = img.shape[0]
 	column_num = img.shape[1]
-	print row_num,column_num,len(img.shape)
+#	print row_num,column_num,len(img.shape)
 	if len(img.shape) == 3:
 		img_mean = np.copy(img.mean(2))
 	else:
 		img_mean = np.copy(img)
-	print img_mean.shape
+#	print img_mean.shape
 	sum_x = 0
 	sum_y = 0
 	sum_image = 0
@@ -67,7 +68,7 @@ def get_center_direction(img):
 			sum_image += img_mean[i,j]
 	center_x = 1.0*sum_x/sum_image
 	center_y = 1.0*sum_y/sum_image
-	print center_x,center_y
+#	print center_x,center_y
 	delta_x = center_x-(column_num-1)/2.0
 	delta_y = center_y-(row_num-1)/2.0
 	if delta_x != 0:
@@ -85,7 +86,7 @@ def get_center_direction(img):
 	else:    #delta_x > 0
 		degree = radian/cmath.pi*180.0
 	degree = degree.real
-	print 'center degree:',degree
+#	print 'center degree:',degree
 	return degree
 
 def image_rotate(img,degree):
@@ -93,11 +94,11 @@ def image_rotate(img,degree):
 	row_num = img.shape[0]
 	column_num = img.shape[1]
 	radian = 1.0*degree/180.0*cmath.pi
-	print 'radian:',radian
+#	print 'radian:',radian
 	rotate_matrix = np.array([[cmath.cos(radian),-cmath.sin(radian),-0.5*(column_num-1)*cmath.cos(radian)+0.5*(row_num-1)*cmath.sin(radian)+0.5*(column_num-1)],
 							  [cmath.sin(radian),cmath.cos(radian),-0.5*(column_num-1)*cmath.sin(radian)-0.5*(row_num-1)*cmath.cos(radian)+0.5*(row_num-1)],
 							  [0,0,1]]).real
-	print 'rotate_matrix:',rotate_matrix
+#	print 'rotate_matrix:',rotate_matrix
 	old_position = np.zeros((3,1))
 	old_position[2] = 1
 	new_position = np.zeros((3,1))
@@ -108,7 +109,6 @@ def image_rotate(img,degree):
 				old_position[0] = j
 				old_position[1] = i
 				new_position = np.around(np.dot(rotate_matrix,old_position))
-#				print 'new position:',new_position
 				if new_position[1]>=0 and new_position[1]<row_num and new_position[0]>=0 and new_position[0]<column_num:
 					rotated_image[int(new_position[1]),int(new_position[0]),:] = img[i,j,:]
 	else:
@@ -124,6 +124,8 @@ def image_rotate(img,degree):
 	return rotated_image
 
 def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_name='pool2'):
+	kp_num = len(kp_pos)
+	print kp_num
 	caffe.set_mode_cpu()
 	model_def = '/home/javen/javenlib/lenet5_profiles/lenet.prototxt'
 	model_weights = '/home/javen/javenlib/lenet5_profiles/lenet_iter_10000.caffemodel'
@@ -146,25 +148,33 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 
 	# set the size of the input (we can skip this if we're happy
 	#  with the default; we can also change it later, e.g., for different batch sizes)
-#	net.blobs['data'].reshape(50,        # batch size
-#                          3,         # 3-channel (BGR) images
-#                          227, 227)  # image size is 227x227
-
-	image = caffe.io.load_image('/home/javen/caffe-master/examples/images/cat.jpg')
-	image = image.mean(2).reshape((360,480,1))
-	print 'before transform:',image.shape
-	transformed_image = transformer.preprocess('data', image)
-	print 'after transform:',transformed_image.shape
-#	plt.imshow(image)
+	net.blobs['data'].reshape(500,        # batch size
+                                1,         # 3-channel (BGR) images
+                               28, 28)  # image size is 227x227
+	data_input = np.zeros((kp_num,1,28,28))
+	for i in range(0,kp_num):
+		outter_square = img[kp_pos[i,1]-21:kp_pos[i,1]+21+1,kp_pos[i,0]-21:kp_pos[i,0]+21+1,:]
+		#添加将中间区域置0的处理函数
+		degree = get_center_direction(outter_square)
+		rotated_outter_square = image_rotate(outter_square,-1*degree) #旋转后的43*43*3
+#		print outter_square[:,:,0],'\n',degree,'°','\n',rotated_outter_square[:,:,0]
+		inner_square = rotated_outter_square[7:35+1,7:35+1,:].mean(2).reshape(29,29,1)
+		transformed_inner_square = transformer.preprocess('data',inner_square)
+#		print 'inner square:',inner_square.shape,'\n','transformed inner square:',transformed_inner_square.shape
+		data_input[i,:,:,:] = transformed_inner_square
+	print data_input.shape
 
 	# copy the image data into the memory allocated for the net
-	net.blobs['data'].data[...] = transformed_image
+	net.blobs['data'].data[...] = data_input
 
-	### perform classification
+#	### perform classification
 	output = net.forward()
-	print net.blobs['pool2'].data[0]
+#	print net.blobs['data'].data[499,0,:,:]
 #	output_pool2 = output['pool2'][0]
-
+	kp_des = net.blobs['pool2'].data
+	kp_des = kp_des.reshape(500,800)
+#	print kp_des.shape
+	return kp_des
 
 
 
