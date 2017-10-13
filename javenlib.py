@@ -92,7 +92,36 @@ def image_rotate(img,degree):
 	#图像旋转函数，degree若大于0则表示顺时针旋转，反之表示逆时针旋转
 	row_num = img.shape[0]
 	column_num = img.shape[1]
-
+	radian = 1.0*degree/180.0*cmath.pi
+	print 'radian:',radian
+	rotate_matrix = np.array([[cmath.cos(radian),-cmath.sin(radian),-0.5*(column_num-1)*cmath.cos(radian)+0.5*(row_num-1)*cmath.sin(radian)+0.5*(column_num-1)],
+							  [cmath.sin(radian),cmath.cos(radian),-0.5*(column_num-1)*cmath.sin(radian)-0.5*(row_num-1)*cmath.cos(radian)+0.5*(row_num-1)],
+							  [0,0,1]]).real
+	print 'rotate_matrix:',rotate_matrix
+	old_position = np.zeros((3,1))
+	old_position[2] = 1
+	new_position = np.zeros((3,1))
+	if len(img.shape) == 3:
+		rotated_image = np.zeros((row_num,column_num,3))
+		for i in range(0,row_num):
+			for j in range(0,column_num):
+				old_position[0] = j
+				old_position[1] = i
+				new_position = np.around(np.dot(rotate_matrix,old_position))
+#				print 'new position:',new_position
+				if new_position[1]>=0 and new_position[1]<row_num and new_position[0]>=0 and new_position[0]<column_num:
+					rotated_image[int(new_position[1]),int(new_position[0]),:] = img[i,j,:]
+	else:
+		rotated_image = np.zeros((row_num,column_num))
+		for i in range(0,row_num):
+			for j in range(0,column_num):
+				old_position[0] = j
+				old_position[1] = i
+				new_position = np.around( np.dot(rotate_matrix,old_position) )
+				if new_position[1]>=0 and new_position[1]<row_num and new_position[0]>=0 and new_position[0]<column_num:
+					rotated_image[int(new_position[1]),int(new_position[0])] = img[i,j]
+#	print rotated_image[:,:,0]
+	return rotated_image
 
 def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_name='pool2'):
 	caffe.set_mode_cpu()
