@@ -48,6 +48,14 @@ def convert_meanvalue():
 	npy_mean = arr[0]
 	np.save('/home/javen/javenlib/lenet5_profiles/minist_mean.npy', npy_mean )
 
+def area_set_zero(img):
+	#该函数输入为43*43×3的图像矩阵，函数功能是将外部方形和其内切圆之间的区域置零后输出新的外部方形
+	for i in range(0,43):
+		for j in range(0,43):
+			if (i-21)**2+(j-21)**2 > (0.5*29*cmath.sqrt(2).real)**2:
+				img[i,j,:] = 0
+	return img
+
 def get_center_direction(img):
 	#该函数得到的角度是图像重心与中心的连线偏离x轴的角度，后续进行逆向旋转的时候请注意是否需要加上负号作为旋转函数的参数
 	row_num = img.shape[0]
@@ -154,8 +162,8 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 	data_input = np.zeros((kp_num,1,28,28))
 	for i in range(0,kp_num):
 		outter_square = img[kp_pos[i,1]-21:kp_pos[i,1]+21+1,kp_pos[i,0]-21:kp_pos[i,0]+21+1,:]
-		#添加将中间区域置0的处理函数
-		degree = get_center_direction(outter_square)
+		#添加将中间区域置0的处理函数area_set_zero()
+		degree = get_center_direction(area_set_zero(outter_square))
 		rotated_outter_square = image_rotate(outter_square,-1*degree) #旋转后的43*43*3
 #		print outter_square[:,:,0],'\n',degree,'°','\n',rotated_outter_square[:,:,0]
 		inner_square = rotated_outter_square[7:35+1,7:35+1,:].mean(2).reshape(29,29,1)
