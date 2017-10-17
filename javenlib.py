@@ -133,8 +133,9 @@ def image_rotate(img,degree):
 	return rotated_image
 
 def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_name='pool2'):
+	#此函数输入的img需要是使用caffe.io.load_image()读取的数据
 	kp_num = len(kp_pos)
-	print kp_num
+#	print kp_num
 	caffe.set_mode_cpu()
 	model_def = '/home/javen/javenlib/lenet5_profiles/lenet.prototxt'
 	model_weights = '/home/javen/javenlib/lenet5_profiles/lenet_iter_10000.caffemodel'
@@ -144,7 +145,7 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 	# load the mean ImageNet image (as distributed with Caffe) for subtraction
 	mu = np.load('/home/javen/javenlib/lenet5_profiles/ilsvrc_2012_mean.npy')
 	mu = mu.mean(1).mean(1).mean(0).reshape(1)  # average over pixels to obtain the mean (BGR) pixel values
-	print 'mu shape:',mu.shape,mu
+#	print 'mu shape:',mu.shape,mu
 #	print 'mean-subtracted values:', zip('BGR', mu)
 
 	# create transformer for the input called 'data'
@@ -157,7 +158,7 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 
 	# set the size of the input (we can skip this if we're happy
 	#  with the default; we can also change it later, e.g., for different batch sizes)
-	net.blobs['data'].reshape(500,        # batch size
+	net.blobs['data'].reshape(kp_num,        # batch size
                                 1,         # 3-channel (BGR) images
                                28, 28)  # image size is 227x227
 	data_input = np.zeros((kp_num,1,28,28))
@@ -181,7 +182,7 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 #	print net.blobs['data'].data[499,0,:,:]
 #	output_pool2 = output['pool2'][0]
 	kp_des = net.blobs['pool2'].data
-	kp_des = kp_des.reshape(500,800)
+	kp_des = kp_des.reshape(kp_num,800)
 #	print kp_des.shape
 	return kp_des
 
