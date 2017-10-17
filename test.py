@@ -25,11 +25,21 @@ import cmath
 #kp_des = javenlib.lenet5_compute(img_caffe,kp)
 #print kp_des[499],kp_des.shape
 
-a = np.zeros((43,43,3),dtype='uint8')
-for i in range(0,43):
-	for j in range(0,43):
-		a[i,j,:] = 255
-a = javenlib.area_set_zero(a)
-cv2.imshow('img',a)
-cv2.waitKey(0)
-cv2.destroyAllwindows()
+img1_cv = cv2.imread('/home/javen/javenlib/images/boat/img1.pgm')
+img1_caffe = caffe.io.load_image('/home/javen/javenlib/images/boat/img1.pgm')
+img2_cv = cv2.imread('/home/javen/javenlib/images/boat/img2.pgm')
+img2_caffe = caffe.io.load_image('/home/javen/javenlib/images/boat/img2.pgm')
+print img1_cv.shape,'\n',img1_caffe.shape
+print img1_cv[1,1,:],img1_caffe[1,1,:]
+orb = cv2.ORB(500)
+kp = orb.detect(img1_cv)
+kp,des = orb.compute(img1_cv,kp)
+print des.shape
+#a = np.zeros((43,43,3),dtype='uint8')
+#for i in range(0,43):
+#	for j in range(0,43):
+#		a[i,j,:] = 255
+#a = javenlib.area_set_zero(a)
+#cv2.imshow('img',a)
+#cv2.waitKey(0)
+#cv2.destroyAllwindows()

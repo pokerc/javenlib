@@ -185,6 +185,17 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 #	print kp_des.shape
 	return kp_des
 
+def get_matrix_from_file(filename):
+	f = open(filename,'r')
+	rotation_matrix = np.zeros((3,3))
+	for i in range(0,3):
+		x = f.readline().split()
+		rotation_matrix[i,0] = float(x[0])
+		rotation_matrix[i,1] = float(x[1])
+		rotation_matrix[i,2] = float(x[2])
+	f.close()
+	return rotation_matrix
+
 def match_accuracy(img1,img1_kp_pos,img1_kp_des,img2,img2_kp_pos,img2_kp_des,rotation_matrix):
 	flann = pyflann.FLANN()
 #	if len(img1_kp_pos) <= len(img2_kp_pos):
@@ -206,7 +217,7 @@ def match_accuracy(img1,img1_kp_pos,img1_kp_des,img2,img2_kp_pos,img2_kp_des,rot
 		kp2_index = int(pair_list[pair_index,2])
 		kp1_pos = img1_kp_pos[kp1_index]
 		kp2_pos = img2_kp_pos[kp2_index]
-		rotated_kp1_pos = rotation_matrix.dot(kp1_pos)
+		rotated_kp1_pos = rotation_matrix.dot(np.append(kp1_pos,1))
 		if kp2_pos[0] >= rotated_kp1_pos[0]-1 and kp2_pos[0] <= rotated_kp1_pos[0]+1 and kp2_pos[1] >= rotated_kp1_pos[1]-1 and kp2_pos[1] <= rotated_kp1_pos[1]+1:
 			match_count += 1
 	print 'match accuracy:',1.0*match_count/kp_num
