@@ -7,6 +7,7 @@ import sys
 import os
 import cv2
 import cmath
+import pyflann
 
 def vis_square(data):
     """Take an array of shape (n, height, width) or (n, height, width, 3)
@@ -184,6 +185,31 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 #	print kp_des.shape
 	return kp_des
 
+def match_accuracy(img1,img1_kp_pos,img1_kp_des,img2,img2_kp_pos,img2_kp_des,rotation_matrix):
+	flann = pyflann.FLANN()
+#	if len(img1_kp_pos) <= len(img2_kp_pos):
+#		kp_num = len(img1_kp_pos)
+#	else:
+#		kp_num = len(img2_kp_pos)
+	kp_num = len(img2_kp_pos)
+	print 'kp_num:',kp_num
+	result,dists = flann.nn(img1_kp_des,img2_kp_des,1,algorithm="kmeans",branching=32,iterations=7, checks=16)
+	pair_list = np.zeros((kp_num,3))
+	pair_list[:,0] = dists
+	pair_list[:,1] = result
+	pair_list[:,2] = np.arange(kp_num)
+	sorted_index = np.argsort(pair_list[:,0]) #按从小到大的顺序排序后的pair的下标
+	match_count = 0
+	for i in range(0,kp_num):
+		pair_index = sorted_index[i]
+		kp1_index = int(pair_list[pair_index,1])
+		kp2_index = int(pair_list[pair_index,2])
+		kp1_pos = img1_kp_pos[kp1_index]
+		kp2_pos = img2_kp_pos[kp2_index]
+		rotated_kp1_pos = rotation_matrix.dot(kp1_pos)
+		if kp2_pos[0] >= rotated_kp1_pos[0]-1 and kp2_pos[0] <= rotated_kp1_pos[0]+1 and kp2_pos[1] >= rotated_kp1_pos[1]-1 and kp2_pos[1] <= rotated_kp1_pos[1]+1:
+			match_count += 1
+	print 'match accuracy:',1.0*match_count/kp_num
 
 
 
