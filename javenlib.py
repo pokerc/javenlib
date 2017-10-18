@@ -145,7 +145,8 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 	# load the mean ImageNet image (as distributed with Caffe) for subtraction
 	mu = np.load('/home/javen/javenlib/lenet5_profiles/ilsvrc_2012_mean.npy')
 	mu = mu.mean(1).mean(1).mean(0).reshape(1)  # average over pixels to obtain the mean (BGR) pixel values
-#	print 'mu shape:',mu.shape,mu
+	mu[0]=0
+	print 'mu shape:',mu.shape,mu
 #	print 'mean-subtracted values:', zip('BGR', mu)
 
 	# create transformer for the input called 'data'
@@ -169,7 +170,9 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 		rotated_outter_square = image_rotate(outter_square,-1*degree) #旋转后的43*43*3
 #		print outter_square[:,:,0],'\n',degree,'°','\n',rotated_outter_square[:,:,0]
 		inner_square = rotated_outter_square[7:35+1,7:35+1,:].mean(2).reshape(29,29,1)
+#		print 'inner_square:',inner_square.shape,inner_square[:,:]
 		transformed_inner_square = transformer.preprocess('data',inner_square)
+#		print 'trans:',transformed_inner_square
 #		print 'inner square:',inner_square.shape,'\n','transformed inner square:',transformed_inner_square.shape
 		data_input[i,:,:,:] = transformed_inner_square
 	print data_input.shape
@@ -183,7 +186,7 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 #	output_pool2 = output['pool2'][0]
 	kp_des = net.blobs['pool2'].data
 	kp_des = kp_des.reshape(kp_num,800)
-#	print kp_des.shape
+	print kp_des.shape
 	return kp_des
 
 def get_matrix_from_file(filename):
@@ -205,13 +208,14 @@ def match_accuracy(img1,img1_kp_pos,img1_kp_des,img2,img2_kp_pos,img2_kp_des,rot
 #		kp_num = len(img2_kp_pos)
 	kp_num = len(img2_kp_pos)
 	print 'kp_num:',kp_num
-	result,dists = flann.nn(img1_kp_des,img2_kp_des,1,algorithm="kmeans",branching=32,iterations=7, checks=16)
+	result,dists = flann.nn(img1_kp_des,img2_kp_des,1)#,algorithm="kmeans",branching=32,iterations=7, checks=16)
 	pair_list = np.zeros((kp_num,3))
 	pair_list[:,0] = dists
 	pair_list[:,1] = result
 	pair_list[:,2] = np.arange(kp_num)
 	sorted_index = np.argsort(pair_list[:,0]) #按从小到大的顺序排序后的pair的下标
 	match_count = 0
+	kp_num = 1000
 	for i in range(0,kp_num):
 		pair_index = sorted_index[i]
 		kp1_index = int(pair_list[pair_index,1])
