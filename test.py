@@ -25,8 +25,15 @@ import cmath
 #kp_des = javenlib.lenet5_compute(img_caffe,kp)
 #print kp_des[499],kp_des.shape
 
-img = cv2.imread('/home/javen/javenlib/images/graf/img1_rotate90.ppm')
+img = cv2.imread('/home/javen/javenlib/images/graf/img1.ppm')
 print img.shape
+area_43 = np.copy(img[300-21:300+21+1,300-21:300+21+1])
+img[300-21:300+21+1,300-21:300+21+1,:] = 255
+cv2.imshow('img',img)
+cv2.waitKey(0)
+cv2.imshow('area_43',area_43)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 #img1_cv = cv2.imread('/home/javen/javenlib/images/boat/img1.pgm')
 #img1_caffe = caffe.io.load_image('/home/javen/javenlib/images/boat/img1.pgm')
