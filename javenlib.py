@@ -51,11 +51,12 @@ def convert_meanvalue():
 
 def area_set_zero(img):
 	#该函数输入为43*43×3的图像矩阵，函数功能是将外部方形和其内切圆之间的区域置零后输出新的外部方形
+	img_inner_circle = np.copy(img)
 	for i in range(0,43):
 		for j in range(0,43):
 			if (i-21)**2+(j-21)**2 > (0.5*29*cmath.sqrt(2).real)**2:
-				img[i,j,:] = 0
-	return img
+				img_inner_circle[i,j,:] = 0
+	return img_inner_circle
 
 def get_center_direction(img):
 	#该函数得到的角度是图像重心与中心的连线偏离x轴的角度，后续进行逆向旋转的时候请注意是否需要加上负号作为旋转函数的参数
@@ -145,7 +146,7 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 	# load the mean ImageNet image (as distributed with Caffe) for subtraction
 	mu = np.load('/home/javen/javenlib/lenet5_profiles/ilsvrc_2012_mean.npy')
 	mu = mu.mean(1).mean(1).mean(0).reshape(1)  # average over pixels to obtain the mean (BGR) pixel values
-	mu[0]=0
+#	mu[0]=0
 	print 'mu shape:',mu.shape,mu
 #	print 'mean-subtracted values:', zip('BGR', mu)
 
@@ -164,14 +165,19 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
                                28, 28)  # image size is 227x227
 	data_input = np.zeros((kp_num,1,28,28))
 	for i in range(0,kp_num):
-		outter_square = img[kp_pos[i,1]-21:kp_pos[i,1]+21+1,kp_pos[i,0]-21:kp_pos[i,0]+21+1,:]
+		outter_square = np.copy(img[kp_pos[i,1]-21:kp_pos[i,1]+21+1,kp_pos[i,0]-21:kp_pos[i,0]+21+1,:])
 		#添加将中间区域置0的处理函数area_set_zero()
 		degree = get_center_direction(area_set_zero(outter_square))
 		rotated_outter_square = image_rotate(outter_square,-1*degree) #旋转后的43*43*3
 #		print outter_square[:,:,0],'\n',degree,'°','\n',rotated_outter_square[:,:,0]
-		inner_square = rotated_outter_square[7:35+1,7:35+1,:].mean(2).reshape(29,29,1)
+		inner_square = np.copy(rotated_outter_square[7:35+1,7:35+1,:].mean(2).reshape(29,29,1))
 #		print 'inner_square:',inner_square.shape,inner_square[:,:]
 		transformed_inner_square = transformer.preprocess('data',inner_square)
+#		cv2.imshow('img',inner_square)
+#		cv2.waitKey(0)
+#		cv2.imshow('img2',img)
+#		cv2.waitKey(0)
+#		cv2.destroyAllWindows()
 #		print 'trans:',transformed_inner_square
 #		print 'inner square:',inner_square.shape,'\n','transformed inner square:',transformed_inner_square.shape
 		data_input[i,:,:,:] = transformed_inner_square
@@ -215,7 +221,7 @@ def match_accuracy(img1,img1_kp_pos,img1_kp_des,img2,img2_kp_pos,img2_kp_des,rot
 	pair_list[:,2] = np.arange(kp_num)
 	sorted_index = np.argsort(pair_list[:,0]) #按从小到大的顺序排序后的pair的下标
 	match_count = 0
-	kp_num = 1000
+#	kp_num = 1000
 	for i in range(0,kp_num):
 		pair_index = sorted_index[i]
 		kp1_index = int(pair_list[pair_index,1])

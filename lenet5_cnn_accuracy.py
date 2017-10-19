@@ -8,11 +8,11 @@ import javenlib
 import cmath
 
 filename1 = '/home/javen/javenlib/images/graf/img1.ppm'
-filename2 = '/home/javen/javenlib/images/graf/img1_rotate10.ppm'
+filename2 = '/home/javen/javenlib/images/graf/img1_rotate90.ppm'
 #rotation_filename = '/home/javen/javenlib/images/boat/H1to2p'
 #rotation_matrix = javenlib.get_matrix_from_file(rotation_filename)
-degree = -10
-detect_method = 'SIFTd'
+degree = -90
+detect_method = 'ORBd'
 
 img1_cv = cv2.imread(filename1)
 img1_caffe = caffe.io.load_image(filename1)

@@ -8,8 +8,8 @@ import javenlib
 import cmath
 
 img1_cv = cv2.imread('/home/javen/javenlib/images/graf/img1.ppm')
-img2_cv = cv2.imread('/home/javen/javenlib/images/graf/img1_rotate10.ppm')
-degree = -10
+img2_cv = cv2.imread('/home/javen/javenlib/images/graf/img1_rotate90.ppm')
+degree = -90
 row_num = img1_cv.shape[0]
 column_num = img1_cv.shape[1]
 radian = 1.0*degree/180.0*cmath.pi

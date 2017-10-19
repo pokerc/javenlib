@@ -28,7 +28,8 @@ import cmath
 img = cv2.imread('/home/javen/javenlib/images/graf/img1.ppm')
 print img.shape
 area_43 = np.copy(img[300-21:300+21+1,300-21:300+21+1])
-img[300-21:300+21+1,300-21:300+21+1,:] = 255
+#img[300-21:300+21+1,300-21:300+21+1,:] = 255
+
 cv2.imshow('img',img)
 cv2.waitKey(0)
 cv2.imshow('area_43',area_43)
