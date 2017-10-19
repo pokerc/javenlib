@@ -28,9 +28,9 @@ img2_kp_pos,img2_kp_des = sift.compute(img2_cv,img2_kp_pos)
 img2_kp_pos = javenlib.KeyPoint_convert_forOpencv2(img2_kp_pos)
 print img1_kp_des.shape,img2_kp_des.shape,img1_kp_pos.shape,img2_kp_pos.shape
 
-javenlib.match_accuracy(img1_cv,img1_kp_pos,img1_kp_des,img2_cv,img2_kp_pos,img2_kp_des,rotation_matrix)
-
-
-
+a1 = javenlib.match_accuracy(img1_cv,img1_kp_pos,img1_kp_des,img2_cv,img2_kp_pos,img2_kp_des,rotation_matrix)
+a2 = javenlib.match_accuracy(img1_cv,img1_kp_pos,img1_kp_des,img2_cv,img2_kp_pos,img2_kp_des,rotation_matrix)
+a3 = javenlib.match_accuracy(img1_cv,img1_kp_pos,img1_kp_des,img2_cv,img2_kp_pos,img2_kp_des,rotation_matrix)
+print a1,a2,a3,(a1+a2+a3)/3.
 
 

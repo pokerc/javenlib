@@ -121,6 +121,12 @@ def image_rotate(img,degree):
 				new_position = np.around(np.dot(rotate_matrix,old_position))
 				if new_position[1]>=0 and new_position[1]<row_num and new_position[0]>=0 and new_position[0]<column_num:
 					rotated_image[int(new_position[1]),int(new_position[0]),:] = img[i,j,:]
+		for i in range(1,row_num-1):
+			for j in range(1,column_num-1):
+				if rotated_image[i,j,0] == 0:
+					rotated_image[i,j,0] = 0.25*(rotated_image[i-1,j,0]+rotated_image[i+1,j,0]+rotated_image[i,j-1,0]+rotated_image[i,j+1,0])
+					rotated_image[i,j,1] = 0.25*(rotated_image[i-1,j,1]+rotated_image[i+1,j,1]+rotated_image[i,j-1,1]+rotated_image[i,j+1,1])
+					rotated_image[i,j,2] = 0.25*(rotated_image[i-1,j,2]+rotated_image[i+1,j,2]+rotated_image[i,j-1,2]+rotated_image[i,j+1,2])
 	else:
 		rotated_image = np.zeros((row_num,column_num))
 		for i in range(0,row_num):
@@ -173,11 +179,6 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 		inner_square = np.copy(rotated_outter_square[7:35+1,7:35+1,:].mean(2).reshape(29,29,1))
 #		print 'inner_square:',inner_square.shape,inner_square[:,:]
 		transformed_inner_square = transformer.preprocess('data',inner_square)
-#		cv2.imshow('img',inner_square)
-#		cv2.waitKey(0)
-#		cv2.imshow('img2',img)
-#		cv2.waitKey(0)
-#		cv2.destroyAllWindows()
 #		print 'trans:',transformed_inner_square
 #		print 'inner square:',inner_square.shape,'\n','transformed inner square:',transformed_inner_square.shape
 		data_input[i,:,:,:] = transformed_inner_square
@@ -190,8 +191,15 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 	output = net.forward()
 #	print net.blobs['data'].data[499,0,:,:]
 #	output_pool2 = output['pool2'][0]
-	kp_des = net.blobs['pool2'].data
-	kp_des = kp_des.reshape(kp_num,800)
+	if layer_name == 'pool2':
+		kp_des = net.blobs['pool2'].data
+		kp_des = kp_des.reshape(kp_num,800)
+	elif layer_name == 'conv2':
+		kp_des = net.blobs['conv2'].data.reshape(kp_num,50*8*8)
+	elif layer_name == 'ip1':
+		kp_des = net.blobs['ip1'].data.reshape(kp_num,500)
+	else:
+		kp_des = net.blobs['ip2'].data.reshape(kp_num,10)
 	print kp_des.shape
 	return kp_des
 
@@ -232,6 +240,7 @@ def match_accuracy(img1,img1_kp_pos,img1_kp_des,img2,img2_kp_pos,img2_kp_des,rot
 		if kp2_pos[0] >= rotated_kp1_pos[0]-1 and kp2_pos[0] <= rotated_kp1_pos[0]+1 and kp2_pos[1] >= rotated_kp1_pos[1]-1 and kp2_pos[1] <= rotated_kp1_pos[1]+1:
 			match_count += 1
 	print 'match accuracy:',1.0*match_count/kp_num
+	return 1.0*match_count/kp_num
 
 
 
