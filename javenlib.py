@@ -172,6 +172,8 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 	data_input = np.zeros((kp_num,1,28,28))
 	for i in range(0,kp_num):
 		outter_square = np.copy(img[kp_pos[i,1]-21:kp_pos[i,1]+21+1,kp_pos[i,0]-21:kp_pos[i,0]+21+1,:])
+#		if outter_square.shape[0]!=43 or outter_square.shape[1]!=43:
+#			print '位置是:',kp_pos[i]
 		#添加将中间区域置0的处理函数area_set_zero()
 		degree = get_center_direction(area_set_zero(outter_square))
 		rotated_outter_square = image_rotate(outter_square,-1*degree) #旋转后的43*43*3
