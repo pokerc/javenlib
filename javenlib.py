@@ -231,8 +231,9 @@ def match_accuracy(img1,img1_kp_pos,img1_kp_des,img2,img2_kp_pos,img2_kp_des,rot
 	pair_list[:,2] = np.arange(kp_num)
 	sorted_index = np.argsort(pair_list[:,0]) #按从小到大的顺序排序后的pair的下标
 	match_count = 0
-#	kp_num = 1000
-	for i in range(0,kp_num):
+#	取前1000个点做测试used_num
+	used_num = 1000
+	for i in range(0,used_num):
 		pair_index = sorted_index[i]
 		kp1_index = int(pair_list[pair_index,1])
 		kp2_index = int(pair_list[pair_index,2])
@@ -241,8 +242,9 @@ def match_accuracy(img1,img1_kp_pos,img1_kp_des,img2,img2_kp_pos,img2_kp_des,rot
 		rotated_kp1_pos = rotation_matrix.dot(np.append(kp1_pos,1))
 		if kp2_pos[0] >= rotated_kp1_pos[0]-1 and kp2_pos[0] <= rotated_kp1_pos[0]+1 and kp2_pos[1] >= rotated_kp1_pos[1]-1 and kp2_pos[1] <= rotated_kp1_pos[1]+1:
 			match_count += 1
-	print 'match accuracy:',1.0*match_count/kp_num
-	return 1.0*match_count/kp_num
+	print 'kp_num:',kp_num,'\n','used_num:',used_num
+#	print 'match accuracy:',1.0*match_count/used_num
+	return 1.0*match_count/used_num
 
 
 

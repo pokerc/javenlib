@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 import javenlib
 import cmath
 
-filename1 = '/home/javen/javenlib/images/wall/img1.ppm'
-filename2 = '/home/javen/javenlib/images/wall/img6.ppm'
+filename1 = '/home/javen/javenlib/images/graf/img1.ppm'
+filename2 = '/home/javen/javenlib/images/graf/img1_rotate90.ppm'
 degree = -90
-rotation_filename = '/home/javen/javenlib/images/wall/H1to6p'
-rotation_matrix = javenlib.get_matrix_from_file(rotation_filename)
+#rotation_filename = '/home/javen/javenlib/images/wall/H1to6p'
+#rotation_matrix = javenlib.get_matrix_from_file(rotation_filename)
 detect_method = 'SIFTd'
 layer = 'ip1'
 
@@ -22,13 +22,13 @@ img2_caffe = caffe.io.load_image(filename2)
 
 row_num = img2_cv.shape[0]
 column_num = img2_cv.shape[1]
-#radian = 1.0*degree/180.0*cmath.pi
-#rotation_matrix = np.array([[cmath.cos(radian),-cmath.sin(radian),-0.5*(column_num-1)*cmath.cos(radian)+0.5*(row_num-1)*cmath.sin(radian)+0.5*(column_num-1)],
-#							  [cmath.sin(radian),cmath.cos(radian),-0.5*(column_num-1)*cmath.sin(radian)-0.5*(row_num-1)*cmath.cos(radian)+0.5*(row_num-1)],
-#							  [0,0,1]]).real
+radian = 1.0*degree/180.0*cmath.pi
+rotation_matrix = np.array([[cmath.cos(radian),-cmath.sin(radian),-0.5*(column_num-1)*cmath.cos(radian)+0.5*(row_num-1)*cmath.sin(radian)+0.5*(column_num-1)],
+							  [cmath.sin(radian),cmath.cos(radian),-0.5*(column_num-1)*cmath.sin(radian)-0.5*(row_num-1)*cmath.cos(radian)+0.5*(row_num-1)],
+							  [0,0,1]]).real
 
-orb = cv2.ORB(1000)
-sift = cv2.SIFT(1000)
+orb = cv2.ORB(1200)
+sift = cv2.SIFT(1200)
 
 if detect_method == 'ORBd':
 	img1_kp_pos = orb.detect(img1_cv)
