@@ -34,7 +34,7 @@ a2 = javenlib.match_accuracy(img1_cv,img1_kp_pos,img1_kp_des,img2_cv,img2_kp_pos
 a3 = javenlib.match_accuracy(img1_cv,img1_kp_pos,img1_kp_des,img2_cv,img2_kp_pos,img2_kp_des,rotation_matrix)
 print a1,a2,a3,(a1+a2+a3)/3.
 
-
+javenlib.match_show(img1_cv,img1_kp_pos,img1_kp_des,img2_cv,img2_kp_pos,img2_kp_des,showed_num=100)
 
 
 

@@ -246,8 +246,36 @@ def match_accuracy(img1,img1_kp_pos,img1_kp_des,img2,img2_kp_pos,img2_kp_des,rot
 #	print 'match accuracy:',1.0*match_count/used_num
 	return 1.0*match_count/used_num
 
-
-
+def match_show(img1,img1_kp_pos,img1_kp_des,img2,img2_kp_pos,img2_kp_des,showed_num=50):
+	row_num = img1.shape[0]
+	column_num = img1.shape[1]
+	stitched_img = np.zeros((row_num,column_num*2,3),dtype='uint8')
+	stitched_img[0:row_num,0:column_num,:] = np.copy(img1)
+	stitched_img[0:row_num,column_num:,:] = np.copy(img2)
+	flann = pyflann.FLANN()
+	kp_num = len(img2_kp_pos)
+	print 'kp_num:',kp_num
+	result,dists = flann.nn(img1_kp_des,img2_kp_des,1)#,algorithm="kmeans",branching=32,iterations=7, checks=16)
+	pair_list = np.zeros((kp_num,3))
+	pair_list[:,0] = dists
+	pair_list[:,1] = result
+	pair_list[:,2] = np.arange(kp_num)
+	sorted_index = np.argsort(pair_list[:,0]) #按从小到大的顺序排序后的pair的下标
+	if showed_num < kp_num:
+		for i in range(0,showed_num):
+			pair_index = sorted_index[i]
+			kp1_index = int(pair_list[pair_index,1])
+			kp2_index = int(pair_list[pair_index,2])
+			kp1_pos = img1_kp_pos[kp1_index]
+			kp2_pos = img2_kp_pos[kp2_index]
+			print 'kp1_pos:',kp1_pos,' ','kp2_pos:',kp2_pos
+			cv2.line(stitched_img,(kp1_pos[0],kp1_pos[1]),(kp2_pos[0]+column_num,kp2_pos[1]),color=(0,255,255))
+#		cv2.line(stitched_img,(50,10),(100,100),color=(0,0,255))
+		cv2.imshow('img',stitched_img)
+		cv2.waitKey(0)
+		cv2.destroyAllwindows()
+	else:
+		print 'The num of kp is not enough to show!'
 
 
 
