@@ -118,6 +118,55 @@
 	直接import javenlib，在后面使用函数的时候就需要使用句点表示法，如javenlib.image_rotate()
 	使用from javenlib import image_rotate 或者from javenlib import * 就不需要句点表示法，直接使用 image_rotate()
 
+16	类（python2.7中类定义需要传入object参数，即class Dog(object)）
+	class Dog():
+		""" 一次模拟小狗的简单尝试 """
+		def __init__(self, name, age):
+			""" 初始化属性 name 和 age"""
+			self.name = name
+			self.age = age
+		def sit(self):
+			""" 模拟小狗被命令时蹲下 """
+			print(self.name.title() + " is now sitting.")
+		def roll_over(self):
+			""" 模拟小狗被命令时打滚 """
+			print(self.name.title() + " rolled over!")
+
+	class BigDog(Dog): ---------->子类BigDog继承父类Dog(super调用父类，self调用自己)
+
+17	文件读取操作
+	with open('pi_digits.txt') as file_object: 	#使用with就可以省略close()
+		contents = file_object.read()
+		print(contents.rstrip())
+
+	关键字 with 在不再需要访问文件后将其关闭。在这个程序中,注意到我们调用了 open() ,但没有调用 close() ;你也可以调用 open() 和 close() 来打开和关闭文件,但这样做时,如果程序存在 bug ,导致 close() 语句未执行,文件将不会关闭。这看似微不足道,但未妥善地关闭文件可能会导致数据丢失或受损。如果在程序中过早地调	用 close() ,你会发现需要使用文件时它已关闭 (无法访问),这会导致更多的错误。并非在任何情况下都能轻松确定关闭文件的恰当时机,但通过使用前面所示的结构,可让 Python 去确定:你只管打开文件,并在需要时使用它, Python 自会在合适的时候自动将其关闭。
+
+	with open(filename) as file_object:
+		lines = file_object.readlines() readlines() 从文件中读取每一行,并将其存储在一个列表中;接下来,该列表被存储到变量 lines 中;在 with 代码块外,我们依然可以使用这个变量
+	for line in lines:
+		print line.rstrip()
+
+	写入文件
+	filename = 'programming.txt'
+	with open(filename, 'w') as file_object:
+		file_object.write("I love programming.")
+
+18	异常
+	Python 使用被称为异常 的特殊对象来管理程序执行期间发生的错误。每当发生让 Python 不知所措的错误时,它都会创建一个异常对象。如果你编写了处理该异常的代码,程序将继续运行;如果你未对异常进行处理,程序将停止,并显示一个 traceback ,其中包含有关异常的报告。
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
