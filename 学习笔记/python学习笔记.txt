@@ -178,11 +178,22 @@
 
 	Python 有一个 pass 语句,可在代码块中使用它来让 Python什么都不要做
 
+19	存储数据结构变量，而不是单纯的文本 (json)
+	模块 json 让你能够将简单的 Python 数据结构转储到文件中,并在程序再次运行时加载该文件中的数据。你还可以使用 json 在 Python 程序之间分享数据。更重要的是, JSON 数据格式并非 Python 专用的,这让你能够将以 JSON 格式存储的数据与使用其他编程语言的人分享。这是一种轻便格式,很有用,也易于学习。JSON ( JavaScript Object Notation )格式最初是为 JavaScript 开发的,但随后成了一种常见格式,被包括 Python 在内的众多语言采用。
 
+	使用json.dump(x,file)来存储数据到文件，文件后缀为.json:
+	import json
+	numbers=[2,3,5,7,11,13]
+	filename='numbers.json'
+	with open(filename,'w') as f_obj:
+		json.dump(numbers,f_obj)
 
-
-
-
+	使用json.load(file)将数据读取到内存中:
+	import json
+	filename='numbers.json'
+	with open(filename) as f_obj:
+		numbers=json.load(f_obj)
+	print numbers
 
 
 
