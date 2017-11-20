@@ -59,27 +59,64 @@
 	dimensions[0]=100	错误操作，元组的元素是无法改变的
 	dimensions=(300,200) 重新定义了元组，之前的元组变量就被覆盖了，不存在了。
 
+9	检查列表中是否包含特定的值
+	names=['jack','rose','tom']
+	'rose' in names --------> 关键词in,返回true代表在列表中，false代表不在列表中
+	‘rose' not in names -----> 关键词not in 返回true代表不在列表中，false代表在列表中
 
 
+10	if-elif-else(可使用多个elif，省略else)语句
+	if age < 4:
+		print age
+	elif age < 18:
+		print age
+	else:
+		print age
 
+11	字典(列表相当于c语言中的数组，而字典就相当于c语言中的结构一样)
+	字典可存储的信息量几乎不受限制，可以有：存储字典的列表，存储列表的字典，存储字典的字典
+	在 Python 中,字典 是一系列键 — 值对 。每个键 都与一个值相关联,你可以使用键来访问与之相关联的值。与键相关联的值可以是数字、字符串、列表乃至字典。事实上,可将任何 Python 对象用作字典中的值。
+	字典以花括号标识，键与其对应的值之间使用冒号(:)分割，每一对键值对之间使用逗号(，)间隔
+	alien_0={'color':'green','points':5}
+	print alien_0['color'] -----> green 访问方法
+	alien_0['x_position']=0 --------> 在字典中增加了一对键值对'x_position':0
+	del alien_0['color'] ----------> 删除字典中的'color'键值对
+	for x,y in alien_0.items():
+		print x,y -----------------> 遍历字典中的键值对，每次将一对键值对存入x,y中，x为键，y为值
+	for x in alien_0.items():
+		print x -------------------> 遍历字典中的键值对，将每一对键值对存入x中，x为一个键值对元组
+	for x in alien_0.keys():
+		print x -------------------> 遍历字典中的所有键，不关心其对应的值
+	for x in sorted(alien_0.keys()):
+		print x -------------------> 按顺序遍历字典中所有的键
+	for x in alien_0.values():
+		print x -------------------> 遍历字典中所有的值，不关心其对应的键
+	set(alien_0.values()) ---------> 剔除掉values列表中重复的值
 
+12	raw_input()函数 (python3使用input函数)
+	函数raw_input()让程序暂停运行，等待用户输入一些文本，获取用户输入后，将其存储在一个变量中，方便使用。
+	message=raw_input("please input something:")
+	print message
 
+13	使用列表副本
+	print_models(models) ----------> 会修改models列表变量本身
+	print_models(models[:]) -------> 不会修改models列表变量本身，models[:]是创建了一个models的副本
 
+14	传递任意数量的实参
+	def make_pizza(*toppings):
+		print toppings
+	make_pizza('pepperoni') -------------------------------------> 传递1个实参也行
+	make_pizza('mushrooms','green peppers','extra cheese') ------> 传递3个实参也行
+	python会将接收到的实参都封装到topping元组中去
 
+	def build_profile(first,last,**user_info):
+		#函数code
+	build_profile('albert','einstein',location='princeton',field='physics')
+	python会创建一个名为user——info的空字典，并将收到的所有名称——值对都封装到这个字典中去
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+15	导入函数
+	直接import javenlib，在后面使用函数的时候就需要使用句点表示法，如javenlib.image_rotate()
+	使用from javenlib import image_rotate 或者from javenlib import * 就不需要句点表示法，直接使用 image_rotate()
 
 
 
