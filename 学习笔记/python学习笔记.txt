@@ -4,11 +4,16 @@
 	s.upper() -------> "HELLO JAVEN"
 	s.lower() -------> "hello javen"
 	
-2	合并拼接字符串
+2	分拆与合并拼接字符串
+	title='Alice in Wonderland'
+	list=title.split() ---------->方法 split() 以空格为分隔符将字符串分拆成多个部分,并将这些部分都存储到一个列表中.
+
 	s1="hello"
 	s2="javen"
 	s=s1+" "+s2 -----> "hello javen"
 	"\n\t" ----------> \n表示转行，\t表示制表符
+
+	可以使用方法 count() 来确定特定的单词或短语在字符串中出现了多少次
 
 3	删除空白
 	s=" hello "
@@ -151,9 +156,75 @@
 	with open(filename, 'w') as file_object:
 		file_object.write("I love programming.")
 
-18	异常
+18	异常，使用try-except代码块,避免程序崩溃影响后面的code的执行
 	Python 使用被称为异常 的特殊对象来管理程序执行期间发生的错误。每当发生让 Python 不知所措的错误时,它都会创建一个异常对象。如果你编写了处理该异常的代码,程序将继续运行;如果你未对异常进行处理,程序将停止,并显示一个 traceback ,其中包含有关异常的报告。
-	
+	当你认为可能发生了错误时,可编写一个 try-except 代码块来处理可能引发的异常。你让 Python 尝试运行一些代码,并告诉它如果这些代码引发了指定的异常,该怎么办。
+	处理 ZeroDivisionError 异常的 try-except 代码块类似于下面这样:
+	try:
+		print(5/0)
+	except ZeroDivisionError: #当python产生ZeroDivisionError异常时执行下面的code
+		print("You can't divide by zero!")
+	else:
+		print(answer) #当try下面的code执行成功就接着执行else下面的code
+
+	所以要想写异常处理的code，编程者必须对python会产生的常见的异常的名称很熟悉，例如常见的找不到文件的异常叫做: FileNotFoundError
+
+	try:
+		with open(filename) as f_obj:
+			contents = f_obj.read()
+	except FileNotFoundError:
+		msg = "Sorry, the file " + filename + " does not exist."
+		print(msg)
+
+	Python 有一个 pass 语句,可在代码块中使用它来让 Python什么都不要做
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
