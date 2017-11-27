@@ -4,7 +4,9 @@
 4	查看磁盘分区情况及分区结构: fdisk -l
 5	查看磁盘的uuid: sudo blkid
 
-5
+6	查看文件夹大小: sudo du -lh
+
+7
 	/dev/sda1       2048   3999743   3997696   1.9G EFI System /boot/efi
 	/dev/sda2    3999744  20000767  16001024   7.6G Linux swap 
 	/dev/sda3   20000768 159999999 139999232  66.8G Linux filesystem /
