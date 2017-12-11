@@ -128,3 +128,32 @@ sess = tf.Session()
 # np.save('./animal/animal_test_data.npy',animal_test_data)
 # np.save('./animal/animal_test_label.npy',animal_test_label)
 
+sess = tf.Session()
+img1_uint8 = plt.imread('/home/javen/LIFT-master/data/testimg/img1.jpg')
+print 'img1_uint8:',img1_uint8.shape,img1_uint8.dtype
+img1_float64 = img1_uint8/255.
+print 'img1_float64:',img1_float64.shape,img1_float64.dtype
+img1_gray_float64 = tf.image.rgb_to_grayscale(img1_float64).eval(session=sess).reshape(1200,1920)
+print 'img1_gray:',img1_gray_float64.shape,img1_gray_float64.dtype
+# plt.ion()
+# plt.figure(1)
+# plt.imshow(img1_uint8)
+# plt.pause(0.3)
+# plt.close(1)
+# plt.figure(2)
+# plt.imshow(img1_float64)
+# plt.pause(0.3)
+# plt.close(2)
+# plt.figure(3)
+# plt.imshow(img1_gray_float64,cmap='gray')
+# plt.ioff()
+# plt.show()
+x = np.array([300,400])
+print x
+new_img1 = np.copy(img1_gray_float64)
+new_img1[x[0]-14:x[0]+14,x[1]-14:x[1]+14] = 1
+plt.figure()
+plt.imshow(new_img1,cmap='gray')
+plt.figure()
+plt.imshow(img1_float64)
+plt.show()
