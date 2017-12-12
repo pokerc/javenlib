@@ -2,6 +2,8 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
+import cv2
+import javenlib_tf
 
 
 sess = tf.Session()
@@ -129,7 +131,7 @@ sess = tf.Session()
 # np.save('./animal/animal_test_label.npy',animal_test_label)
 
 # ##############################################################################
-# #各方法得到的图像数据类型测试
+# #各方法得到的图像数据类型测试 opencv读取图形的数据类型也是uint8
 # img1_uint8 = plt.imread('/home/javen/LIFT-master/data/testimg/img1.jpg')
 # print 'img1_uint8:',img1_uint8.shape,img1_uint8.dtype
 # img1_float64 = img1_uint8/255.
@@ -159,20 +161,85 @@ sess = tf.Session()
 # plt.imshow(img1_float64)
 # plt.show()
 
+img1 = plt.imread('/home/javen/javenlib/images/leuven/img1.ppm')
+img2 = plt.imread('/home/javen/javenlib/images/leuven/img2.ppm')
+img3 = plt.imread('/home/javen/javenlib/images/leuven/img3.ppm')
+img4 = plt.imread('/home/javen/javenlib/images/leuven/img4.ppm')
+img5 = plt.imread('/home/javen/javenlib/images/leuven/img5.ppm')
+img6 = plt.imread('/home/javen/javenlib/images/leuven/img6.ppm')
+# img1 = tf.image.rgb_to_grayscale(
+#     plt.imread('/home/javen/javenlib/images/leuven/img1.ppm')).eval(session=sess)
+# print img1.shape,img1.dtype
+#
+#
+# sift = cv2.SIFT(400)
+# kp = sift.detect(img1)
+# points = javenlib_tf.KeyPoint_convert_forOpencv2(kp)
+#
+# new_img1 = np.copy(img1)
+# # new_img1[points[0][1]-32:points[0][1]+32,points[0][0]-32:points[0][0]+32]=255
+# # plt.figure()
+# # plt.imshow(new_img1)
+# # plt.show()
+# coordinate_x = 1
+# coordinate_y = 0
+# img1_patch_data = np.zeros(shape=(200,64,64,3))
+# count = 0
+# plt.ion()
+# for i in range(20):
+#     if points[i][1] > 32 and points[i][1] < 600-32 and points[i][0] > 32 and points[i][0] < 900-32:
+#         count += 1
+#         img1_patch_data[i] = np.copy(img1[points[i][1]-32:points[i][1]+32,points[i][0]-32:points[i][0]+32])
+#         new_img1 = np.copy(img1)
+#         new_img1[points[i][1]-32:points[i][1]+32,points[i][0]-32:points[i][0]+32,0] = 200
+#         plt.figure(1)
+#         plt.imshow(new_img1)
+#         plt.figure(2)
+#         plt.imshow(img1_patch_data[i]/255.)
+#         plt.pause(5)
+#         plt.close(1)
+#         plt.close(2)
+#
+#
+# print count
+
+sift = cv2.SIFT(1400)
+img1_kp = sift.detect(img1)
+img1_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img1_kp)
+img2_kp = sift.detect(img2)
+img2_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img2_kp)
+img3_kp = sift.detect(img3)
+img3_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img3_kp)
+img4_kp = sift.detect(img4)
+img4_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img4_kp)
+img5_kp = sift.detect(img5)
+img5_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img5_kp)
+
+x = np.array([[1,2],[3,4],[5,3]])
+y = np.array([[3,4],[2,4]])
+
+where_tuple = np.where(x==3)
+# where_tuple_index0 = where_tuple[0][0]
+# where_tuple_index1 = where_tuple[1][0]
+print where_tuple
+print len(where_tuple[0])
+# print where_tuple_index0,where_tuple_index1
 
 
 
 
+for i in range(1400):
+    where_tuple = np.where(img2_kp_coordinate == img1_kp_coordinate[i][0])
+    if len(where_tuple[0]) == 0:
+        continue
+    for j in range(len(where_tuple[0])):
+        row_index = where_tuple[0][j]
+        if img2_kp_coordinate[row_index,0]==img1_kp_coordinate[i,0] and img2_kp_coordinate[row_index,1]==img1_kp_coordinate[i,1]:
+            print 'ok:',img1_kp_coordinate[i],img2_kp_coordinate[row_index]
+    # where_tuple_index0 = where_tuple[0][0]
+    # where_tuple_index1 = where_tuple[1][0]
 
-
-
-
-
-
-
-
-
-
+    # print where_tuple
 
 
 
