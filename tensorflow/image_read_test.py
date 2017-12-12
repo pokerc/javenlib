@@ -203,7 +203,7 @@ img6 = plt.imread('/home/javen/javenlib/images/leuven/img6.ppm')
 #
 # print count
 
-sift = cv2.SIFT(1400)
+sift = cv2.SIFT(400)
 img1_kp = sift.detect(img1)
 img1_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img1_kp)
 img2_kp = sift.detect(img2)
@@ -215,33 +215,88 @@ img4_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img4_kp)
 img5_kp = sift.detect(img5)
 img5_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img5_kp)
 
-x = np.array([[1,2],[3,4],[5,3]])
+x = np.array([[1,2],[3,4],[5,3],[1,3]])
 y = np.array([[3,4],[2,4]])
 
-where_tuple = np.where(x==3)
+where_tuple = np.where(x[:,0]==1)
 # where_tuple_index0 = where_tuple[0][0]
 # where_tuple_index1 = where_tuple[1][0]
 print where_tuple
+print where_tuple[0]
 print len(where_tuple[0])
 # print where_tuple_index0,where_tuple_index1
 
 
 
+# 将取出具有重复性的点的算法写为一个函数
+def get_kp_set(img1_kp_coordinate,img2_kp_coordinate):
+    kp_set = np.zeros(shape=(1, 2))
+    print '########################同一列'
+    count = 0
+    for i in range(400):
+        where_tuple = np.where(img2_kp_coordinate[:,0] == img1_kp_coordinate[i,0])
+        if len(where_tuple[0]) == 0:
+            continue
+        print 'where_tuple[0]:',where_tuple[0],'img1_row:',i,img1_kp_coordinate[i]
+        for j in range(len(where_tuple[0])):
+            row_index = where_tuple[0][j]
+            if (img2_kp_coordinate[row_index,0]>=img1_kp_coordinate[i,0]-1 and img2_kp_coordinate[row_index,0]<=img1_kp_coordinate[i,0]+1) and (img2_kp_coordinate[row_index,1]>=img1_kp_coordinate[i,1]-1 and img2_kp_coordinate[row_index,1]<=img1_kp_coordinate[i,1]+1):
+                count += 1
+                print 'ok:',img1_kp_coordinate[i],img2_kp_coordinate[row_index],'img2_row:',row_index
+                kp_set = np.vstack([kp_set, img1_kp_coordinate[i]])
+    print 'count0:',count
 
-for i in range(1400):
-    where_tuple = np.where(img2_kp_coordinate == img1_kp_coordinate[i][0])
-    if len(where_tuple[0]) == 0:
-        continue
-    for j in range(len(where_tuple[0])):
-        row_index = where_tuple[0][j]
-        if img2_kp_coordinate[row_index,0]==img1_kp_coordinate[i,0] and img2_kp_coordinate[row_index,1]==img1_kp_coordinate[i,1]:
-            print 'ok:',img1_kp_coordinate[i],img2_kp_coordinate[row_index]
-    # where_tuple_index0 = where_tuple[0][0]
-    # where_tuple_index1 = where_tuple[1][0]
+    print '########################前一列'
+    count = 0
+    for i in range(400):
+        where_tuple = np.where(img2_kp_coordinate == img1_kp_coordinate[i][0]-1)
+        if len(where_tuple[0]) == 0:
+            continue
+        for j in range(len(where_tuple[0])):
+            row_index = where_tuple[0][j]
+            if (img2_kp_coordinate[row_index,0]>=img1_kp_coordinate[i,0]-1 and img2_kp_coordinate[row_index,0]<=img1_kp_coordinate[i,0]+1) and (img2_kp_coordinate[row_index,1]>=img1_kp_coordinate[i,1]-1 and img2_kp_coordinate[row_index,1]<=img1_kp_coordinate[i,1]+1):
+                count += 1
+                print 'ok:',img1_kp_coordinate[i],img2_kp_coordinate[row_index]
+                kp_set = np.vstack([kp_set,img1_kp_coordinate[i]])
+    print 'count-1:',count
 
-    # print where_tuple
+    print '########################后一列'
+    count = 0
+    for i in range(400):
+        where_tuple = np.where(img2_kp_coordinate == img1_kp_coordinate[i][0]+1)
+        if len(where_tuple[0]) == 0:
+            continue
+        for j in range(len(where_tuple[0])):
+            row_index = where_tuple[0][j]
+            if (img2_kp_coordinate[row_index,0]>=img1_kp_coordinate[i,0]-1 and img2_kp_coordinate[row_index,0]<=img1_kp_coordinate[i,0]+1) and (img2_kp_coordinate[row_index,1]>=img1_kp_coordinate[i,1]-1 and img2_kp_coordinate[row_index,1]<=img1_kp_coordinate[i,1]+1):
+                count += 1
+                print 'ok:',img1_kp_coordinate[i],img2_kp_coordinate[row_index]
+                kp_set = np.vstack([kp_set, img1_kp_coordinate[i]])
+    print 'count+1:',count
+    for i in range(len(kp_set) - 1, -1, -1):
+        if kp_set[i, 0] < 32 or kp_set[i, 0] > 900 - 32 or kp_set[i, 1] < 32 or kp_set[i, 1] > 600 - 32:
+            kp_set = np.delete(kp_set, i, axis=0)
+    return kp_set.astype(np.int)
+###########################################################
+
+kp_set = get_kp_set(img2_kp_coordinate,img4_kp_coordinate)
+print kp_set.shape
+print kp_set
 
 
+
+kp_patch_set = np.zeros(shape=(len(kp_set),64,64,3))
+for i in range(len(kp_set)):
+    kp_patch_set[i] = np.copy(img1[kp_set[i,1]-32:kp_set[i,1]+32,kp_set[i,0]-32:kp_set[i,0]+32])
+print kp_patch_set.shape,len(kp_patch_set)
+
+plt.ion()
+for i in range(len(kp_patch_set)):
+    plt.figure()
+    plt.imshow(kp_patch_set[i]/255.)
+    plt.pause(0.5)
+    plt.close()
+plt.ioff()
 
 
 
