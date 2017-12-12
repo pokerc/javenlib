@@ -1,2 +1,2 @@
-model_checkpoint_path: "mymodel1_step40"
-all_model_checkpoint_paths: "mymodel1_step40"
+model_checkpoint_path: "detector_TILDE_model"
+all_model_checkpoint_paths: "detector_TILDE_model"
