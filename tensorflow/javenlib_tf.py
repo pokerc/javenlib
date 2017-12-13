@@ -19,7 +19,7 @@ def KeyPoint_convert_forOpencv2(keypoints):
 
 def show_patch_set(patch_set):
 	"""
-	显示patch集中的图像,一幅接一幅，时间间隔为0.5s
+	显示patch集中的图像,一幅接一幅，时间间隔为0.5s，图像为rgb图
 	:param patch_set: 要显示的patch集
 	:return:
 	"""
@@ -27,6 +27,20 @@ def show_patch_set(patch_set):
 	for i in range(len(patch_set)):
 		plt.figure()
 		plt.imshow(patch_set[i])
+		plt.pause(0.5)
+		plt.close()
+	plt.ioff()
+
+def show_patch_set_gray(patch_set):
+	"""
+	显示patch集中的图像,一幅接一幅，时间间隔为0.5s,图像为灰度图
+	:param patch_set: 要显示的patch集
+	:return:
+	"""
+	plt.ion()
+	for i in range(len(patch_set)):
+		plt.figure()
+		plt.imshow(patch_set[i].reshape(64,64),cmap='gray')
 		plt.pause(0.5)
 		plt.close()
 	plt.ioff()
