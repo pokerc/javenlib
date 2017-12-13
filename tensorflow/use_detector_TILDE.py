@@ -75,11 +75,12 @@ def use_TILDE():
             count += 1
     print '准确率:', count / 100.
 
-    img_test_rgb = plt.imread('/home/javen/javenlib/images/leuven/img4.ppm')/255.
+    img_test_rgb = plt.imread('/home/javen/javenlib/images/leuven/img6.ppm')/255.
     img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
     kp_set = np.zeros(shape=(1,2))
-    for i in range(32,600-32,5):
-        for j in range(32,900-32,5):
+    #对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
+    for i in range(32,600-32,32): #扫描的步长需要调整
+        for j in range(32,900-32,32):
             patch = np.copy(img_test_gray[i-32:i+32,j-32:j+32]).reshape(1,64,64,1)
             output_predict = sess.run(output, feed_dict={tf_x:patch})
             if output_predict>=0.5:
@@ -91,8 +92,8 @@ def use_TILDE():
     # plt.ion()
     new_img = np.copy(img_test_rgb)
     for i in range(len(kp_set)):
-        plt.figure()
         new_img[kp_set[i,1]-3:kp_set[i,1]+3,kp_set[i,0]-3:kp_set[i,0]+3,0] = 1.
+        # plt.figure()
         # plt.imshow(new_img)
         # plt.pause(0.3)
         # plt.close()
