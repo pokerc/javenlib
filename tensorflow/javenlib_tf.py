@@ -16,3 +16,17 @@ def KeyPoint_convert_forOpencv2(keypoints):
 		points2f[i,:] = keypoints[i].pt
 	points = np.array(np.around(points2f),dtype='int')
 	return points
+
+def show_patch_set(patch_set):
+	"""
+	显示patch集中的图像,一幅接一幅，时间间隔为0.5s
+	:param patch_set: 要显示的patch集
+	:return:
+	"""
+	plt.ion()
+	for i in range(len(patch_set)):
+		plt.figure()
+		plt.imshow(patch_set[i])
+		plt.pause(0.5)
+		plt.close()
+	plt.ioff()

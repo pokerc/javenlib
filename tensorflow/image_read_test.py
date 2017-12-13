@@ -160,6 +160,7 @@ sess = tf.Session()
 # plt.figure()
 # plt.imshow(img1_float64)
 # plt.show()
+#################################################################
 
 img1 = plt.imread('/home/javen/javenlib/images/leuven/img1.ppm')
 img2 = plt.imread('/home/javen/javenlib/images/leuven/img2.ppm')
@@ -214,6 +215,8 @@ img4_kp = sift.detect(img4)
 img4_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img4_kp)
 img5_kp = sift.detect(img5)
 img5_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img5_kp)
+img6_kp = sift.detect(img6)
+img6_kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(img6_kp)
 
 x = np.array([[1,2],[3,4],[5,3],[1,3]])
 y = np.array([[3,4],[2,4]])
@@ -227,7 +230,7 @@ print len(where_tuple[0])
 # print where_tuple_index0,where_tuple_index1
 
 
-
+###########################################################
 # 将取出具有重复性的点的算法写为一个函数
 def get_kp_set(img1_kp_coordinate,img2_kp_coordinate):
     kp_set = np.zeros(shape=(1, 2))
@@ -273,34 +276,94 @@ def get_kp_set(img1_kp_coordinate,img2_kp_coordinate):
                 print 'ok:',img1_kp_coordinate[i],img2_kp_coordinate[row_index]
                 kp_set = np.vstack([kp_set, img1_kp_coordinate[i]])
     print 'count+1:',count
-    for i in range(len(kp_set) - 1, -1, -1):
+    for i in range(len(kp_set) - 1, -1, -1): #将无法取出patch的边缘kp点进行去除处理
         if kp_set[i, 0] < 32 or kp_set[i, 0] > 900 - 32 or kp_set[i, 1] < 32 or kp_set[i, 1] > 600 - 32:
             kp_set = np.delete(kp_set, i, axis=0)
     return kp_set.astype(np.int)
 ###########################################################
 
-kp_set = get_kp_set(img2_kp_coordinate,img4_kp_coordinate)
+
+###########################################################
+#将取出具有重复性的点周围的patch写为一个函数
+def get_kp_patch_set(img,kp_set):
+    kp_patch_set = np.zeros(shape=(len(kp_set), 64, 64, 3))
+    for i in range(len(kp_set)):
+        kp_patch_set[i] = np.copy(img[kp_set[i, 1] - 32:kp_set[i, 1] + 32, kp_set[i, 0] - 32:kp_set[i, 0] + 32])
+    return kp_patch_set/255.
+###########################################################
+
+kp_set = get_kp_set(img1_kp_coordinate,img2_kp_coordinate)
 print kp_set.shape
 print kp_set
 
+kp_patch_set = get_kp_patch_set(img1,kp_set)
+a = np.append(kp_patch_set,kp_patch_set,axis=0)
+print a.shape
+
+kp_set_12 = get_kp_set(img1_kp_coordinate,img2_kp_coordinate)
+kp_patch_set_12 = get_kp_patch_set(img1,kp_set_12)
+kp_set_34 = get_kp_set(img3_kp_coordinate,img4_kp_coordinate)
+kp_patch_set_34 = get_kp_patch_set(img3,kp_set_34)
+kp_set_56 = get_kp_set(img5_kp_coordinate,img6_kp_coordinate)
+kp_patch_set_56 = get_kp_patch_set(img5,kp_set_56)
+
+kp_patch_set = np.copy(kp_patch_set_12)
+kp_patch_set = np.append(kp_patch_set,kp_patch_set_34,axis=0)
+kp_patch_set = np.append(kp_patch_set,kp_patch_set_56,axis=0)
+print kp_patch_set.shape
+
+# #保存为positive samples,即具有重复性的patch集
+# np.save('./TILDE_data/positive_samples.npy',kp_patch_set)
 
 
-kp_patch_set = np.zeros(shape=(len(kp_set),64,64,3))
-for i in range(len(kp_set)):
-    kp_patch_set[i] = np.copy(img1[kp_set[i,1]-32:kp_set[i,1]+32,kp_set[i,0]-32:kp_set[i,0]+32])
-print kp_patch_set.shape,len(kp_patch_set)
+# plt.ion()
+# for i in range(len(kp_patch_set)):
+#     plt.figure()
+#     plt.imshow(kp_patch_set[i])
+#     plt.pause(0.5)
+#     plt.close()
+# plt.ioff()
 
-plt.ion()
-for i in range(len(kp_patch_set)):
-    plt.figure()
-    plt.imshow(kp_patch_set[i]/255.)
-    plt.pause(0.5)
-    plt.close()
-plt.ioff()
+def get_negative_patch_set(img,kp_set_positive):
+    """
+    从给定的img中取出不具有重复性的点的patch集
+    :param img:
+    :return: 返回不具有重复性的patch集
+    """
+    sift = cv2.SIFT(400)
+    kp = sift.detect(img)
+    kp_coordinate = javenlib_tf.KeyPoint_convert_forOpencv2(kp)
+    # print kp_coordinate
+    kp_set_negative = np.zeros(shape=(1,2))
+    for i in range(len(kp_coordinate)):
+        where_tuple = np.where(kp_set_positive[:,0]==kp_coordinate[i,0])
+        if len(where_tuple[0]) == 0:
+            kp_set_negative = np.append(kp_set_negative,kp_coordinate[i].reshape(1,2),axis=0)
+    for i in range(len(kp_set_negative) - 1, -1, -1): #将无法取出patch的边缘kp点进行去除处理
+        if kp_set_negative[i, 0] < 32 or kp_set_negative[i, 0] > 900 - 32 or kp_set_negative[i, 1] < 32 or kp_set_negative[i, 1] > 600 - 32:
+            kp_set_negative = np.delete(kp_set_negative, i, axis=0)
+    kp_set_negative = kp_set_negative.astype(np.int)
+    print 'kp_set_negative:', kp_set_negative.shape
+    kp_patch_set_negative = np.zeros(shape=(len(kp_set_negative),64,64,3))
+    for i in range(len(kp_set_negative)):
+        kp_patch_set_negative[i] = np.copy(img[kp_set_negative[i, 1] - 32:kp_set_negative[i, 1] + 32, kp_set_negative[i, 0] - 32:kp_set_negative[i, 0] + 32])
+    return kp_patch_set_negative/255.
 
+kp_set_positive = np.append(kp_set_12,kp_set_34,axis=0)
+kp_set_positive = np.append(kp_set_positive,kp_set_56,axis=0)
+kp_patch_set_negative = get_negative_patch_set(img1,kp_set_positive)
 
+# #保存kp_patch_set_negative到文件
+# np.save('./TILDE_data/negative_samples.npy',kp_patch_set_negative)
 
-
+# #显示kp_patch_set_negative
+# plt.ion()
+# for i in range(len(kp_patch_set_negative)):
+#     plt.figure()
+#     plt.imshow(kp_patch_set_negative[i])
+#     plt.pause(0.5)
+#     plt.close()
+# plt.ioff()
 
 
 
