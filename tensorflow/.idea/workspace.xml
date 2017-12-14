@@ -18,13 +18,18 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="javenlib_tf.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="javenlib_tf.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="780">
-              <caret line="42" column="57" lean-forward="false" selection-start-line="42" selection-start-column="57" selection-end-line="42" selection-end-column="57" />
+            <state relative-caret-position="406">
+              <caret line="92" column="0" lean-forward="true" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
               <folding>
                 <element signature="e#16#34#0" expanded="true" />
+                <element signature="e#172#324#0" expanded="false" />
+                <element signature="e#371#555#0" expanded="false" />
+                <element signature="e#589#804#0" expanded="false" />
+                <element signature="e#843#1084#0" expanded="false" />
+                <element signature="e#1122#2073#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -33,23 +38,13 @@
       <file leaf-file-name="image_read_test.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/image_read_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7120">
-              <caret line="360" column="26" lean-forward="false" selection-start-line="360" selection-start-column="26" selection-end-line="360" selection-end-column="26" />
+            <state relative-caret-position="507">
+              <caret line="370" column="18" lean-forward="false" selection-start-line="370" selection-start-column="18" selection-end-line="370" selection-end-column="18" />
               <folding>
                 <element signature="e#16#39#0" expanded="true" />
+                <element signature="e#8144#10864#0" expanded="false" />
                 <element signature="e#11051#11281#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="javen_cnn_sample.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/javen_cnn_sample.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1860">
-              <caret line="97" column="22" lean-forward="false" selection-start-line="97" selection-start-column="22" selection-end-line="97" selection-end-column="22" />
-              <folding>
-                <element signature="e#16#39#0" expanded="true" />
+                <element signature="e#12380#13600#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -58,7 +53,7 @@
       <file leaf-file-name="detector_TILDE.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/detector_TILDE.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2200">
+            <state relative-caret-position="2260">
               <caret line="113" column="10" lean-forward="false" selection-start-line="113" selection-start-column="10" selection-end-line="115" selection-end-column="13" />
               <folding>
                 <element signature="e#16#39#0" expanded="true" />
@@ -67,13 +62,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="use_detector_TILDE.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="use_detector_TILDE.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/use_detector_TILDE.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="426">
-              <caret line="94" column="71" lean-forward="false" selection-start-line="94" selection-start-column="71" selection-end-line="94" selection-end-column="71" />
+            <state relative-caret-position="86">
+              <caret line="77" column="63" lean-forward="false" selection-start-line="77" selection-start-column="63" selection-end-line="77" selection-end-column="63" />
               <folding>
                 <element signature="e#16#39#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="flann_example.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../各种库的代码example/flann_example.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="360">
+              <caret line="18" column="47" lean-forward="false" selection-start-line="18" selection-start-column="47" selection-end-line="18" selection-end-column="47" />
+              <folding>
+                <element signature="e#35#45#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -93,10 +100,11 @@
         <option value="$PROJECT_DIR$/variable_tensor_test.py" />
         <option value="$PROJECT_DIR$/amos_dataset/download_amos.py" />
         <option value="$PROJECT_DIR$/javen_cnn_sample.py" />
-        <option value="$PROJECT_DIR$/image_read_test.py" />
-        <option value="$PROJECT_DIR$/javenlib_tf.py" />
         <option value="$PROJECT_DIR$/detector_TILDE.py" />
         <option value="$PROJECT_DIR$/use_detector_TILDE.py" />
+        <option value="$PROJECT_DIR$/../各种库的代码example/flann_example.py" />
+        <option value="$PROJECT_DIR$/image_read_test.py" />
+        <option value="$PROJECT_DIR$/javenlib_tf.py" />
       </list>
     </option>
   </component>
@@ -143,24 +151,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../lenet5_cnn_accuracy.py" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Python" />
   </component>
-  <component name="RunManager" selected="Python.use_detector_TILDE">
-    <configuration default="false" name="javen_cnn_sample" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="tensorflow" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/javen_cnn_sample.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Python.javenlib_tf">
     <configuration default="false" name="image_read_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -174,23 +165,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="tensorflow" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/image_read_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="download_amos" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/amos_dataset" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="tensorflow" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/amos_dataset/download_amos.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -225,6 +199,40 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="tensorflow" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/use_detector_TILDE.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="flann_example" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../各种库的代码example" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="tensorflow" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../各种库的代码example/flann_example.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="javenlib_tf" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="tensorflow" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/javenlib_tf.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -364,19 +372,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Python.javen_cnn_sample" />
-      <item index="1" class="java.lang.String" itemvalue="Python.image_read_test" />
-      <item index="2" class="java.lang.String" itemvalue="Python.download_amos" />
-      <item index="3" class="java.lang.String" itemvalue="Python.detector_TILDE" />
-      <item index="4" class="java.lang.String" itemvalue="Python.use_detector_TILDE" />
+      <item index="0" class="java.lang.String" itemvalue="Python.image_read_test" />
+      <item index="1" class="java.lang.String" itemvalue="Python.detector_TILDE" />
+      <item index="2" class="java.lang.String" itemvalue="Python.use_detector_TILDE" />
+      <item index="3" class="java.lang.String" itemvalue="Python.flann_example" />
+      <item index="4" class="java.lang.String" itemvalue="Python.javenlib_tf" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.use_detector_TILDE" />
-        <item index="1" class="java.lang.String" itemvalue="Python.detector_TILDE" />
-        <item index="2" class="java.lang.String" itemvalue="Python.image_read_test" />
-        <item index="3" class="java.lang.String" itemvalue="Python.download_amos" />
-        <item index="4" class="java.lang.String" itemvalue="Python.javen_cnn_sample" />
+        <item index="0" class="java.lang.String" itemvalue="Python.javenlib_tf" />
+        <item index="1" class="java.lang.String" itemvalue="Python.image_read_test" />
+        <item index="2" class="java.lang.String" itemvalue="Python.flann_example" />
+        <item index="3" class="java.lang.String" itemvalue="Python.use_detector_TILDE" />
+        <item index="4" class="java.lang.String" itemvalue="Python.detector_TILDE" />
       </list>
     </recent_temporary>
   </component>
@@ -410,7 +418,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3291714" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33030647" sideWeight="0.5037353" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3291714" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32842582" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3091733" sideWeight="0.49626467" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3291714" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -441,6 +449,11 @@
           <caret line="42" column="57" lean-forward="false" selection-start-line="42" selection-start-column="57" selection-end-line="42" selection-end-column="57" />
           <folding>
             <element signature="e#16#34#0" expanded="true" />
+            <element signature="e#172#324#0" expanded="false" />
+            <element signature="e#371#555#0" expanded="false" />
+            <element signature="e#589#804#0" expanded="false" />
+            <element signature="e#843#1084#0" expanded="false" />
+            <element signature="e#1122#2073#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -451,7 +464,9 @@
           <caret line="360" column="26" lean-forward="false" selection-start-line="360" selection-start-column="26" selection-end-line="360" selection-end-column="26" />
           <folding>
             <element signature="e#16#39#0" expanded="true" />
+            <element signature="e#8144#10864#0" expanded="false" />
             <element signature="e#11051#11281#0" expanded="false" />
+            <element signature="e#12380#13600#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -461,7 +476,7 @@
         <state relative-caret-position="1860">
           <caret line="97" column="22" lean-forward="false" selection-start-line="97" selection-start-column="22" selection-end-line="97" selection-end-column="22" />
           <folding>
-            <element signature="e#16#39#0" expanded="true" />
+            <element signature="e#16#39#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -492,6 +507,11 @@
           <caret line="42" column="57" lean-forward="false" selection-start-line="42" selection-start-column="57" selection-end-line="42" selection-end-column="57" />
           <folding>
             <element signature="e#16#34#0" expanded="true" />
+            <element signature="e#172#324#0" expanded="false" />
+            <element signature="e#371#555#0" expanded="false" />
+            <element signature="e#589#804#0" expanded="false" />
+            <element signature="e#843#1084#0" expanded="false" />
+            <element signature="e#1122#2073#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -502,7 +522,9 @@
           <caret line="360" column="26" lean-forward="false" selection-start-line="360" selection-start-column="26" selection-end-line="360" selection-end-column="26" />
           <folding>
             <element signature="e#16#39#0" expanded="true" />
+            <element signature="e#8144#10864#0" expanded="false" />
             <element signature="e#11051#11281#0" expanded="false" />
+            <element signature="e#12380#13600#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -512,7 +534,7 @@
         <state relative-caret-position="1860">
           <caret line="97" column="22" lean-forward="true" selection-start-line="97" selection-start-column="22" selection-end-line="97" selection-end-column="22" />
           <folding>
-            <element signature="e#16#39#0" expanded="true" />
+            <element signature="e#16#39#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -572,37 +594,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="780">
-          <caret line="42" column="57" lean-forward="false" selection-start-line="42" selection-start-column="57" selection-end-line="42" selection-end-column="57" />
-          <folding>
-            <element signature="e#16#34#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/image_read_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7120">
-          <caret line="360" column="26" lean-forward="false" selection-start-line="360" selection-start-column="26" selection-end-line="360" selection-end-column="26" />
-          <folding>
-            <element signature="e#16#39#0" expanded="true" />
-            <element signature="e#11051#11281#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/javen_cnn_sample.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1860">
-          <caret line="97" column="22" lean-forward="false" selection-start-line="97" selection-start-column="22" selection-end-line="97" selection-end-column="22" />
-          <folding>
-            <element signature="e#16#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/variable_tensor_test.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="477">
@@ -610,9 +601,29 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/javen_cnn_sample.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="97" column="22" lean-forward="false" selection-start-line="97" selection-start-column="22" selection-end-line="97" selection-end-column="22" />
+          <folding>
+            <element signature="e#16#39#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/use_detector_TILDE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="86">
+          <caret line="77" column="63" lean-forward="false" selection-start-line="77" selection-start-column="63" selection-end-line="77" selection-end-column="63" />
+          <folding>
+            <element signature="e#16#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/detector_TILDE.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2200">
+        <state relative-caret-position="2260">
           <caret line="113" column="10" lean-forward="false" selection-start-line="113" selection-start-column="10" selection-end-line="115" selection-end-column="13" />
           <folding>
             <element signature="e#16#39#0" expanded="true" />
@@ -620,12 +631,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/use_detector_TILDE.py">
+    <entry file="file://$PROJECT_DIR$/../各种库的代码example/flann_example.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="426">
-          <caret line="94" column="71" lean-forward="false" selection-start-line="94" selection-start-column="71" selection-end-line="94" selection-end-column="71" />
+        <state relative-caret-position="360">
+          <caret line="18" column="47" lean-forward="false" selection-start-line="18" selection-start-column="47" selection-end-line="18" selection-end-column="47" />
+          <folding>
+            <element signature="e#35#45#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/image_read_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="507">
+          <caret line="370" column="18" lean-forward="false" selection-start-line="370" selection-start-column="18" selection-end-line="370" selection-end-column="18" />
           <folding>
             <element signature="e#16#39#0" expanded="true" />
+            <element signature="e#8144#10864#0" expanded="false" />
+            <element signature="e#11051#11281#0" expanded="false" />
+            <element signature="e#12380#13600#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="406">
+          <caret line="92" column="0" lean-forward="true" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
+          <folding>
+            <element signature="e#16#34#0" expanded="true" />
+            <element signature="e#172#324#0" expanded="false" />
+            <element signature="e#371#555#0" expanded="false" />
+            <element signature="e#589#804#0" expanded="false" />
+            <element signature="e#843#1084#0" expanded="false" />
+            <element signature="e#1122#2073#0" expanded="false" />
           </folding>
         </state>
       </provider>

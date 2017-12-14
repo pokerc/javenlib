@@ -12,6 +12,7 @@ import pyflann
 flann = pyflann.FLANN()
 origin_data = np.array([5.,7,9,10,4,8,6,3,15,11]).reshape(10,1)
 test_data = np.arange(10.).reshape(10,1)
+test_data[0]=30
 print origin_data
 print test_data
 print origin_data[0].dtype
