@@ -1,6 +1,6 @@
 1	寻找进程: ps -ef | grep (例如ping)
 2	查看CPU、内存占用情况: top
-3	查看磁盘使用情况: df -lh
+3	查看磁盘使用情况(目录挂载): df -lh
 4	查看磁盘分区情况及分区结构: fdisk -l
 5	查看磁盘的uuid: sudo blkid
 
@@ -12,3 +12,7 @@
 	/dev/sda3   20000768 159999999 139999232  66.8G Linux filesystem /
 	/dev/sda4  160000000 488396799 328396800 156.6G Linux filesystem
 
+8	跟踪路由: tracepath
+
+9	查看显卡：lspci | grep -i VGA
+			 lspci | grep -i nvidia
