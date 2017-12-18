@@ -110,7 +110,20 @@ def get_kp_set_positive(kp_set_raw,dist_threshold=18):
 		new_test_data = np.delete(new_test_data,0,axis=0)
 		print 'step:',step,'count:',count
 		print 'new_test_data:',new_test_data.shape
-	return new_test_data.astype(np.int)
+	kp_set_positive = np.copy(new_test_data)
+	# 进行非局部最大值抑制,即去除聚在一起的冗余的点,保留其中一个即可
+	new_test_data = np.copy(kp_set_positive)
+	for i in range(len(kp_set_positive)):
+		origin_data = np.copy(new_test_data)
+		test_data = np.copy(new_test_data)
+		matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 2,
+													  algorithm="kmeans", branching=32, iterations=7, checks=16)
+		for j in range(len(test_data) - 1, -1, -1):
+			if matched_distances[j, 1] < 1000:
+				new_test_data = np.delete(test_data, j, axis=0)
+				break
+	kp_set_positive = np.copy(new_test_data)
+	return kp_set_positive.astype(np.int)
 
 def get_kp_set_negative(kp_set_raw,dist_threshold=1000):
 	"""
@@ -135,9 +148,22 @@ def get_kp_set_negative(kp_set_raw,dist_threshold=1000):
 				new_test_data = np.append(new_test_data, test_data[i].reshape(1, 2), axis=0)
 				print matched_distances[i]
 		new_test_data = np.delete(new_test_data,0,axis=0)
-		print 'step:',step,'count:',count
-		print 'new_test_data:',new_test_data.shape
-	return new_test_data.astype(np.int)
+		# print 'step:',step,'count:',count
+		# print 'new_test_data:',new_test_data.shape
+	kp_set_negative = np.copy(new_test_data)
+	#进行非局部最大值抑制,即去除聚在一起的冗余的点,保留其中一个即可
+	new_test_data = np.copy(kp_set_negative)
+	for i in range(len(kp_set_negative)):
+		origin_data = np.copy(new_test_data)
+		test_data = np.copy(new_test_data)
+		matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 2,
+													  algorithm="kmeans", branching=32, iterations=7, checks=16)
+		for j in range(len(test_data) - 1, -1, -1):
+			if matched_distances[j, 1] < 1000:
+				new_test_data = np.delete(test_data, j, axis=0)
+				break
+	kp_set_negative = np.copy(new_test_data)
+	return kp_set_negative.astype(np.int)
 
 def get_kp_patch_set_positive(img_path_list,kp_set_positive):
 	"""
