@@ -1,0 +1,7 @@
+先解压
+然后mkdir build
+然后 cd build
+然后 cmake ..
+然后 sudo make -j
+然后 sudo make install
+然后就可以用了
