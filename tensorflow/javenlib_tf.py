@@ -18,7 +18,7 @@ def KeyPoint_convert_forOpencv2(keypoints):
 	points = np.array(np.around(points2f),dtype='int')
 	return points
 
-def show_kp_set(img_path,kp_set):
+def show_kp_set(img_path,kp_set,pixel_size=5):
 	"""
 	将特征点在图片上显示出来
 	:param img_path: 图片的路径
@@ -27,7 +27,7 @@ def show_kp_set(img_path,kp_set):
 	"""
 	new_img = np.copy(plt.imread(img_path))
 	for i in range(len(kp_set)):
-		new_img[kp_set[i,1]-5:kp_set[i,1]+5,kp_set[i,0]-5:kp_set[i,0]+5,0] = 255
+		new_img[kp_set[i,1]-pixel_size:kp_set[i,1]+pixel_size,kp_set[i,0]-pixel_size:kp_set[i,0]+pixel_size,0] = 255
 	plt.figure()
 	plt.imshow(new_img)
 	plt.show()
