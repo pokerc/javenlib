@@ -108,8 +108,8 @@ def get_kp_set_positive(kp_set_raw,dist_threshold=18):
 				new_test_data = np.append(new_test_data, test_data[i].reshape(1, 2), axis=0)
 				# print matched_distances[i]
 		new_test_data = np.delete(new_test_data,0,axis=0)
-		print 'step:',step,'count:',count
-		print 'new_test_data:',new_test_data.shape
+		# print 'step:',step,'count:',count
+		# print 'new_test_data:',new_test_data.shape
 	kp_set_positive = np.copy(new_test_data)
 	# 进行非局部最大值抑制,即去除聚在一起的冗余的点,保留其中一个即可
 	new_test_data = np.copy(kp_set_positive)
@@ -146,7 +146,7 @@ def get_kp_set_negative(kp_set_raw,dist_threshold=1000):
 			if matched_distances[i] > dist_threshold:
 				count += 1
 				new_test_data = np.append(new_test_data, test_data[i].reshape(1, 2), axis=0)
-				print matched_distances[i]
+				# print matched_distances[i]
 		new_test_data = np.delete(new_test_data,0,axis=0)
 		# print 'step:',step,'count:',count
 		# print 'new_test_data:',new_test_data.shape
