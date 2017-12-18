@@ -18,18 +18,35 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="javenlib_tf.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="javenlib_tf.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="85" column="27" lean-forward="true" selection-start-line="85" selection-start-column="27" selection-end-line="85" selection-end-column="27" />
+            <state relative-caret-position="366">
+              <caret line="179" column="0" lean-forward="false" selection-start-line="179" selection-start-column="0" selection-end-line="179" selection-end-column="0" />
               <folding>
                 <element signature="e#16#34#0" expanded="true" />
                 <element signature="e#172#324#0" expanded="false" />
                 <element signature="e#371#555#0" expanded="false" />
-                <element signature="e#589#804#0" expanded="false" />
-                <element signature="e#843#1084#0" expanded="false" />
-                <element signature="e#1122#2073#0" expanded="false" />
+                <element signature="e#592#870#0" expanded="false" />
+                <element signature="e#922#1145#0" expanded="false" />
+                <element signature="e#1184#1425#0" expanded="false" />
+                <element signature="e#1463#2414#0" expanded="false" />
+                <element signature="e#2472#3455#0" expanded="false" />
+                <element signature="e#3515#4493#0" expanded="false" />
+                <element signature="e#4558#5703#0" expanded="false" />
+                <element signature="e#5768#6598#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="extract_patches.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/extract_patches.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="400">
+              <caret line="26" column="23" lean-forward="false" selection-start-line="26" selection-start-column="23" selection-end-line="26" selection-end-column="23" />
+              <folding>
+                <element signature="e#16#34#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -105,6 +122,7 @@
         <option value="$PROJECT_DIR$/../各种库的代码example/flann_example.py" />
         <option value="$PROJECT_DIR$/image_read_test.py" />
         <option value="$PROJECT_DIR$/javenlib_tf.py" />
+        <option value="$PROJECT_DIR$/extract_patches.py" />
       </list>
     </option>
   </component>
@@ -129,7 +147,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -145,13 +162,14 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../lenet5_cnn_accuracy.py" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Python" />
   </component>
-  <component name="RunManager" selected="Python.javenlib_tf">
+  <component name="RunManager" selected="Python.extract_patches">
     <configuration default="false" name="image_read_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -165,23 +183,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="tensorflow" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/image_read_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="detector_TILDE" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="tensorflow" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/detector_TILDE.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -233,6 +234,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="tensorflow" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/javenlib_tf.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="extract_patches" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="tensorflow" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/extract_patches.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -373,18 +391,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.image_read_test" />
-      <item index="1" class="java.lang.String" itemvalue="Python.detector_TILDE" />
-      <item index="2" class="java.lang.String" itemvalue="Python.use_detector_TILDE" />
-      <item index="3" class="java.lang.String" itemvalue="Python.flann_example" />
-      <item index="4" class="java.lang.String" itemvalue="Python.javenlib_tf" />
+      <item index="1" class="java.lang.String" itemvalue="Python.use_detector_TILDE" />
+      <item index="2" class="java.lang.String" itemvalue="Python.flann_example" />
+      <item index="3" class="java.lang.String" itemvalue="Python.javenlib_tf" />
+      <item index="4" class="java.lang.String" itemvalue="Python.extract_patches" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.javenlib_tf" />
-        <item index="1" class="java.lang.String" itemvalue="Python.image_read_test" />
-        <item index="2" class="java.lang.String" itemvalue="Python.flann_example" />
-        <item index="3" class="java.lang.String" itemvalue="Python.use_detector_TILDE" />
-        <item index="4" class="java.lang.String" itemvalue="Python.detector_TILDE" />
+        <item index="0" class="java.lang.String" itemvalue="Python.extract_patches" />
+        <item index="1" class="java.lang.String" itemvalue="Python.javenlib_tf" />
+        <item index="2" class="java.lang.String" itemvalue="Python.image_read_test" />
+        <item index="3" class="java.lang.String" itemvalue="Python.flann_example" />
+        <item index="4" class="java.lang.String" itemvalue="Python.use_detector_TILDE" />
       </list>
     </recent_temporary>
   </component>
@@ -414,7 +432,7 @@
     <frame x="960" y="52" width="940" height="979" extended-state="4" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2529349" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2519084" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3291714" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33030647" sideWeight="0.5037353" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -438,7 +456,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <option name="time" value="4" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -451,9 +469,14 @@
             <element signature="e#16#34#0" expanded="true" />
             <element signature="e#172#324#0" expanded="false" />
             <element signature="e#371#555#0" expanded="false" />
-            <element signature="e#589#804#0" expanded="false" />
-            <element signature="e#843#1084#0" expanded="false" />
-            <element signature="e#1122#2073#0" expanded="false" />
+            <element signature="e#592#870#0" expanded="false" />
+            <element signature="e#922#1145#0" expanded="false" />
+            <element signature="e#1184#1425#0" expanded="false" />
+            <element signature="e#1463#2414#0" expanded="false" />
+            <element signature="e#2472#3455#0" expanded="false" />
+            <element signature="e#3515#4493#0" expanded="false" />
+            <element signature="e#4558#5703#0" expanded="false" />
+            <element signature="e#5768#6598#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -509,9 +532,14 @@
             <element signature="e#16#34#0" expanded="true" />
             <element signature="e#172#324#0" expanded="false" />
             <element signature="e#371#555#0" expanded="false" />
-            <element signature="e#589#804#0" expanded="false" />
-            <element signature="e#843#1084#0" expanded="false" />
-            <element signature="e#1122#2073#0" expanded="false" />
+            <element signature="e#592#870#0" expanded="false" />
+            <element signature="e#922#1145#0" expanded="false" />
+            <element signature="e#1184#1425#0" expanded="false" />
+            <element signature="e#1463#2414#0" expanded="false" />
+            <element signature="e#2472#3455#0" expanded="false" />
+            <element signature="e#3515#4493#0" expanded="false" />
+            <element signature="e#4558#5703#0" expanded="false" />
+            <element signature="e#5768#6598#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -656,15 +684,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="85" column="27" lean-forward="true" selection-start-line="85" selection-start-column="27" selection-end-line="85" selection-end-column="27" />
+        <state relative-caret-position="366">
+          <caret line="179" column="0" lean-forward="false" selection-start-line="179" selection-start-column="0" selection-end-line="179" selection-end-column="0" />
           <folding>
             <element signature="e#16#34#0" expanded="true" />
             <element signature="e#172#324#0" expanded="false" />
             <element signature="e#371#555#0" expanded="false" />
-            <element signature="e#589#804#0" expanded="false" />
-            <element signature="e#843#1084#0" expanded="false" />
-            <element signature="e#1122#2073#0" expanded="false" />
+            <element signature="e#592#870#0" expanded="false" />
+            <element signature="e#922#1145#0" expanded="false" />
+            <element signature="e#1184#1425#0" expanded="false" />
+            <element signature="e#1463#2414#0" expanded="false" />
+            <element signature="e#2472#3455#0" expanded="false" />
+            <element signature="e#3515#4493#0" expanded="false" />
+            <element signature="e#4558#5703#0" expanded="false" />
+            <element signature="e#5768#6598#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/extract_patches.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="26" column="23" lean-forward="false" selection-start-line="26" selection-start-column="23" selection-end-line="26" selection-end-column="23" />
+          <folding>
+            <element signature="e#16#34#0" expanded="true" />
           </folding>
         </state>
       </provider>

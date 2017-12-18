@@ -18,18 +18,32 @@ def KeyPoint_convert_forOpencv2(keypoints):
 	points = np.array(np.around(points2f),dtype='int')
 	return points
 
-def show_patch_set(patch_set):
+def show_kp_set(img_path,kp_set):
+	"""
+	将特征点在图片上显示出来
+	:param img_path: 图片的路径
+	:param kp_set: 检测到的特征点的坐标集合
+	:return:
+	"""
+	new_img = np.copy(plt.imread(img_path))
+	for i in range(len(kp_set)):
+		new_img[kp_set[i,1]-5:kp_set[i,1]+5,kp_set[i,0]-5:kp_set[i,0]+5,0] = 255
+	plt.figure()
+	plt.imshow(new_img)
+	plt.show()
+
+def show_patch_set(patch_set,time_interval=0.5):
 	"""
 	显示patch集中的图像,一幅接一幅，时间间隔为0.5s，图像为rgb图
 	:param patch_set: 要显示的patch集
 	:return:
 	"""
 	plt.ion()
+	plt.figure()
 	for i in range(len(patch_set)):
-		plt.figure()
 		plt.imshow(patch_set[i])
-		plt.pause(0.5)
-		plt.close()
+		plt.pause(time_interval)
+	plt.close()
 	plt.ioff()
 
 def show_patch_set_gray(patch_set):
@@ -71,31 +85,120 @@ def get_kp_set_raw(img_path_list):
 	# print 'kp_set_raw:',kp_set_raw.shape,kp_set_raw.dtype
 	return kp_set_raw
 
-def get_kp_set_positive(kp_set_raw):
+def get_kp_set_positive(kp_set_raw,dist_threshold=18):
 	"""
 	使用flann的方法,寻找出kp_set_raw中具有重复性的kp点
 	:param kp_set_raw: 输入sift检测出的原始kp点集
+	:param dist_threshold: 相似距离的冗余度阈值,当距离小于18,认为两点重复,可判断为具有重复性的点
 	:return: 返回具有可重复性的kp点集
 	"""
 	print 'kp_set_raw:',kp_set_raw.shape
 	flann = pyflann.FLANN()
-	origin_data = kp_set_raw[0] #(400,2)
-	test_data = kp_set_raw[1] #(400,2)
-	matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 1, algorithm="kmeans", branching=32, iterations=7, checks=16)
-	print 'matched_indices:',matched_indices.shape,'matched_distances:',matched_distances.shape
-	print matched_distances
-	count = 0
-	for i in range(400):
-		if matched_distances[i] < 20:
-			count += 1
-			print matched_distances[i]
-	print 'count:',count
+	new_test_data = np.copy(kp_set_raw[0])
+	for step in range(4):
+		test_data = np.copy(new_test_data)
+		origin_data = kp_set_raw[step+1]
+		matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 1,
+													  algorithm="kmeans", branching=32, iterations=7, checks=16)
+		count = 0
+		new_test_data = np.zeros(shape=(1, 2))
+		for i in range(len(test_data)):
+			if matched_distances[i] < dist_threshold:
+				count += 1
+				new_test_data = np.append(new_test_data, test_data[i].reshape(1, 2), axis=0)
+				# print matched_distances[i]
+		new_test_data = np.delete(new_test_data,0,axis=0)
+		print 'step:',step,'count:',count
+		print 'new_test_data:',new_test_data.shape
+	return new_test_data.astype(np.int)
+
+def get_kp_set_negative(kp_set_raw,dist_threshold=1000):
+	"""
+	使用flann的方法,寻找出kp_set_raw中具有重复性的kp点
+	:param kp_set_raw: 输入sift检测出的原始kp点集
+	:param dist_threshold: 相似距离的冗余度阈值,当距离大于3000,可判断为不具有重复性的点
+	:return: 返回不具有可重复性的kp点集
+	"""
+	print 'kp_set_raw:',kp_set_raw.shape
+	flann = pyflann.FLANN()
+	new_test_data = np.copy(kp_set_raw[0])
+	for step in range(4):
+		test_data = np.copy(new_test_data)
+		origin_data = kp_set_raw[step+1]
+		matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 1,
+													  algorithm="kmeans", branching=32, iterations=7, checks=16)
+		count = 0
+		new_test_data = np.zeros(shape=(1, 2))
+		for i in range(len(test_data)):
+			if matched_distances[i] > dist_threshold:
+				count += 1
+				new_test_data = np.append(new_test_data, test_data[i].reshape(1, 2), axis=0)
+				print matched_distances[i]
+		new_test_data = np.delete(new_test_data,0,axis=0)
+		print 'step:',step,'count:',count
+		print 'new_test_data:',new_test_data.shape
+	return new_test_data.astype(np.int)
+
+def get_kp_patch_set_positive(img_path_list,kp_set_positive):
+	"""
+	根据所给的图像，以及positive kp的坐标取出positive patch的集合
+	:param img_path_list: 图像路径列表
+	:param kp_set_positive: positive kp集合
+	:return: 返回positive patch集合（由于函数中要进行kp是否可取patch的边界范围判断，所以可能得到的patch数目比positive kp的数目少）
+	"""
+	#无法取到patch的kp点的去除
+	rows_num,columns_num = plt.imread(img_path_list[0]).shape[0:2]
+	for i in range(len(kp_set_positive)-1,-1,-1):
+		if kp_set_positive[i,1] < 32 or kp_set_positive[i,1] > rows_num-32 or kp_set_positive[i,0] < 32 or kp_set_positive[i,0] > columns_num-32:
+			kp_set_positive = np.delete(kp_set_positive,i,axis=0)
+	# print 'kp_set_positive:',kp_set_positive.shape,kp_set_positive
+	#取出kp_set_positive所对应的patch集合
+	kp_patch_set_positive = np.zeros(shape=(1,64,64,3))
+	for img_count in range(len(img_path_list)):
+		img = plt.imread(img_path_list[img_count])/255.
+		for i in range(len(kp_set_positive)):
+			kp_patch_set_positive = np.append(kp_patch_set_positive,img[kp_set_positive[i,1]-32:kp_set_positive[i,1]+32,kp_set_positive[i,0]-32:kp_set_positive[i,0]+32,:].reshape(1,64,64,3),axis=0)
+	kp_patch_set_positive = np.delete(kp_patch_set_positive,0,axis=0)
+	# print kp_patch_set_positive.shape
+	return kp_patch_set_positive
+
+def get_kp_patch_set_negative(img_path_list,kp_set_negative):
+	#无法取到patch的kp点的去除
+	rows_num,columns_num = plt.imread(img_path_list[0]).shape[0:2]
+	for i in range(len(kp_set_negative)-1,-1,-1):
+		if kp_set_negative[i,1] < 32 or kp_set_negative[i,1] > rows_num-32 or kp_set_negative[i,0] < 32 or kp_set_negative[i,0] > columns_num-32:
+			kp_set_negative = np.delete(kp_set_negative,i,axis=0)
+	#取出kp_set_negative所对应的patch集合
+	kp_patch_set_negative = np.zeros(shape=(1,64,64,3))
+	for img_count in range(len(img_path_list)):
+		img = plt.imread(img_path_list[img_count])/255.
+		for i in range(len(kp_set_negative)):
+			kp_patch_set_negative = np.append(kp_patch_set_negative,img[kp_set_negative[i,1]-32:kp_set_negative[i,1]+32,kp_set_negative[i,0]-32:kp_set_negative[i,0]+32,:].reshape(1,64,64,3),axis=0)
+	kp_patch_set_negative = np.delete(kp_patch_set_negative,0,axis=0)
+	return kp_patch_set_negative
 
 
-img_path_list = ['/home/javen/javenlib/images/leuven/img1.ppm',
-		 '/home/javen/javenlib/images/leuven/img2.ppm',
-		 '/home/javen/javenlib/images/leuven/img3.ppm',
-		 '/home/javen/javenlib/images/leuven/img4.ppm',
-		 '/home/javen/javenlib/images/leuven/img5.ppm']
-kp_set_raw = get_kp_set_raw(img_path_list)
-get_kp_set_positive(kp_set_raw)
+# #提取图片集合中的positive patches和negative patches
+# img_path_list = ['/home/javen/javenlib/images/leuven/img1.ppm',
+# 		 '/home/javen/javenlib/images/leuven/img2.ppm',
+# 		 '/home/javen/javenlib/images/leuven/img3.ppm',
+# 		 '/home/javen/javenlib/images/leuven/img4.ppm',
+# 		 '/home/javen/javenlib/images/leuven/img5.ppm']
+#
+# kp_set_raw = get_kp_set_raw(img_path_list)
+# kp_set_positive = get_kp_set_positive(kp_set_raw)
+# print 'kp_set_positive:',kp_set_positive.shape
+# kp_patch_set_positive = get_kp_patch_set_positive(img_path_list,kp_set_positive)
+# print 'kp_patch_set_positive:',kp_patch_set_positive.shape
+# # show_patch_set(kp_patch_set_positive)
+# # show_kp_set(img_path_list[4],kp_set_positive)
+# #保存positive patch集合
+# # np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+'leuven'+'_positive_patches.npy',kp_patch_set_positive)
+#
+# kp_set_negative = get_kp_set_negative(kp_set_raw)
+# print 'kp_set_nagative:',kp_set_negative.shape
+# kp_patch_set_negative = get_kp_patch_set_negative(img_path_list,kp_set_negative)
+# print 'kp_patch_set_negative:',kp_patch_set_negative.shape
+# # show_patch_set(kp_patch_set_negative)
+# #保存negative patch集合
+# # np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+'leuven'+'_negative_patches.npy',kp_patch_set_negative)
