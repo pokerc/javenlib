@@ -203,6 +203,15 @@ def get_kp_patch_set_negative(img_path_list,kp_set_negative):
 	kp_patch_set_negative = np.delete(kp_patch_set_negative,0,axis=0)
 	return kp_patch_set_negative
 
+def shuffle_data_and_label(train_data,train_label):
+	x = np.arange(len(train_data))
+	np.random.shuffle(x)
+	shuffled_train_data = train_data[x]
+	shuffled_train_label = train_label[x]
+	return (shuffled_train_data,shuffled_train_label)
+
+
+
 
 # #提取图片集合中的positive patches和negative patches
 # img_path_list = ['/home/javen/javenlib/images/leuven/img1.ppm',

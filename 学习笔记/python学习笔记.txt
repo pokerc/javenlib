@@ -195,7 +195,7 @@
 		numbers=json.load(f_obj)
 	print numbers
 
-
+20	python文件的搜索与判断方法，正则表达式的使用
 
 
 

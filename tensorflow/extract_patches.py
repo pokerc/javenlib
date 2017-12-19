@@ -6,7 +6,7 @@ import cv2
 import pyflann
 import javenlib_tf
 
-image_classname = 'amosLakeroad'
+image_classname = 'amos850_201609'
 image_type = 'jpg'
 #提取图片集合中的positive patches和negative patches
 img_path_list = ['/home/javen/javenlib/images/'+image_classname+'/img1.'+image_type,
@@ -24,7 +24,7 @@ print 'kp_patch_set_positive:',kp_patch_set_positive.shape
 # javenlib_tf.show_patch_set(kp_patch_set_positive)
 # javenlib_tf.show_kp_set(img_path_list[4],kp_set_positive,pixel_size=10)
 #保存positive patch集合
-np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+image_classname+'_positive_patches.npy',kp_patch_set_positive)
+# np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+image_classname+'_positive_patches.npy',kp_patch_set_positive)
 
 kp_set_negative = javenlib_tf.get_kp_set_negative(kp_set_raw,dist_threshold=1000)
 print 'kp_set_nagative:',kp_set_negative.shape
@@ -33,7 +33,7 @@ print 'kp_patch_set_negative:',kp_patch_set_negative.shape
 # javenlib_tf.show_patch_set(kp_patch_set_negative)
 # javenlib_tf.show_kp_set(img_path_list[4],kp_set_negative,pixel_size=10)
 #保存negative patch集合
-np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+image_classname+'_negative_patches.npy',kp_patch_set_negative)
+# np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+image_classname+'_negative_patches.npy',kp_patch_set_negative)
 
 # new_test_data = np.copy(kp_set_negative)
 # flann = pyflann.FLANN()
@@ -51,3 +51,5 @@ np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+image_classname+'_negative
 # print new_test_data
 # print new_test_data.shape
 # javenlib_tf.show_kp_set(img_path_list[4],new_test_data,pixel_size=10)
+
+# print plt.imread(img_path_list[4]).shape

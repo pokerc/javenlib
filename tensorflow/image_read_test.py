@@ -365,12 +365,6 @@ kp_patch_set_negative = get_negative_patch_set(img1,kp_set_positive)
 #     plt.close()
 # plt.ioff()
 
-new_img = np.copy(img1)
-new_img[100-5:100+5,100-5:100+5,0]=255
-plt.figure()
-plt.imshow(new_img)
-plt.show()
-
 
 
 

@@ -18,11 +18,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="javenlib_tf.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="javenlib_tf.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="254">
-              <caret line="87" column="0" lean-forward="false" selection-start-line="87" selection-start-column="0" selection-end-line="87" selection-end-column="0" />
+            <state relative-caret-position="326">
+              <caret line="166" column="0" lean-forward="true" selection-start-line="166" selection-start-column="0" selection-end-line="166" selection-end-column="0" />
               <folding>
                 <element signature="e#16#34#0" expanded="true" />
                 <element signature="e#172#324#0" expanded="false" />
@@ -40,11 +40,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="extract_patches.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="extract_patches.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/extract_patches.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="280">
-              <caret line="23" column="32" lean-forward="false" selection-start-line="23" selection-start-column="32" selection-end-line="23" selection-end-column="32" />
+            <state relative-caret-position="380">
+              <caret line="19" column="47" lean-forward="true" selection-start-line="19" selection-start-column="47" selection-end-line="19" selection-end-column="47" />
               <folding>
                 <element signature="e#16#34#0" expanded="true" />
               </folding>
@@ -55,8 +55,8 @@
       <file leaf-file-name="image_read_test.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/image_read_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="659">
-              <caret line="370" column="18" lean-forward="false" selection-start-line="370" selection-start-column="18" selection-end-line="370" selection-end-column="18" />
+            <state relative-caret-position="226">
+              <caret line="353" column="23" lean-forward="false" selection-start-line="353" selection-start-column="23" selection-end-line="353" selection-end-column="23" />
               <folding>
                 <element signature="e#16#39#0" expanded="true" />
                 <element signature="e#8144#10864#0" expanded="false" />
@@ -70,7 +70,7 @@
       <file leaf-file-name="detector_TILDE.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/detector_TILDE.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="740">
+            <state relative-caret-position="260">
               <caret line="40" column="11" lean-forward="false" selection-start-line="40" selection-start-column="11" selection-end-line="40" selection-end-column="11" />
               <folding>
                 <element signature="e#16#39#0" expanded="true" />
@@ -82,7 +82,7 @@
       <file leaf-file-name="use_detector_TILDE.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/use_detector_TILDE.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1480">
+            <state relative-caret-position="86">
               <caret line="77" column="63" lean-forward="false" selection-start-line="77" selection-start-column="63" selection-end-line="77" selection-end-column="63" />
               <folding>
                 <element signature="e#16#39#0" expanded="true" />
@@ -120,9 +120,10 @@
         <option value="$PROJECT_DIR$/detector_TILDE.py" />
         <option value="$PROJECT_DIR$/use_detector_TILDE.py" />
         <option value="$PROJECT_DIR$/../各种库的代码example/flann_example.py" />
-        <option value="$PROJECT_DIR$/image_read_test.py" />
-        <option value="$PROJECT_DIR$/javenlib_tf.py" />
         <option value="$PROJECT_DIR$/extract_patches.py" />
+        <option value="$PROJECT_DIR$/TILDE_data/make_patch_set.py" />
+        <option value="$PROJECT_DIR$/javenlib_tf.py" />
+        <option value="$PROJECT_DIR$/image_read_test.py" />
       </list>
     </option>
   </component>
@@ -169,7 +170,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../lenet5_cnn_accuracy.py" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Python" />
   </component>
-  <component name="RunManager" selected="Python.extract_patches">
+  <component name="RunManager" selected="Python.image_read_test">
     <configuration default="false" name="image_read_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -183,23 +184,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="tensorflow" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/image_read_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="use_detector_TILDE" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="tensorflow" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/use_detector_TILDE.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -251,6 +235,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="tensorflow" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/extract_patches.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="make_patch_set" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TILDE_data" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="tensorflow" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TILDE_data/make_patch_set.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -391,18 +392,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.image_read_test" />
-      <item index="1" class="java.lang.String" itemvalue="Python.use_detector_TILDE" />
-      <item index="2" class="java.lang.String" itemvalue="Python.flann_example" />
-      <item index="3" class="java.lang.String" itemvalue="Python.javenlib_tf" />
-      <item index="4" class="java.lang.String" itemvalue="Python.extract_patches" />
+      <item index="1" class="java.lang.String" itemvalue="Python.flann_example" />
+      <item index="2" class="java.lang.String" itemvalue="Python.javenlib_tf" />
+      <item index="3" class="java.lang.String" itemvalue="Python.extract_patches" />
+      <item index="4" class="java.lang.String" itemvalue="Python.make_patch_set" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.extract_patches" />
-        <item index="1" class="java.lang.String" itemvalue="Python.javenlib_tf" />
-        <item index="2" class="java.lang.String" itemvalue="Python.image_read_test" />
-        <item index="3" class="java.lang.String" itemvalue="Python.flann_example" />
-        <item index="4" class="java.lang.String" itemvalue="Python.use_detector_TILDE" />
+        <item index="0" class="java.lang.String" itemvalue="Python.image_read_test" />
+        <item index="1" class="java.lang.String" itemvalue="Python.make_patch_set" />
+        <item index="2" class="java.lang.String" itemvalue="Python.extract_patches" />
+        <item index="3" class="java.lang.String" itemvalue="Python.javenlib_tf" />
+        <item index="4" class="java.lang.String" itemvalue="Python.flann_example" />
       </list>
     </recent_temporary>
   </component>
@@ -429,7 +430,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="960" y="52" width="930" height="979" extended-state="4" />
+    <frame x="960" y="52" width="930" height="979" extended-state="5" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25137818" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
@@ -630,26 +631,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/detector_TILDE.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="740">
-          <caret line="40" column="11" lean-forward="false" selection-start-line="40" selection-start-column="11" selection-end-line="40" selection-end-column="11" />
-          <folding>
-            <element signature="e#16#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/use_detector_TILDE.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1480">
-          <caret line="77" column="63" lean-forward="false" selection-start-line="77" selection-start-column="63" selection-end-line="77" selection-end-column="63" />
-          <folding>
-            <element signature="e#16#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../各种库的代码example/flann_example.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
@@ -660,10 +641,48 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/use_detector_TILDE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="86">
+          <caret line="77" column="63" lean-forward="false" selection-start-line="77" selection-start-column="63" selection-end-line="77" selection-end-column="63" />
+          <folding>
+            <element signature="e#16#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/detector_TILDE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="40" column="11" lean-forward="false" selection-start-line="40" selection-start-column="11" selection-end-line="40" selection-end-column="11" />
+          <folding>
+            <element signature="e#16#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TILDE_data/make_patch_set.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="840">
+          <caret line="42" column="47" lean-forward="false" selection-start-line="42" selection-start-column="47" selection-end-line="42" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/extract_patches.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="19" column="47" lean-forward="true" selection-start-line="19" selection-start-column="47" selection-end-line="19" selection-end-column="47" />
+          <folding>
+            <element signature="e#16#34#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/image_read_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="659">
-          <caret line="370" column="18" lean-forward="false" selection-start-line="370" selection-start-column="18" selection-end-line="370" selection-end-column="18" />
+        <state relative-caret-position="226">
+          <caret line="353" column="23" lean-forward="false" selection-start-line="353" selection-start-column="23" selection-end-line="353" selection-end-column="23" />
           <folding>
             <element signature="e#16#39#0" expanded="true" />
             <element signature="e#8144#10864#0" expanded="false" />
@@ -675,8 +694,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="254">
-          <caret line="87" column="0" lean-forward="false" selection-start-line="87" selection-start-column="0" selection-end-line="87" selection-end-column="0" />
+        <state relative-caret-position="326">
+          <caret line="166" column="0" lean-forward="true" selection-start-line="166" selection-start-column="0" selection-end-line="166" selection-end-column="0" />
           <folding>
             <element signature="e#16#34#0" expanded="true" />
             <element signature="e#172#324#0" expanded="false" />
@@ -689,16 +708,6 @@
             <element signature="e#4180#5775#0" expanded="false" />
             <element signature="e#5840#6985#0" expanded="false" />
             <element signature="e#7050#7880#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/extract_patches.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="23" column="32" lean-forward="false" selection-start-line="23" selection-start-column="32" selection-end-line="23" selection-end-column="32" />
-          <folding>
-            <element signature="e#16#34#0" expanded="true" />
           </folding>
         </state>
       </provider>
