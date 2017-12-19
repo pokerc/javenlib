@@ -43,8 +43,8 @@
       <file leaf-file-name="extract_patches.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/extract_patches.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="720">
-              <caret line="36" column="0" lean-forward="true" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+            <state relative-caret-position="280">
+              <caret line="23" column="32" lean-forward="false" selection-start-line="23" selection-start-column="32" selection-end-line="23" selection-end-column="32" />
               <folding>
                 <element signature="e#16#34#0" expanded="true" />
               </folding>
@@ -695,8 +695,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/extract_patches.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="36" column="0" lean-forward="true" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+        <state relative-caret-position="280">
+          <caret line="23" column="32" lean-forward="false" selection-start-line="23" selection-start-column="32" selection-end-line="23" selection-end-column="32" />
           <folding>
             <element signature="e#16#34#0" expanded="true" />
           </folding>
