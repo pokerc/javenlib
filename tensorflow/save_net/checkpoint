@@ -1,2 +1,2 @@
-model_checkpoint_path: "detector_TILDE_model"
-all_model_checkpoint_paths: "detector_TILDE_model"
+model_checkpoint_path: "detector_TILDE_model_20171219_softmax_20_0_001"
+all_model_checkpoint_paths: "detector_TILDE_model_20171219_softmax_20_0_001"

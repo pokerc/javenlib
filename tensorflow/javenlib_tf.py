@@ -210,8 +210,37 @@ def shuffle_data_and_label(train_data,train_label):
 	shuffled_train_label = train_label[x]
 	return (shuffled_train_data,shuffled_train_label)
 
+def rgb2gray_train_data(train_data):
+	"""
+	将train_data从rgb模式转换为gray模式
+	:param train_data: rgb模式的train_data,其维度必须为(?,64,64,3)的形式
+	:return: 返回转换为gray模式的train_data,转换后的维度为(?,64,64,1)
+	"""
+	if train_data.shape[3] != 3:
+		print 'Error: 输入数据的维度必须满足(?,64,64,3)'
+		exit()
+	train_data_gray = np.dot(train_data[...,:3],[0.2989,0.5870,0.1140])
+	return train_data_gray.reshape(len(train_data),64,64,1)
 
-
+def NMS_4_points_set(kp_set):
+	"""
+	对一个points set 进行NMS,即非局部最大值抑制,即将点集合中比较彼此很靠近的点堆中只保留其中一个,其实并没有保留最大值,只是保留了其中一个值而已,不算完全的NMS
+	:param kp_set: 需要进行NMS的点集
+	:return: 返回进过NMS过滤的点集
+	"""
+	# 进行非局部最大值抑制,即去除聚在一起的冗余的点,保留其中一个即可
+	flann = pyflann.FLANN()
+	new_test_data = np.copy(kp_set)
+	for i in range(len(kp_set)):
+		origin_data = np.copy(new_test_data)
+		test_data = np.copy(new_test_data)
+		matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 2,
+													  algorithm="kmeans", branching=32, iterations=7, checks=16)
+		for j in range(len(test_data) - 1, -1, -1):
+			if matched_distances[j, 1] < 1024:
+				new_test_data = np.delete(test_data, j, axis=0)
+				break
+	return new_test_data
 
 # #提取图片集合中的positive patches和negative patches
 # img_path_list = ['/home/javen/javenlib/images/leuven/img1.ppm',

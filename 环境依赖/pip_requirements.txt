@@ -1,0 +1,2 @@
+Cython numpy scipy scikit-image matplotlib ipython h5py leveldb networkx nose pandas python-dateutil protobuf python-gflags pyyaml pillow six pyflann
+
