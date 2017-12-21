@@ -222,10 +222,11 @@ def rgb2gray_train_data(train_data):
 	train_data_gray = np.dot(train_data[...,:3],[0.2989,0.5870,0.1140])
 	return train_data_gray.reshape(len(train_data),64,64,1)
 
-def NMS_4_points_set(kp_set):
+def NMS_4_points_set(kp_set,dist_threshold=1100):
 	"""
 	对一个points set 进行NMS,即非局部最大值抑制,即将点集合中比较彼此很靠近的点堆中只保留其中一个,其实并没有保留最大值,只是保留了其中一个值而已,不算完全的NMS
 	:param kp_set: 需要进行NMS的点集
+	:param dist_threshold: 相似距离的冗余度阈值,当距离大于1100,可判断为可以保留的点
 	:return: 返回进过NMS过滤的点集
 	"""
 	# 进行非局部最大值抑制,即去除聚在一起的冗余的点,保留其中一个即可
@@ -237,32 +238,35 @@ def NMS_4_points_set(kp_set):
 		matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 2,
 													  algorithm="kmeans", branching=32, iterations=7, checks=16)
 		for j in range(len(test_data) - 1, -1, -1):
-			if matched_distances[j, 1] < 1024:
+			if matched_distances[j, 1] < dist_threshold:
 				new_test_data = np.delete(test_data, j, axis=0)
 				break
 	return new_test_data
 
-# #提取图片集合中的positive patches和negative patches
-# img_path_list = ['/home/javen/javenlib/images/leuven/img1.ppm',
-# 		 '/home/javen/javenlib/images/leuven/img2.ppm',
-# 		 '/home/javen/javenlib/images/leuven/img3.ppm',
-# 		 '/home/javen/javenlib/images/leuven/img4.ppm',
-# 		 '/home/javen/javenlib/images/leuven/img5.ppm']
-#
-# kp_set_raw = get_kp_set_raw(img_path_list)
-# kp_set_positive = get_kp_set_positive(kp_set_raw)
-# print 'kp_set_positive:',kp_set_positive.shape
-# kp_patch_set_positive = get_kp_patch_set_positive(img_path_list,kp_set_positive)
-# print 'kp_patch_set_positive:',kp_patch_set_positive.shape
-# # show_patch_set(kp_patch_set_positive)
-# # show_kp_set(img_path_list[4],kp_set_positive)
-# #保存positive patch集合
-# # np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+'leuven'+'_positive_patches.npy',kp_patch_set_positive)
-#
-# kp_set_negative = get_kp_set_negative(kp_set_raw)
-# print 'kp_set_nagative:',kp_set_negative.shape
-# kp_patch_set_negative = get_kp_patch_set_negative(img_path_list,kp_set_negative)
-# print 'kp_patch_set_negative:',kp_patch_set_negative.shape
-# # show_patch_set(kp_patch_set_negative)
-# #保存negative patch集合
-# # np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+'leuven'+'_negative_patches.npy',kp_patch_set_negative)
+def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None):
+	flann = pyflann.FLANN()
+	total_num = len(kp_set1)+len(kp_set2)
+	#首先在1中检测有没有与2重复的
+	origin_data = np.copy(kp_set1)
+	test_data = np.copy(kp_set2)
+	matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 1)
+	count1 = 0
+	# print 'matched_indices:',matched_indices
+	# print 'matched_distances:',matched_distances
+	for i in range(len(matched_distances)):
+		if matched_distances[i] <= 1500:
+			count1 += 1
+	#然后在2中检测有没有与1重复的
+	origin_data = np.copy(kp_set2)
+	test_data = np.copy(kp_set1)
+	matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 1)
+	count2 = 0
+	# print 'matched_indices:', matched_indices
+	# print 'matched_distances:', matched_distances
+	for i in range(len(matched_distances)):
+		if matched_distances[i] <= 1500:
+			count2 += 1
+	print kp_set1.shape,kp_set2.shape
+	print 'count1:',count1,'count2:',count2
+	print 'accuracy:',1.*(count1+count2)/total_num
+
