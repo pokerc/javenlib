@@ -62,6 +62,8 @@ def use_TILDE(img_path_list):
         print kp_set.shape#,kp_set
         kp_set_afternms = javenlib_tf.NMS_4_points_set(kp_set)
         print 'kp_set_afternms:',kp_set_afternms.shape
+        # javenlib_tf.show_kp_set(img_path_list[img_count],kp_set)
+        # javenlib_tf.show_kp_set(img_path_list[img_count],kp_set_afternms)
         kp_set_afternms_list.append(kp_set_afternms)
     print 'kp_set_afternms_list:',len(kp_set_afternms_list),kp_set_afternms_list[0].shape,kp_set_afternms_list[1].shape
 
@@ -85,6 +87,7 @@ kp2 = sift.detect(plt.imread(img_path_list[1]))
 kp2 = javenlib_tf.KeyPoint_convert_forOpencv2(kp2)
 kp2 = javenlib_tf.NMS_4_points_set(kp2)
 javenlib_tf.quantity_test(kp1,kp2)
+javenlib_tf.show_kp_set(img_path_list[0],kp1)
 
 ################################################################################
 ################################################################################

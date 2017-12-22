@@ -16,3 +16,5 @@
 
 9	查看显卡：lspci | grep -i VGA
 			 lspci | grep -i nvidia
+
+10	查看dns情况：nmcli device show

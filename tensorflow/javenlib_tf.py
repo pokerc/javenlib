@@ -64,7 +64,7 @@ def get_kp_set_raw(img_path_list):
 	"""
 	获取输入的几幅图的kp点的集合,每幅图使用sift检测400个kp
 	:param img_path_list: 输入的图像的path列表
-	:return: 返回kp点的集合
+	:return: 返回kp点的集合(?,400,2)
 	"""
 	# img_path_list = ['/home/javen/javenlib/images/leuven/img1.ppm',
 	# 	 '/home/javen/javenlib/images/leuven/img2.ppm',
