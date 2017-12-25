@@ -8,86 +8,72 @@ import cv2
 ################################################################################
 ################################################################################
 ################################################################################
-#MSE版的use_TILDE
-def use_TILDE(img_path_list):
-    tf_x = tf.placeholder(tf.float32, [None, 64, 64, 1])  # 输入patch维度为64*64
-    tf_y = tf.placeholder(tf.int32, [None, 1])  # input y ,y代表score所以维度为1
+# #MSE版的use_TILDE
+# def use_TILDE(img_path_list):
+#     tf_x = tf.placeholder(tf.float32, [None, 64, 64, 1])  # 输入patch维度为64*64
+#     tf_y = tf.placeholder(tf.int32, [None, 1])  # input y ,y代表score所以维度为1
+#
+#     ########################################################################
+#     conv1 = tf.layers.conv2d(
+#         inputs=tf_x,  # (?,64,64,1)
+#         filters=16,
+#         kernel_size=5,
+#         strides=1,
+#         padding='valid',
+#         activation=tf.nn.relu
+#     )  # -> (?, 60, 60, 16)
+#
+#     pool1 = tf.layers.max_pooling2d(
+#         conv1,
+#         pool_size=2,
+#         strides=2,
+#     )  # -> (?,30, 30, 16)
+#
+#     conv2 = tf.layers.conv2d(pool1, 32, 5, 1, 'valid', activation=tf.nn.relu)  # -> (?,26, 26, 32)
+#
+#     pool2 = tf.layers.max_pooling2d(conv2, 2, 2)  # -> (?,13, 13, 32)
+#
+#     conv3 = tf.layers.conv2d(pool2, 32, 3, 1, 'valid', activation=tf.nn.relu)  # -> (?,11, 11, 32)
+#
+#     # pool3 = tf.layers.max_pooling2d(conv3, 2, 2)    # -> (?,32, 32, 64)
+#     #
+#     flat = tf.reshape(conv3, [-1, 11 * 11 * 32])  # -> (?,32*32*64)
+#
+#     output = tf.layers.dense(flat, 1)  # output layer
+#
+#     sess = tf.Session()
+#     saver = tf.train.Saver()
+#     saver.restore(sess,'./save_net/detector_TILDE_model_20171219_mse_20_0_0005')
+#
+#     #使用列表将两个维度不相同的矩阵打包在一起return
+#     kp_set_afternms_list = []
+#     for img_count in range(len(img_path_list)):
+#         img_test_rgb = plt.imread(img_path_list[img_count])/255.
+#         img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
+#         kp_set = np.zeros(shape=(0,2))
+#         #对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
+#         for i in range(32,600-32,16): #扫描的步长需要调整
+#             for j in range(32,900-32,16):
+#                 patch = np.copy(img_test_gray[i-32:i+32,j-32:j+32]).reshape(1,64,64,1)
+#                 output_predict = sess.run(output, feed_dict={tf_x:patch})
+#                 if output_predict>=0.5:
+#                     kp_set = np.append(kp_set,[[j,i]],axis=0)
+#         kp_set = kp_set.astype(np.int)
+#         # print kp_set.shape#,kp_set
+#         kp_set_afternms = javenlib_tf.NMS_4_points_set(kp_set)
+#         # print 'kp_set_afternms:',kp_set_afternms.shape
+#         # javenlib_tf.show_kp_set(img_path_list[img_count],kp_set)
+#         # javenlib_tf.show_kp_set(img_path_list[img_count],kp_set_afternms)
+#         kp_set_afternms_list.append(kp_set_afternms)
+#     # print 'kp_set_afternms_list:',len(kp_set_afternms_list),kp_set_afternms_list[0].shape,kp_set_afternms_list[1].shape
+#
+#     # #在图上显示检测出的点
+#     # javenlib_tf.show_kp_set(img_path_list[0],kp_set_afternms_list[0])
+#     # javenlib_tf.show_kp_set(img_path_list[1], kp_set_afternms_list[1])
+#
+#     return kp_set_afternms_list
 
-    ########################################################################
-    conv1 = tf.layers.conv2d(
-        inputs=tf_x,  # (?,64,64,1)
-        filters=16,
-        kernel_size=5,
-        strides=1,
-        padding='valid',
-        activation=tf.nn.relu
-    )  # -> (?, 60, 60, 16)
 
-    pool1 = tf.layers.max_pooling2d(
-        conv1,
-        pool_size=2,
-        strides=2,
-    )  # -> (?,30, 30, 16)
-
-    conv2 = tf.layers.conv2d(pool1, 32, 5, 1, 'valid', activation=tf.nn.relu)  # -> (?,26, 26, 32)
-
-    pool2 = tf.layers.max_pooling2d(conv2, 2, 2)  # -> (?,13, 13, 32)
-
-    conv3 = tf.layers.conv2d(pool2, 32, 3, 1, 'valid', activation=tf.nn.relu)  # -> (?,11, 11, 32)
-
-    # pool3 = tf.layers.max_pooling2d(conv3, 2, 2)    # -> (?,32, 32, 64)
-    #
-    flat = tf.reshape(conv3, [-1, 11 * 11 * 32])  # -> (?,32*32*64)
-
-    output = tf.layers.dense(flat, 1)  # output layer
-
-    sess = tf.Session()
-    saver = tf.train.Saver()
-    saver.restore(sess,'./save_net/detector_TILDE_model_20171219_mse_20_0_0005')
-
-    #使用列表将两个维度不相同的矩阵打包在一起return
-    kp_set_afternms_list = []
-    for img_count in range(len(img_path_list)):
-        img_test_rgb = plt.imread(img_path_list[img_count])/255.
-        img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
-        kp_set = np.zeros(shape=(0,2))
-        #对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
-        for i in range(32,600-32,16): #扫描的步长需要调整
-            for j in range(32,900-32,16):
-                patch = np.copy(img_test_gray[i-32:i+32,j-32:j+32]).reshape(1,64,64,1)
-                output_predict = sess.run(output, feed_dict={tf_x:patch})
-                if output_predict>=0.5:
-                    kp_set = np.append(kp_set,[[j,i]],axis=0)
-        kp_set = kp_set.astype(np.int)
-        print kp_set.shape#,kp_set
-        kp_set_afternms = javenlib_tf.NMS_4_points_set(kp_set)
-        print 'kp_set_afternms:',kp_set_afternms.shape
-        # javenlib_tf.show_kp_set(img_path_list[img_count],kp_set)
-        # javenlib_tf.show_kp_set(img_path_list[img_count],kp_set_afternms)
-        kp_set_afternms_list.append(kp_set_afternms)
-    print 'kp_set_afternms_list:',len(kp_set_afternms_list),kp_set_afternms_list[0].shape,kp_set_afternms_list[1].shape
-
-    # #在图上显示检测出的点
-    # javenlib_tf.show_kp_set(img_path_list[0],kp_set_afternms_list[0])
-    # javenlib_tf.show_kp_set(img_path_list[1], kp_set_afternms_list[1])
-
-    return kp_set_afternms_list
-
-#测试use_TILDE函数
-img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
-                 '/home/javen/javenlib/images/bikes/img2.ppm']
-kp_set_afternms_list = use_TILDE(img_path_list)
-javenlib_tf.quantity_test(kp_set_afternms_list[0],kp_set_afternms_list[1])
-
-sift = cv2.SIFT(115)
-kp1 = sift.detect(plt.imread(img_path_list[0]))
-kp1 = javenlib_tf.KeyPoint_convert_forOpencv2(kp1)
-kp1 = javenlib_tf.NMS_4_points_set(kp1)
-kp2 = sift.detect(plt.imread(img_path_list[1]))
-kp2 = javenlib_tf.KeyPoint_convert_forOpencv2(kp2)
-kp2 = javenlib_tf.NMS_4_points_set(kp2)
-javenlib_tf.quantity_test(kp1,kp2)
-javenlib_tf.show_kp_set(img_path_list[0],kp1)
 
 ################################################################################
 ################################################################################

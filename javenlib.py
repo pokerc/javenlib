@@ -10,24 +10,24 @@ import cmath
 import pyflann
 
 def vis_square(data):
-    """Take an array of shape (n, height, width) or (n, height, width, 3)
-       and visualize each (height, width) thing in a grid of size approx. sqrt(n) by sqrt(n)"""
-    
-    # normalize data for display
-    data = (data - data.min()) / (data.max() - data.min())
-    
-    # force the number of filters to be square
-    n = int(np.ceil(np.sqrt(data.shape[0])))
-    padding = (((0, n ** 2 - data.shape[0]),
-               (0, 1), (0, 1))                 # add some space between filters
-               + ((0, 0),) * (data.ndim - 3))  # don't pad the last dimension (if there is one)
-    data = np.pad(data, padding, mode='constant', constant_values=1)  # pad with ones (white)
-    
-    # tile the filters into an image
-    data = data.reshape((n, n) + data.shape[1:]).transpose((0, 2, 1, 3) + tuple(range(4, data.ndim + 1)))
-    data = data.reshape((n * data.shape[1], n * data.shape[3]) + data.shape[4:])
-    
-    plt.imshow(data); plt.axis('off')
+	"""Take an array of shape (n, height, width) or (n, height, width, 3)
+	   and visualize each (height, width) thing in a grid of size approx. sqrt(n) by sqrt(n)"""
+
+	# normalize data for display
+	data = (data - data.min()) / (data.max() - data.min())
+
+	# force the number of filters to be square
+	n = int(np.ceil(np.sqrt(data.shape[0])))
+	padding = (((0, n ** 2 - data.shape[0]),
+			   (0, 1), (0, 1))                 # add some space between filters
+			   + ((0, 0),) * (data.ndim - 3))  # don't pad the last dimension (if there is one)
+	data = np.pad(data, padding, mode='constant', constant_values=1)  # pad with ones (white)
+
+	# tile the filters into an image
+	data = data.reshape((n, n) + data.shape[1:]).transpose((0, 2, 1, 3) + tuple(range(4, data.ndim + 1)))
+	data = data.reshape((n * data.shape[1], n * data.shape[3]) + data.shape[4:])
+
+	plt.imshow(data); plt.axis('off')
 
 def KeyPoint_convert_forOpencv2(keypoints):
 	length = len(keypoints)
@@ -36,10 +36,6 @@ def KeyPoint_convert_forOpencv2(keypoints):
 		points2f[i,:] = keypoints[i].pt
 	points = np.array(np.around(points2f),dtype='int')
 	return points
-
-def ph():
-    print 'hello ph function!'
-	
 
 def convert_meanvalue():
 	blob = caffe.proto.caffe_pb2.BlobProto()
@@ -147,8 +143,8 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 	model_def = '/home/javen/javenlib/lenet5_profiles/lenet.prototxt'
 	model_weights = '/home/javen/javenlib/lenet5_profiles/lenet_iter_10000.caffemodel'
 	net = caffe.Net(model_def,      # defines the structure of the model
-                model_weights,  # contains the trained weights
-                caffe.TEST)     # use test mode (e.g., don't perform dropout)
+				model_weights,  # contains the trained weights
+				caffe.TEST)     # use test mode (e.g., don't perform dropout)
 	# load the mean ImageNet image (as distributed with Caffe) for subtraction
 	mu = np.load('/home/javen/javenlib/lenet5_profiles/ilsvrc_2012_mean.npy')
 	mu = mu.mean(1).mean(1).mean(0).reshape(1)  # average over pixels to obtain the mean (BGR) pixel values
@@ -167,8 +163,8 @@ def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_n
 	# set the size of the input (we can skip this if we're happy
 	#  with the default; we can also change it later, e.g., for different batch sizes)
 	net.blobs['data'].reshape(kp_num,        # batch size
-                                1,         # 3-channel (BGR) images
-                               28, 28)  # image size is 227x227
+								1,         # 3-channel (BGR) images
+							   28, 28)  # image size is 227x227
 	data_input = np.zeros((kp_num,1,28,28))
 	for i in range(0,kp_num):
 		outter_square = np.copy(img[kp_pos[i,1]-21:kp_pos[i,1]+21+1,kp_pos[i,0]-21:kp_pos[i,0]+21+1,:])

@@ -6,17 +6,34 @@ import cv2
 import pyflann
 
 def image_resize(image,rows,columns,toGray=True):
-    new_image = tf.image.resize_images(image,[rows,columns],method=1)
-    new_image = tf.to_float(tf.image.rgb_to_grayscale(new_image))
-    return new_image
+	new_image = tf.image.resize_images(image,[rows,columns],method=1)
+	new_image = tf.to_float(tf.image.rgb_to_grayscale(new_image))
+	return new_image
 
 def KeyPoint_convert_forOpencv2(keypoints):
+	"""
+	将list类型的kp object变量,解析为坐标矩阵,即坐标提取
+	:param keypoints:
+	:return:
+	"""
 	length = len(keypoints)
 	points2f = np.zeros((length,2))
 	for i in range(0,length):
 		points2f[i,:] = keypoints[i].pt
 	points = np.array(np.around(points2f),dtype='int')
 	return points
+
+def KeyPoint_reverse_convert_forOpencv2(keypoints):
+	"""
+	将坐标形式的kp转化为sift算法可用的obj形式的list,可作为后续的sift.compute()的参数
+	:param keypoints:
+	:return:
+	"""
+	kp_list = []
+	for i in range(len(keypoints)):
+		kp_obj = cv2.KeyPoint(keypoints[i,0],keypoints[i,1],_size=3.58366942406)
+		kp_list.append(kp_obj)
+	return kp_list
 
 def show_kp_set(img_path,kp_set,pixel_size=5):
 	"""
@@ -270,3 +287,125 @@ def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None):
 	print 'count1:',count1,'count2:',count2
 	print 'accuracy:',1.*(count1+count2)/total_num
 
+def match_accuracy(img1_kp_pos,img1_kp_des,img2_kp_pos,img2_kp_des,rotation_matrix):
+	"""
+	用来进行 oxford数据集特征点匹配测试
+	:param img1:
+	:param img1_kp_pos:
+	:param img1_kp_des:
+	:param img2:
+	:param img2_kp_pos:
+	:param img2_kp_des:
+	:param rotation_matrix:
+	:return:
+	"""
+	flann = pyflann.FLANN()
+	kp_num = len(img1_kp_pos)
+	origin_kp = np.copy(img2_kp_pos)
+	origin_kp_des = np.copy(img2_kp_des)
+	test_kp = np.copy(img1_kp_pos)
+	test_kp_des = np.copy(img1_kp_des)
+	print 'kp_num:',kp_num
+	matched_index,matched_distance = flann.nn(origin_kp_des,test_kp_des,1)
+	match_count = 0
+	for i in range(kp_num):
+		matched_kp_4_test_kp = origin_kp[matched_index[i]]
+		# print 'matched_kp_4_test_kp:',matched_kp_4_test_kp
+		transformed_kp_4_test_kp = rotation_matrix.dot(np.append(test_kp[i],1))
+		# print 'transformed_kp_4_test_kp:',transformed_kp_4_test_kp
+		if ((matched_kp_4_test_kp[0]-transformed_kp_4_test_kp[0])**2 + (matched_kp_4_test_kp[1]-transformed_kp_4_test_kp[1])**2) <= 16:
+			match_count += 1
+	print 'match_count:',match_count
+	print 'match accuracy:',1.0*match_count/kp_num
+	return 1.0*match_count/kp_num
+
+def get_matrix_from_file(filename):
+	"""
+	从文件中读取出变换的groundtruth matrix
+	:param filename:文件保存路径
+	:return:矩阵形式返回变换matrix
+	"""
+	f = open(filename,'r')
+	rotation_matrix = np.zeros((3,3))
+	for i in range(0,3):
+		x = f.readline().split()
+		rotation_matrix[i,0] = float(x[0])
+		rotation_matrix[i,1] = float(x[1])
+		rotation_matrix[i,2] = float(x[2])
+	f.close()
+	return rotation_matrix
+
+#MSE版的use_TILDE
+def use_TILDE(img_path_list):
+	tf_x = tf.placeholder(tf.float32, [None, 64, 64, 1])  # 输入patch维度为64*64
+	tf_y = tf.placeholder(tf.int32, [None, 1])  # input y ,y代表score所以维度为1
+
+	########################################################################
+	conv1 = tf.layers.conv2d(
+		inputs=tf_x,  # (?,64,64,1)
+		filters=16,
+		kernel_size=5,
+		strides=1,
+		padding='valid',
+		activation=tf.nn.relu
+	)  # -> (?, 60, 60, 16)
+
+	pool1 = tf.layers.max_pooling2d(
+		conv1,
+		pool_size=2,
+		strides=2,
+	)  # -> (?,30, 30, 16)
+
+	conv2 = tf.layers.conv2d(pool1, 32, 5, 1, 'valid', activation=tf.nn.relu)  # -> (?,26, 26, 32)
+
+	pool2 = tf.layers.max_pooling2d(conv2, 2, 2)  # -> (?,13, 13, 32)
+
+	conv3 = tf.layers.conv2d(pool2, 32, 3, 1, 'valid', activation=tf.nn.relu)  # -> (?,11, 11, 32)
+
+	# pool3 = tf.layers.max_pooling2d(conv3, 2, 2)    # -> (?,32, 32, 64)
+	#
+	flat = tf.reshape(conv3, [-1, 11 * 11 * 32])  # -> (?,32*32*64)
+
+	output = tf.layers.dense(flat, 1)  # output layer
+
+	sess = tf.Session()
+	saver = tf.train.Saver()
+	saver.restore(sess,'./save_net/detector_TILDE_model_20171219_mse_20_0_0005')
+
+	#使用列表将两个维度不相同的矩阵打包在一起return
+	kp_set_afternms_list = []
+	for img_count in range(len(img_path_list)):
+		img_test_rgb = plt.imread(img_path_list[img_count])/255.
+		img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
+		kp_set = np.zeros(shape=(0,2))
+		#对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
+		row_num = plt.imread(img_path_list[0]).shape[0]
+		column_num = plt.imread(img_path_list[0]).shape[1]
+		for i in range(32,row_num-32,1): #扫描的步长需要调整
+			for j in range(32,column_num-32,1):
+				patch = np.copy(img_test_gray[i-32:i+32,j-32:j+32]).reshape(1,64,64,1)
+				output_predict = sess.run(output, feed_dict={tf_x:patch})
+				if output_predict >= 0.5:
+					# print output_predict
+					kp_set = np.append(kp_set,[[j,i]],axis=0)
+		kp_set = kp_set.astype(np.int)
+		# print kp_set.shape#,kp_set
+		kp_set_afternms = NMS_4_points_set(kp_set)
+		# print 'kp_set_afternms:',kp_set_afternms.shape
+		# javenlib_tf.show_kp_set(img_path_list[img_count],kp_set)
+		# javenlib_tf.show_kp_set(img_path_list[img_count],kp_set_afternms)
+		kp_set_afternms_list.append(kp_set)
+	# print 'kp_set_afternms_list:',len(kp_set_afternms_list),kp_set_afternms_list[0].shape,kp_set_afternms_list[1].shape
+
+	# #在图上显示检测出的点
+	# javenlib_tf.show_kp_set(img_path_list[0],kp_set_afternms_list[0])
+	# javenlib_tf.show_kp_set(img_path_list[1], kp_set_afternms_list[1])
+	return kp_set_afternms_list
+
+
+# img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
+#                  '/home/javen/javenlib/images/bikes/img2.ppm']
+# img = plt.imread(img_path_list[0])
+# kp = use_TILDE(img_path_list)
+# kp1 = kp[0]
+# print kp1.shape

@@ -18,3 +18,4 @@
 			 lspci | grep -i nvidia
 
 10	查看dns情况：nmcli device show
+
