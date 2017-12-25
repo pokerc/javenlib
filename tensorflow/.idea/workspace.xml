@@ -21,8 +21,8 @@
       <file leaf-file-name="javenlib_tf.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="322">
-              <caret line="401" column="47" lean-forward="false" selection-start-line="401" selection-start-column="47" selection-end-line="401" selection-end-column="47" />
+            <state relative-caret-position="378">
+              <caret line="411" column="25" lean-forward="false" selection-start-line="411" selection-start-column="25" selection-end-line="411" selection-end-column="25" />
               <folding>
                 <element signature="e#16#34#0" expanded="true" />
                 <element signature="e#169#315#0" expanded="false" />
@@ -41,6 +41,7 @@
                 <element signature="e#9774#10736#0" expanded="false" />
                 <element signature="e#10824#11840#0" expanded="false" />
                 <element signature="e#11879#12219#0" expanded="false" />
+                <element signature="e#12268#14706#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -123,8 +124,8 @@
         <option value="$PROJECT_DIR$/train_detector_TILDE.py" />
         <option value="$PROJECT_DIR$/use_detector_TILDE.py" />
         <option value="$PROJECT_DIR$/../javenlib.py" />
-        <option value="$PROJECT_DIR$/javenlib_tf.py" />
         <option value="$PROJECT_DIR$/quality_test.py" />
+        <option value="$PROJECT_DIR$/javenlib_tf.py" />
       </list>
     </option>
   </component>
@@ -485,6 +486,7 @@
             <element signature="e#9774#10736#0" expanded="false" />
             <element signature="e#10824#11840#0" expanded="false" />
             <element signature="e#11879#12219#0" expanded="false" />
+            <element signature="e#12268#14706#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -548,6 +550,7 @@
             <element signature="e#9774#10736#0" expanded="false" />
             <element signature="e#10824#11840#0" expanded="false" />
             <element signature="e#11879#12219#0" expanded="false" />
+            <element signature="e#12268#14706#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -604,6 +607,7 @@
             <element signature="e#9774#10736#0" expanded="false" />
             <element signature="e#10824#11840#0" expanded="false" />
             <element signature="e#11879#12219#0" expanded="false" />
+            <element signature="e#12268#14706#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -782,8 +786,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="401" column="47" lean-forward="false" selection-start-line="401" selection-start-column="47" selection-end-line="401" selection-end-column="47" />
+        <state relative-caret-position="378">
+          <caret line="411" column="25" lean-forward="false" selection-start-line="411" selection-start-column="25" selection-end-line="411" selection-end-column="25" />
           <folding>
             <element signature="e#16#34#0" expanded="true" />
             <element signature="e#169#315#0" expanded="false" />
@@ -802,6 +806,7 @@
             <element signature="e#9774#10736#0" expanded="false" />
             <element signature="e#10824#11840#0" expanded="false" />
             <element signature="e#11879#12219#0" expanded="false" />
+            <element signature="e#12268#14706#0" expanded="false" />
           </folding>
         </state>
       </provider>
