@@ -197,4 +197,5 @@ print '准确率:',1.*count/total_num
 # saver = tf.train.Saver()
 # saver.save(sess,'./save_net/detector_TILDE_model_20171219_softmax_20_0_001')
 
-
+#释放gpu资源
+sess.close()

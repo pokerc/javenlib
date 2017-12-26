@@ -467,6 +467,9 @@ def use_TILDE_multitread(img_path_list):
 	# #在图上显示检测出的点
 	# javenlib_tf.show_kp_set(img_path_list[0],kp_set_afternms_list[0])
 	# javenlib_tf.show_kp_set(img_path_list[1], kp_set_afternms_list[1])
+
+	#释放gpu资源
+	sess.close()
 	return kp_set_afternms_list
 
 # img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',

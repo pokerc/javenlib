@@ -21,12 +21,13 @@
       <file leaf-file-name="javenlib_tf.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
-              <caret line="411" column="25" lean-forward="false" selection-start-line="411" selection-start-column="25" selection-end-line="411" selection-end-column="25" />
+            <state relative-caret-position="325">
+              <caret line="336" column="0" lean-forward="true" selection-start-line="336" selection-start-column="0" selection-end-line="336" selection-end-column="0" />
               <folding>
                 <element signature="e#16#34#0" expanded="true" />
                 <element signature="e#169#315#0" expanded="false" />
                 <element signature="e#362#620#0" expanded="false" />
+                <element signature="e#675#931#0" expanded="false" />
                 <element signature="e#981#1295#0" expanded="false" />
                 <element signature="e#1347#1570#0" expanded="false" />
                 <element signature="e#1609#1850#0" expanded="false" />
@@ -42,6 +43,7 @@
                 <element signature="e#10824#11840#0" expanded="false" />
                 <element signature="e#11879#12219#0" expanded="false" />
                 <element signature="e#12268#14706#0" expanded="false" />
+                <element signature="e#14773#17500#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -50,8 +52,8 @@
       <file leaf-file-name="train_detector_TILDE.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train_detector_TILDE.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1540">
-              <caret line="175" column="19" lean-forward="false" selection-start-line="175" selection-start-column="19" selection-end-line="175" selection-end-column="19" />
+            <state relative-caret-position="442">
+              <caret line="200" column="12" lean-forward="false" selection-start-line="200" selection-start-column="12" selection-end-line="200" selection-end-column="12" />
               <folding>
                 <element signature="e#16#39#0" expanded="true" />
                 <element signature="e#185#265#0" expanded="false" />
@@ -121,11 +123,11 @@
         <option value="$PROJECT_DIR$/TILDE_data/make_patch_set.py" />
         <option value="$PROJECT_DIR$/image_read_test.py" />
         <option value="$PROJECT_DIR$/cnn_sample_tensorflow2017.py" />
-        <option value="$PROJECT_DIR$/train_detector_TILDE.py" />
         <option value="$PROJECT_DIR$/use_detector_TILDE.py" />
         <option value="$PROJECT_DIR$/../javenlib.py" />
         <option value="$PROJECT_DIR$/quality_test.py" />
         <option value="$PROJECT_DIR$/javenlib_tf.py" />
+        <option value="$PROJECT_DIR$/train_detector_TILDE.py" />
       </list>
     </option>
   </component>
@@ -472,6 +474,7 @@
             <element signature="e#16#34#0" expanded="true" />
             <element signature="e#169#315#0" expanded="false" />
             <element signature="e#362#620#0" expanded="false" />
+            <element signature="e#675#931#0" expanded="false" />
             <element signature="e#981#1295#0" expanded="false" />
             <element signature="e#1347#1570#0" expanded="false" />
             <element signature="e#1609#1850#0" expanded="false" />
@@ -487,6 +490,7 @@
             <element signature="e#10824#11840#0" expanded="false" />
             <element signature="e#11879#12219#0" expanded="false" />
             <element signature="e#12268#14706#0" expanded="false" />
+            <element signature="e#14773#17500#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -536,6 +540,7 @@
             <element signature="e#16#34#0" expanded="true" />
             <element signature="e#169#315#0" expanded="false" />
             <element signature="e#362#620#0" expanded="false" />
+            <element signature="e#675#931#0" expanded="false" />
             <element signature="e#981#1295#0" expanded="false" />
             <element signature="e#1347#1570#0" expanded="false" />
             <element signature="e#1609#1850#0" expanded="false" />
@@ -551,6 +556,7 @@
             <element signature="e#10824#11840#0" expanded="false" />
             <element signature="e#11879#12219#0" expanded="false" />
             <element signature="e#12268#14706#0" expanded="false" />
+            <element signature="e#14773#17500#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -593,6 +599,7 @@
             <element signature="e#16#34#0" expanded="true" />
             <element signature="e#169#315#0" expanded="false" />
             <element signature="e#362#620#0" expanded="false" />
+            <element signature="e#675#931#0" expanded="false" />
             <element signature="e#981#1295#0" expanded="false" />
             <element signature="e#1347#1570#0" expanded="false" />
             <element signature="e#1609#1850#0" expanded="false" />
@@ -608,6 +615,7 @@
             <element signature="e#10824#11840#0" expanded="false" />
             <element signature="e#11879#12219#0" expanded="false" />
             <element signature="e#12268#14706#0" expanded="false" />
+            <element signature="e#14773#17500#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -755,17 +763,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/train_detector_TILDE.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1540">
-          <caret line="175" column="19" lean-forward="false" selection-start-line="175" selection-start-column="19" selection-end-line="175" selection-end-column="19" />
-          <folding>
-            <element signature="e#16#39#0" expanded="true" />
-            <element signature="e#185#265#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../sift_accuracy.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="260">
@@ -784,14 +781,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/train_detector_TILDE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="200" column="12" lean-forward="false" selection-start-line="200" selection-start-column="12" selection-end-line="200" selection-end-column="12" />
+          <folding>
+            <element signature="e#16#39#0" expanded="true" />
+            <element signature="e#185#265#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="411" column="25" lean-forward="false" selection-start-line="411" selection-start-column="25" selection-end-line="411" selection-end-column="25" />
+        <state relative-caret-position="325">
+          <caret line="336" column="0" lean-forward="true" selection-start-line="336" selection-start-column="0" selection-end-line="336" selection-end-column="0" />
           <folding>
             <element signature="e#16#34#0" expanded="true" />
             <element signature="e#169#315#0" expanded="false" />
             <element signature="e#362#620#0" expanded="false" />
+            <element signature="e#675#931#0" expanded="false" />
             <element signature="e#981#1295#0" expanded="false" />
             <element signature="e#1347#1570#0" expanded="false" />
             <element signature="e#1609#1850#0" expanded="false" />
@@ -807,6 +816,7 @@
             <element signature="e#10824#11840#0" expanded="false" />
             <element signature="e#11879#12219#0" expanded="false" />
             <element signature="e#12268#14706#0" expanded="false" />
+            <element signature="e#14773#17500#0" expanded="false" />
           </folding>
         </state>
       </provider>
