@@ -1,3 +1,5 @@
+    查看一个类有什么方法和属性,直接使用dir()
+
 1	字符串大小写
 	s="hello javen"
 	s.title() -------> "Hello Javen"
@@ -196,6 +198,35 @@
 	print numbers
 
 20	python文件的搜索与判断方法，正则表达式的使用
+
+
+21	python多线程相关方法：
+	例子1.将两个函数放到两个线程中去同时处理
+    import threading
+    from time import ctime,sleep
+    def music(func):
+        for i in range(2):
+            print "I was listening to %s. %s" %(func,ctime())
+            sleep(1)
+
+    def move(func):
+        for i in range(2):
+            print "I was at the %s! %s" %(func,ctime())
+            sleep(5)
+
+    threads = [] #先创建空的线程list
+    t1 = threading.Thread(target=music,args=(u'爱情买卖',)) #创建一个线程对象
+    threads.append(t1) #将线程对象添加到线程list中去
+    t2 = threading.Thread(target=move,args=(u'阿凡达',))
+    threads.append(t2)
+
+    if __name__ == '__main__':
+        for t in threads:
+            t.setDaemon(True) #将线程声明为守护线程
+            t.start() #让线程开始活动
+        for t in threads:
+            t.join() #意思是必须等该线程执行完毕后才继续执行主线程,以为前面已经让所有的线程启动了,所以这一步只是为了确保所有的线程都执行完毕,才能继续执行主线程,否则直接继续主线程,会发生主线程执行完了,上面的两个线程没执行完会被强制关闭的情况.
+        print "all over %s" %ctime()
 
 
 

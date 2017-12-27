@@ -12,8 +12,8 @@ img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
 tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/bikes/H1to2p')
 imga = plt.imread(img_path_list[0])
 imgb = plt.imread(img_path_list[1])
-kp_set_afternms_list = javenlib_tf.use_TILDE(img_path_list)
-
+kp_set_afternms_list = javenlib_tf.use_TILDE_optimized(img_path_list)
+print 'a yes!'
 imga_kp_cnn = kp_set_afternms_list[0]
 imga_kp_cnn_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imga_kp_cnn)
 imga_kp_cnn_obj,imga_kp_cnn_des = sift.compute(imga,imga_kp_cnn_obj)

@@ -4,6 +4,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import cv2
 import pyflann
+import time
 
 def image_resize(image,rows,columns,toGray=True):
 	new_image = tf.image.resize_images(image,[rows,columns],method=1)
@@ -313,7 +314,7 @@ def match_accuracy(img1_kp_pos,img1_kp_des,img2_kp_pos,img2_kp_des,rotation_matr
 		# print 'matched_kp_4_test_kp:',matched_kp_4_test_kp
 		transformed_kp_4_test_kp = rotation_matrix.dot(np.append(test_kp[i],1))
 		# print 'transformed_kp_4_test_kp:',transformed_kp_4_test_kp
-		if ((matched_kp_4_test_kp[0]-transformed_kp_4_test_kp[0])**2 + (matched_kp_4_test_kp[1]-transformed_kp_4_test_kp[1])**2) <= 16:
+		if ((matched_kp_4_test_kp[0]-transformed_kp_4_test_kp[0])**2 + (matched_kp_4_test_kp[1]-transformed_kp_4_test_kp[1])**2) <= 25:
 			match_count += 1
 	print 'match_count:',match_count
 	print 'match accuracy:',1.0*match_count/kp_num
@@ -381,8 +382,8 @@ def use_TILDE(img_path_list):
 		#对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
 		row_num = plt.imread(img_path_list[0]).shape[0]
 		column_num = plt.imread(img_path_list[0]).shape[1]
-		for i in range(32,row_num-32,1): #扫描的步长需要调整
-			for j in range(32,column_num-32,1):
+		for i in range(32,row_num-32,4): #扫描的步长需要调整
+			for j in range(32,column_num-32,4):
 				patch = np.copy(img_test_gray[i-32:i+32,j-32:j+32]).reshape(1,64,64,1)
 				output_predict = sess.run(output, feed_dict={tf_x:patch})
 				if output_predict >= 0.5:
@@ -400,10 +401,11 @@ def use_TILDE(img_path_list):
 	# #在图上显示检测出的点
 	# javenlib_tf.show_kp_set(img_path_list[0],kp_set_afternms_list[0])
 	# javenlib_tf.show_kp_set(img_path_list[1], kp_set_afternms_list[1])
+	sess.close()
 	return kp_set_afternms_list
 
-#MSE版的use_TILDE增加多线程优化
-def use_TILDE_multitread(img_path_list):
+#MSE版的use_TILDE增加循环优化
+def use_TILDE_optimized(img_path_list):
 	tf_x = tf.placeholder(tf.float32, [None, 64, 64, 1])  # 输入patch维度为64*64
 	tf_y = tf.placeholder(tf.int32, [None, 1])  # input y ,y代表score所以维度为1
 
@@ -440,41 +442,55 @@ def use_TILDE_multitread(img_path_list):
 	saver.restore(sess, './save_net/detector_TILDE_model_20171219_mse_20_0_0005')
 
 	# 使用列表将两个维度不相同的矩阵打包在一起return
-	kp_set_afternms_list = []
+	kp_set_list = []
 	for img_count in range(len(img_path_list)):
 		img_test_rgb = plt.imread(img_path_list[img_count]) / 255.
 		img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
-		kp_set = np.zeros(shape=(0, 2))
+		kp_set = np.zeros(shape=(0, 3))
 		# 对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
 		row_num = plt.imread(img_path_list[0]).shape[0]
 		column_num = plt.imread(img_path_list[0]).shape[1]
-		for i in range(32, row_num - 32, 1):  # 扫描的步长需要调整
-			for j in range(32, column_num - 32, 1):
-				patch = np.copy(img_test_gray[i - 32:i + 32, j - 32:j + 32]).reshape(1, 64, 64, 1)
+		kp_set = []
+		count = 0
+		for i in range(32, row_num - 32, 4):  # 扫描的步长需要调整
+			for j in range(32, column_num - 32, 4):
+				patch = img_test_gray[i - 32:i + 32, j - 32:j + 32].reshape(1,64, 64, 1)
 				output_predict = sess.run(output, feed_dict={tf_x: patch})
-				if output_predict >= 0.5:
-					# print output_predict
-					kp_set = np.append(kp_set, [[j, i]], axis=0)
-		kp_set = kp_set.astype(np.int)
-		# print kp_set.shape#,kp_set
-		kp_set_afternms = NMS_4_points_set(kp_set)
-		# print 'kp_set_afternms:',kp_set_afternms.shape
-		# javenlib_tf.show_kp_set(img_path_list[img_count],kp_set)
-		# javenlib_tf.show_kp_set(img_path_list[img_count],kp_set_afternms)
-		kp_set_afternms_list.append(kp_set)
-	# print 'kp_set_afternms_list:',len(kp_set_afternms_list),kp_set_afternms_list[0].shape,kp_set_afternms_list[1].shape
-
-	# #在图上显示检测出的点
-	# javenlib_tf.show_kp_set(img_path_list[0],kp_set_afternms_list[0])
-	# javenlib_tf.show_kp_set(img_path_list[1], kp_set_afternms_list[1])
-
+				if output_predict[0,0] >= 0.8:
+					count += 1
+					kp_set.append([j,i,output_predict[0,0]])
+		print 'from image',img_count,'kp count from cnn without NMS:',count
+		#为了方便后续处理,将list在转化为np.ndarray传出去
+		kp_set_2array = np.zeros(shape=(len(kp_set),3))
+		for i in range(len(kp_set)):
+			kp_set_2array[i,:] = kp_set[i][:]
+		#进行NMS扫描去冗余
+		print 'before NMS:',len(kp_set_2array)
+		kp_set_2array_afternms = np.zeros(shape=(0,3))
+		for i in range(35, row_num - 35, 10):  # 扫描的步长需要调整
+			for j in range(35, column_num - 35, 10):
+				point_temp = np.zeros(shape=(1,3))
+				for k in range(len(kp_set_2array)):
+					if kp_set_2array[k,0] >= j-5 and kp_set_2array[k,0] < j+5 and kp_set_2array[k,1] >= i-5 and kp_set_2array[k,1] < i+5:
+						if kp_set_2array[k,2] > point_temp[0,2]:
+							point_temp = np.copy(kp_set_2array[k].reshape(1,3))
+							# print 'point_temp.shape',point_temp.shape
+				if point_temp[0,2] != 0:
+					kp_set_2array_afternms = np.append(kp_set_2array_afternms,point_temp,axis=0)
+		print kp_set_2array_afternms[0:5],kp_set_2array_afternms.shape
+		kp_set_list.append(kp_set_2array_afternms[:,0:2].astype(np.int))
 	#释放gpu资源
 	sess.close()
-	return kp_set_afternms_list
+
+	return kp_set_list
+
 
 # img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
 #                  '/home/javen/javenlib/images/bikes/img2.ppm']
 # img = plt.imread(img_path_list[0])
-# kp = use_TILDE(img_path_list)
-# kp1 = kp[0]
-# print kp1.shape
+# print time.ctime()
+# kp = use_TILDE_optimized(img_path_list)
+# print time.ctime()
+# print kp[0].shape,kp[1].shape
+# print kp[0][0:5,0:2]
+# show_kp_set(img_path_list[0],kp[0])
