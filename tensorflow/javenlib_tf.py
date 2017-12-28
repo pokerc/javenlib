@@ -487,6 +487,8 @@ def use_TILDE_optimized(img_path_list):
 		kp_set_2array = np.zeros(shape=(len(kp_set),3))
 		for i in range(len(kp_set)):
 			kp_set_2array[i,:] = kp_set[i][:]
+		# show_kp_set('/home/javen/javenlib/images/bikes/img1.ppm',kp_set_2array[:,0:2].astype(np.int))
+
 		# #进行NMS扫描去冗余
 		# print 'before NMS:',len(kp_set_2array)
 		# kp_set_2array_afternms = np.zeros(shape=(0,3))
@@ -501,19 +503,26 @@ def use_TILDE_optimized(img_path_list):
 		# 		if point_temp[0,2] != 0:
 		# 			kp_set_2array_afternms = np.append(kp_set_2array_afternms,point_temp,axis=0)
 		# print kp_set_2array_afternms[0:5],kp_set_2array_afternms.shape
+
 		# 进行NMS扫描去冗余,加实时删除操作
 		print 'before NMS:', len(kp_set_2array)
 		kp_set_2array_afternms = np.zeros(shape=(0, 3))
+		kp_set_2array_afterdelete = np.copy(kp_set_2array)
 		for i in range(32, row_num - 32, 8):  # 扫描的步长需要调整
 			for j in range(32, column_num - 32, 8):
 				point_temp = np.zeros(shape=(1, 3))
+				kp_set_2array = np.copy(kp_set_2array_afterdelete)
+				print 'before drop:',kp_set_2array.shape
 				for k in range(len(kp_set_2array)):
-					if kp_set_2array[k, 0] >= j - 15 and kp_set_2array[k, 0] < j + 15 and kp_set_2array[
-						k, 1] >= i - 15 and kp_set_2array[k, 1] < i + 15:
+					if kp_set_2array[k, 0] >= j - 16 and kp_set_2array[k, 0] < j + 16 and kp_set_2array[
+						k, 1] >= i - 16 and kp_set_2array[k, 1] < i + 16:
 						if kp_set_2array[k, 2] > point_temp[0, 2]:
 							point_temp = np.copy(kp_set_2array[k].reshape(1, 3))
+						#删除已经进行区域比较的点
+						kp_set_2array_afterdelete = np.delete(kp_set_2array,k,axis=0)
 						# print 'point_temp.shape',point_temp.shape
-				if point_temp[0, 2] != 0:
+				print 'after drop:',kp_set_2array.shape
+				if point_temp[0, 2] > 0.6:
 					kp_set_2array_afternms = np.append(kp_set_2array_afternms, point_temp, axis=0)
 		print kp_set_2array_afternms[0:5], kp_set_2array_afternms.shape
 		#将筛选后的kp点存入list中
