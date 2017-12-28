@@ -31,8 +31,8 @@
       <file leaf-file-name="javenlib_tf.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-53">
-              <caret line="458" column="45" lean-forward="false" selection-start-line="458" selection-start-column="45" selection-end-line="458" selection-end-column="45" />
+            <state relative-caret-position="405">
+              <caret line="518" column="24" lean-forward="false" selection-start-line="518" selection-start-column="24" selection-end-line="518" selection-end-column="24" />
               <folding>
                 <element signature="e#16#34#0" expanded="true" />
                 <element signature="e#181#327#0" expanded="false" />
@@ -50,9 +50,8 @@
                 <element signature="e#8551#8902#0" expanded="false" />
                 <element signature="e#8955#9723#0" expanded="false" />
                 <element signature="e#9786#10748#0" expanded="false" />
-                <element signature="e#10836#11852#0" expanded="false" />
-                <element signature="e#11891#12231#0" expanded="false" />
-                <element signature="e#12280#14732#0" expanded="false" />
+                <element signature="e#12828#13168#0" expanded="false" />
+                <element signature="e#13217#15669#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -74,8 +73,8 @@
       <file leaf-file-name="quality_test.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/quality_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="17" column="38" lean-forward="false" selection-start-line="17" selection-start-column="38" selection-end-line="17" selection-end-column="38" />
+            <state relative-caret-position="396">
+              <caret line="40" column="38" lean-forward="false" selection-start-line="40" selection-start-column="38" selection-end-line="40" selection-end-column="38" />
               <folding>
                 <element signature="e#16#39#0" expanded="true" />
               </folding>
@@ -135,9 +134,9 @@
         <option value="$PROJECT_DIR$/use_detector_TILDE.py" />
         <option value="$PROJECT_DIR$/../javenlib.py" />
         <option value="$PROJECT_DIR$/train_detector_TILDE.py" />
-        <option value="$PROJECT_DIR$/javenlib_tf.py" />
-        <option value="$PROJECT_DIR$/quality_test.py" />
         <option value="$PROJECT_DIR$/../学习笔记/python学习笔记.txt" />
+        <option value="$PROJECT_DIR$/quality_test.py" />
+        <option value="$PROJECT_DIR$/javenlib_tf.py" />
       </list>
     </option>
   </component>
@@ -497,9 +496,8 @@
             <element signature="e#8551#8902#0" expanded="false" />
             <element signature="e#8955#9723#0" expanded="false" />
             <element signature="e#9786#10748#0" expanded="false" />
-            <element signature="e#10836#11852#0" expanded="false" />
-            <element signature="e#11891#12231#0" expanded="false" />
-            <element signature="e#12280#14732#0" expanded="false" />
+            <element signature="e#12828#13168#0" expanded="false" />
+            <element signature="e#13217#15669#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -562,9 +560,8 @@
             <element signature="e#8551#8902#0" expanded="false" />
             <element signature="e#8955#9723#0" expanded="false" />
             <element signature="e#9786#10748#0" expanded="false" />
-            <element signature="e#10836#11852#0" expanded="false" />
-            <element signature="e#11891#12231#0" expanded="false" />
-            <element signature="e#12280#14732#0" expanded="false" />
+            <element signature="e#12828#13168#0" expanded="false" />
+            <element signature="e#13217#15669#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -620,9 +617,8 @@
             <element signature="e#8551#8902#0" expanded="false" />
             <element signature="e#8955#9723#0" expanded="false" />
             <element signature="e#9786#10748#0" expanded="false" />
-            <element signature="e#10836#11852#0" expanded="false" />
-            <element signature="e#11891#12231#0" expanded="false" />
-            <element signature="e#12280#14732#0" expanded="false" />
+            <element signature="e#12828#13168#0" expanded="false" />
+            <element signature="e#13217#15669#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -770,14 +766,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../sift_accuracy.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="18" column="39" lean-forward="true" selection-start-line="18" selection-start-column="39" selection-end-line="18" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/train_detector_TILDE.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="622">
@@ -785,16 +773,6 @@
           <folding>
             <element signature="e#16#39#0" expanded="true" />
             <element signature="e#185#265#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quality_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="17" column="38" lean-forward="false" selection-start-line="17" selection-start-column="38" selection-end-line="17" selection-end-column="38" />
-          <folding>
-            <element signature="e#16#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -807,10 +785,28 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../sift_accuracy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="18" column="39" lean-forward="true" selection-start-line="18" selection-start-column="39" selection-end-line="18" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quality_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="40" column="38" lean-forward="false" selection-start-line="40" selection-start-column="38" selection-end-line="40" selection-end-column="38" />
+          <folding>
+            <element signature="e#16#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/javenlib_tf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-53">
-          <caret line="458" column="45" lean-forward="false" selection-start-line="458" selection-start-column="45" selection-end-line="458" selection-end-column="45" />
+        <state relative-caret-position="405">
+          <caret line="518" column="24" lean-forward="false" selection-start-line="518" selection-start-column="24" selection-end-line="518" selection-end-column="24" />
           <folding>
             <element signature="e#16#34#0" expanded="true" />
             <element signature="e#181#327#0" expanded="false" />
@@ -828,9 +824,8 @@
             <element signature="e#8551#8902#0" expanded="false" />
             <element signature="e#8955#9723#0" expanded="false" />
             <element signature="e#9786#10748#0" expanded="false" />
-            <element signature="e#10836#11852#0" expanded="false" />
-            <element signature="e#11891#12231#0" expanded="false" />
-            <element signature="e#12280#14732#0" expanded="false" />
+            <element signature="e#12828#13168#0" expanded="false" />
+            <element signature="e#13217#15669#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -300,25 +300,48 @@ def match_accuracy(img1_kp_pos,img1_kp_des,img2_kp_pos,img2_kp_des,rotation_matr
 	:param rotation_matrix:
 	:return:
 	"""
+	# #多数量的set作test_data
+	# flann = pyflann.FLANN()
+	# kp_num = len(img1_kp_pos)
+	# origin_kp = np.copy(img2_kp_pos)
+	# origin_kp_des = np.copy(img2_kp_des)
+	# test_kp = np.copy(img1_kp_pos)
+	# test_kp_des = np.copy(img1_kp_des)
+	# print 'kp_num:',kp_num
+	# matched_index,matched_distance = flann.nn(origin_kp_des,test_kp_des,1)
+	# match_count = 0
+	# for i in range(kp_num):
+	# 	matched_kp_4_test_kp = origin_kp[matched_index[i]]
+	# 	# print 'matched_kp_4_test_kp:',matched_kp_4_test_kp
+	# 	transformed_kp_4_test_kp = rotation_matrix.dot(np.append(test_kp[i],1))
+	# 	# print 'transformed_kp_4_test_kp:',transformed_kp_4_test_kp
+	# 	if ((matched_kp_4_test_kp[0]-transformed_kp_4_test_kp[0])**2 + (matched_kp_4_test_kp[1]-transformed_kp_4_test_kp[1])**2) <= 25:
+	# 		match_count += 1
+	# print 'match_count:',match_count
+	# print 'match accuracy:',1.0*match_count/kp_num
+	# return 1.0*match_count/kp_num
+
+	# 少数量的set作test_data
 	flann = pyflann.FLANN()
-	kp_num = len(img1_kp_pos)
-	origin_kp = np.copy(img2_kp_pos)
-	origin_kp_des = np.copy(img2_kp_des)
-	test_kp = np.copy(img1_kp_pos)
-	test_kp_des = np.copy(img1_kp_des)
-	print 'kp_num:',kp_num
-	matched_index,matched_distance = flann.nn(origin_kp_des,test_kp_des,1)
+	kp_num = len(img2_kp_pos)
+	origin_kp = np.copy(img1_kp_pos)
+	origin_kp_des = np.copy(img1_kp_des)
+	test_kp = np.copy(img2_kp_pos)
+	test_kp_des = np.copy(img2_kp_des)
+	print 'kp_num:', kp_num
+	matched_index, matched_distance = flann.nn(origin_kp_des, test_kp_des, 1)
 	match_count = 0
 	for i in range(kp_num):
 		matched_kp_4_test_kp = origin_kp[matched_index[i]]
 		# print 'matched_kp_4_test_kp:',matched_kp_4_test_kp
-		transformed_kp_4_test_kp = rotation_matrix.dot(np.append(test_kp[i],1))
+		transformed_kp_4_test_kp = rotation_matrix.dot(np.append(matched_kp_4_test_kp, 1))
 		# print 'transformed_kp_4_test_kp:',transformed_kp_4_test_kp
-		if ((matched_kp_4_test_kp[0]-transformed_kp_4_test_kp[0])**2 + (matched_kp_4_test_kp[1]-transformed_kp_4_test_kp[1])**2) <= 25:
+		if ((test_kp[i][0] - transformed_kp_4_test_kp[0]) ** 2 + (
+			test_kp[i][1] - transformed_kp_4_test_kp[1]) ** 2) <= 25:
 			match_count += 1
-	print 'match_count:',match_count
-	print 'match accuracy:',1.0*match_count/kp_num
-	return 1.0*match_count/kp_num
+	print 'match_count:', match_count
+	print 'match accuracy:', 1.0 * match_count / kp_num
+	return 1.0 * match_count / kp_num
 
 def get_matrix_from_file(filename):
 	"""
@@ -456,7 +479,7 @@ def use_TILDE_optimized(img_path_list):
 			for j in range(32, column_num - 32, 4):
 				patch = img_test_gray[i - 32:i + 32, j - 32:j + 32].reshape(1,64, 64, 1)
 				output_predict = sess.run(output, feed_dict={tf_x: patch})
-				if output_predict[0,0] >= 0.8:
+				if output_predict[0,0] >= 0.5:
 					count += 1
 					kp_set.append([j,i,output_predict[0,0]])
 		print 'from image',img_count,'kp count from cnn without NMS:',count
@@ -464,20 +487,36 @@ def use_TILDE_optimized(img_path_list):
 		kp_set_2array = np.zeros(shape=(len(kp_set),3))
 		for i in range(len(kp_set)):
 			kp_set_2array[i,:] = kp_set[i][:]
-		#进行NMS扫描去冗余
-		print 'before NMS:',len(kp_set_2array)
-		kp_set_2array_afternms = np.zeros(shape=(0,3))
-		for i in range(35, row_num - 35, 10):  # 扫描的步长需要调整
-			for j in range(35, column_num - 35, 10):
-				point_temp = np.zeros(shape=(1,3))
+		# #进行NMS扫描去冗余
+		# print 'before NMS:',len(kp_set_2array)
+		# kp_set_2array_afternms = np.zeros(shape=(0,3))
+		# for i in range(32, row_num - 32, 8):  # 扫描的步长需要调整
+		# 	for j in range(32, column_num - 32, 8):
+		# 		point_temp = np.zeros(shape=(1,3))
+		# 		for k in range(len(kp_set_2array)):
+		# 			if kp_set_2array[k,0] >= j-15 and kp_set_2array[k,0] < j+15 and kp_set_2array[k,1] >= i-15 and kp_set_2array[k,1] < i+15:
+		# 				if kp_set_2array[k,2] > point_temp[0,2]:
+		# 					point_temp = np.copy(kp_set_2array[k].reshape(1,3))
+		# 					# print 'point_temp.shape',point_temp.shape
+		# 		if point_temp[0,2] != 0:
+		# 			kp_set_2array_afternms = np.append(kp_set_2array_afternms,point_temp,axis=0)
+		# print kp_set_2array_afternms[0:5],kp_set_2array_afternms.shape
+		# 进行NMS扫描去冗余,加实时删除操作
+		print 'before NMS:', len(kp_set_2array)
+		kp_set_2array_afternms = np.zeros(shape=(0, 3))
+		for i in range(32, row_num - 32, 8):  # 扫描的步长需要调整
+			for j in range(32, column_num - 32, 8):
+				point_temp = np.zeros(shape=(1, 3))
 				for k in range(len(kp_set_2array)):
-					if kp_set_2array[k,0] >= j-5 and kp_set_2array[k,0] < j+5 and kp_set_2array[k,1] >= i-5 and kp_set_2array[k,1] < i+5:
-						if kp_set_2array[k,2] > point_temp[0,2]:
-							point_temp = np.copy(kp_set_2array[k].reshape(1,3))
-							# print 'point_temp.shape',point_temp.shape
-				if point_temp[0,2] != 0:
-					kp_set_2array_afternms = np.append(kp_set_2array_afternms,point_temp,axis=0)
-		print kp_set_2array_afternms[0:5],kp_set_2array_afternms.shape
+					if kp_set_2array[k, 0] >= j - 15 and kp_set_2array[k, 0] < j + 15 and kp_set_2array[
+						k, 1] >= i - 15 and kp_set_2array[k, 1] < i + 15:
+						if kp_set_2array[k, 2] > point_temp[0, 2]:
+							point_temp = np.copy(kp_set_2array[k].reshape(1, 3))
+						# print 'point_temp.shape',point_temp.shape
+				if point_temp[0, 2] != 0:
+					kp_set_2array_afternms = np.append(kp_set_2array_afternms, point_temp, axis=0)
+		print kp_set_2array_afternms[0:5], kp_set_2array_afternms.shape
+		#将筛选后的kp点存入list中
 		kp_set_list.append(kp_set_2array_afternms[:,0:2].astype(np.int))
 	#释放gpu资源
 	sess.close()
