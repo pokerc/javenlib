@@ -483,13 +483,14 @@ def use_TILDE_optimized(img_path_list):
 					count += 1
 					kp_set.append([j,i,output_predict[0,0]])
 		print 'from image',img_count,'kp count from cnn without NMS:',count
-		#为了方便后续处理,将list在转化为np.ndarray传出去
-		kp_set_2array = np.zeros(shape=(len(kp_set),3))
-		for i in range(len(kp_set)):
-			kp_set_2array[i,:] = kp_set[i][:]
+		print kp_set[0],kp_set[0][0]
+		# #为了方便后续处理,将list在转化为np.ndarray传出去
+		# kp_set_2array = np.zeros(shape=(len(kp_set),3))
+		# for i in range(len(kp_set)):
+		# 	kp_set_2array[i,:] = kp_set[i][:]
 		# show_kp_set('/home/javen/javenlib/images/bikes/img1.ppm',kp_set_2array[:,0:2].astype(np.int))
 
-		# #进行NMS扫描去冗余
+		# #进行NMS扫描去冗余(发现没加实时删除，导致重复率高)
 		# print 'before NMS:',len(kp_set_2array)
 		# kp_set_2array_afternms = np.zeros(shape=(0,3))
 		# for i in range(32, row_num - 32, 8):  # 扫描的步长需要调整
@@ -504,32 +505,59 @@ def use_TILDE_optimized(img_path_list):
 		# 			kp_set_2array_afternms = np.append(kp_set_2array_afternms,point_temp,axis=0)
 		# print kp_set_2array_afternms[0:5],kp_set_2array_afternms.shape
 
-		# 进行NMS扫描去冗余,加实时删除操作
-		print 'before NMS:', len(kp_set_2array)
-		kp_set_2array_afternms = np.zeros(shape=(0, 3))
-		kp_set_2array_afterdelete = np.copy(kp_set_2array)
+		# # 进行NMS扫描去冗余,加实时删除操作(发现实时删除时kp_set的删除更新有问题,每次其实只删除了一个点)
+		# print 'before NMS:', len(kp_set_2array)
+		# kp_set_2array_afternms = np.zeros(shape=(0, 3))
+		# kp_set_2array_afterdelete = np.copy(kp_set_2array)
+		# for i in range(32, row_num - 32, 8):  # 扫描的步长需要调整
+		# 	for j in range(32, column_num - 32, 8):
+		# 		point_temp = np.zeros(shape=(1, 3))
+		# 		kp_set_2array = np.copy(kp_set_2array_afterdelete)
+		# 		print 'before drop:',kp_set_2array.shape
+		# 		cc = 0
+		# 		for k in range(len(kp_set_2array)):
+		# 			if kp_set_2array[k, 0] >= j - 100 and kp_set_2array[k, 0] < j + 100 and kp_set_2array[
+		# 				k, 1] >= i - 100 and kp_set_2array[k, 1] < i + 100:
+		# 				cc += 1
+		# 				if kp_set_2array[k, 2] > point_temp[0, 2]:
+		# 					point_temp = np.copy(kp_set_2array[k].reshape(1, 3))
+		# 				#删除已经进行区域比较的点
+		# 				kp_set_2array_afterdelete = np.delete(kp_set_2array,k,axis=0)
+		# 				# print 'point_temp.shape',point_temp.shape
+		# 		print 'after drop:',kp_set_2array_afterdelete.shape,'drop quantity:',cc
+		# 		if point_temp[0, 2] > 0.6:
+		# 			kp_set_2array_afternms = np.append(kp_set_2array_afternms, point_temp, axis=0)
+		# print kp_set_2array_afternms[0:5], kp_set_2array_afternms.shape
+		# #将筛选后的kp点存入list中
+		# kp_set_list.append(kp_set_2array_afternms[:,0:2].astype(np.int))
+
+		#进行NMS扫描去冗余, 加实时删除操作,此版本的删除策略是倒序遍历删除.第二点就是使用list来提高效率
+		print 'before NMS:',len(kp_set)
+		kp_set_afterNMS_list = []
 		for i in range(32, row_num - 32, 8):  # 扫描的步长需要调整
 			for j in range(32, column_num - 32, 8):
-				point_temp = np.zeros(shape=(1, 3))
-				kp_set_2array = np.copy(kp_set_2array_afterdelete)
-				print 'before drop:',kp_set_2array.shape
-				for k in range(len(kp_set_2array)):
-					if kp_set_2array[k, 0] >= j - 16 and kp_set_2array[k, 0] < j + 16 and kp_set_2array[
-						k, 1] >= i - 16 and kp_set_2array[k, 1] < i + 16:
-						if kp_set_2array[k, 2] > point_temp[0, 2]:
-							point_temp = np.copy(kp_set_2array[k].reshape(1, 3))
-						#删除已经进行区域比较的点
-						kp_set_2array_afterdelete = np.delete(kp_set_2array,k,axis=0)
-						# print 'point_temp.shape',point_temp.shape
-				print 'after drop:',kp_set_2array.shape
-				if point_temp[0, 2] > 0.6:
-					kp_set_2array_afternms = np.append(kp_set_2array_afternms, point_temp, axis=0)
-		print kp_set_2array_afternms[0:5], kp_set_2array_afternms.shape
-		#将筛选后的kp点存入list中
-		kp_set_list.append(kp_set_2array_afternms[:,0:2].astype(np.int))
+				# print 'before drop:',len(kp_set)
+				point_temp = [0,0,0]
+				for k in range(len(kp_set)-1,-1,-1):
+					#判断并删除,从后往前不会影响次序
+					if kp_set[k][0] >= j-16 and kp_set[k][0] < j+16 and kp_set[k][1] >= i-16 and kp_set[k][1] < i+16:
+						if kp_set[k][2] > point_temp[2]:
+							point_temp = kp_set[k][:]
+						del kp_set[k]
+				#判断point_temp是否符合要求,进行保留还是舍弃
+				if point_temp[2] > 0.6:
+					kp_set_afterNMS_list.append(point_temp)
+				# print 'after drop:',len(kp_set)
+		print 'after NMS:',len(kp_set)
+		# print 'kp got:',len(kp_set_afterNMS_list),kp_set_afterNMS_list[0:5]
+		#将list转换为ndarray,并放入作为一个元素放入list中
+		kp_set_afterNMS_array = np.zeros(shape=(len(kp_set_afterNMS_list),2),dtype=np.int)
+		for i in range(len(kp_set_afterNMS_list)):
+			kp_set_afterNMS_array[i] = np.copy(kp_set_afterNMS_list[i][0:2])
+		# print 'kp_set_afterNMS_array:',kp_set_afterNMS_array.shape,kp_set_afterNMS_array[0:3]
+		kp_set_list.append(kp_set_afterNMS_array)
 	#释放gpu资源
 	sess.close()
-
 	return kp_set_list
 
 
@@ -539,6 +567,3 @@ def use_TILDE_optimized(img_path_list):
 # print time.ctime()
 # kp = use_TILDE_optimized(img_path_list)
 # print time.ctime()
-# print kp[0].shape,kp[1].shape
-# print kp[0][0:5,0:2]
-# show_kp_set(img_path_list[0],kp[0])

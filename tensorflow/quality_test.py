@@ -40,6 +40,8 @@ javenlib_tf.match_accuracy(imga_kp_sift,imga_kp_sift_des,imgb_kp_sift,imgb_kp_si
 print 'cnn shape:',imga_kp_cnn.shape,imgb_kp_cnn.shape
 javenlib_tf.match_accuracy(imga_kp_cnn,imga_kp_cnn_des,imgb_kp_cnn,imgb_kp_cnn_des,tranform_matrix)
 
+print 'kp cnn:','\n',imga_kp_cnn[0:10]
+
 # javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_sift)
 javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_cnn)
 
