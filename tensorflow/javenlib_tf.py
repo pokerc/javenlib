@@ -359,6 +359,28 @@ def get_matrix_from_file(filename):
 	f.close()
 	return rotation_matrix
 
+def NMS_4_kp_set(kp_set,row_num,column_num,step=8,n_pixel=16,threshold=0.5):
+	print 'before NMS:', len(kp_set)
+	kp_set_afterNMS_list = []
+	for i in range(32, row_num - 32, step):  # 扫描的步长需要调整
+		for j in range(32, column_num - 32, step):
+			# print 'before drop:',len(kp_set)
+			point_temp = [0, 0, 0]
+			for k in range(len(kp_set) - 1, -1, -1):
+				# 判断并删除,从后往前不会影响次序
+				if kp_set[k][0] >= j - n_pixel and kp_set[k][0] < j + n_pixel and kp_set[k][1] >= i - n_pixel and kp_set[k][
+					1] < i + n_pixel:
+					if kp_set[k][2] > point_temp[2]:
+						point_temp = kp_set[k][:]
+					del kp_set[k]
+			# 判断point_temp是否符合要求,进行保留还是舍弃
+			if point_temp[2] > threshold:
+				kp_set_afterNMS_list.append(point_temp)
+			# print 'after drop:',len(kp_set)
+	print 'after NMS:', len(kp_set)
+	print 'kp got:',len(kp_set_afterNMS_list)
+	return kp_set_afterNMS_list
+
 #MSE版的use_TILDE
 def use_TILDE(img_path_list):
 	tf_x = tf.placeholder(tf.float32, [None, 64, 64, 1])  # 输入patch维度为64*64
@@ -483,7 +505,6 @@ def use_TILDE_optimized(img_path_list):
 					count += 1
 					kp_set.append([j,i,output_predict[0,0]])
 		print 'from image',img_count,'kp count from cnn without NMS:',count
-		print kp_set[0],kp_set[0][0]
 		# #为了方便后续处理,将list在转化为np.ndarray传出去
 		# kp_set_2array = np.zeros(shape=(len(kp_set),3))
 		# for i in range(len(kp_set)):
@@ -531,25 +552,27 @@ def use_TILDE_optimized(img_path_list):
 		# #将筛选后的kp点存入list中
 		# kp_set_list.append(kp_set_2array_afternms[:,0:2].astype(np.int))
 
-		#进行NMS扫描去冗余, 加实时删除操作,此版本的删除策略是倒序遍历删除.第二点就是使用list来提高效率
-		print 'before NMS:',len(kp_set)
-		kp_set_afterNMS_list = []
-		for i in range(32, row_num - 32, 8):  # 扫描的步长需要调整
-			for j in range(32, column_num - 32, 8):
-				# print 'before drop:',len(kp_set)
-				point_temp = [0,0,0]
-				for k in range(len(kp_set)-1,-1,-1):
-					#判断并删除,从后往前不会影响次序
-					if kp_set[k][0] >= j-16 and kp_set[k][0] < j+16 and kp_set[k][1] >= i-16 and kp_set[k][1] < i+16:
-						if kp_set[k][2] > point_temp[2]:
-							point_temp = kp_set[k][:]
-						del kp_set[k]
-				#判断point_temp是否符合要求,进行保留还是舍弃
-				if point_temp[2] > 0.6:
-					kp_set_afterNMS_list.append(point_temp)
-				# print 'after drop:',len(kp_set)
-		print 'after NMS:',len(kp_set)
-		# print 'kp got:',len(kp_set_afterNMS_list),kp_set_afterNMS_list[0:5]
+		# #进行NMS扫描去冗余, 加实时删除操作,此版本的删除策略是倒序遍历删除.第二点就是使用list来提高效率
+		# print 'before NMS:',len(kp_set)
+		# kp_set_afterNMS_list = []
+		# for i in range(32, row_num - 32, 8):  # 扫描的步长需要调整
+		# 	for j in range(32, column_num - 32, 8):
+		# 		# print 'before drop:',len(kp_set)
+		# 		point_temp = [0,0,0]
+		# 		for k in range(len(kp_set)-1,-1,-1):
+		# 			#判断并删除,从后往前不会影响次序
+		# 			if kp_set[k][0] >= j-32 and kp_set[k][0] < j+32 and kp_set[k][1] >= i-32 and kp_set[k][1] < i+32:
+		# 				if kp_set[k][2] > point_temp[2]:
+		# 					point_temp = kp_set[k][:]
+		# 				del kp_set[k]
+		# 		#判断point_temp是否符合要求,进行保留还是舍弃
+		# 		if point_temp[2] > 0.5:
+		# 			kp_set_afterNMS_list.append(point_temp)
+		# 		# print 'after drop:',len(kp_set)
+		# print 'after NMS:',len(kp_set)
+		# # print 'kp got:',len(kp_set_afterNMS_list),kp_set_afterNMS_list[0:5]
+		kp_set_afterNMS_list = NMS_4_kp_set(kp_set,row_num,column_num,step=8,n_pixel=16,threshold=0.5)
+		kp_set_afterNMS_list = NMS_4_kp_set(kp_set_afterNMS_list, row_num, column_num,step=8,n_pixel=32,threshold=0.6)
 		#将list转换为ndarray,并放入作为一个元素放入list中
 		kp_set_afterNMS_array = np.zeros(shape=(len(kp_set_afterNMS_list),2),dtype=np.int)
 		for i in range(len(kp_set_afterNMS_list)):
