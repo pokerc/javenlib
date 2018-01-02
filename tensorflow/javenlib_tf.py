@@ -89,14 +89,15 @@ def get_kp_set_raw(img_path_list):
 	# 	 '/home/javen/javenlib/images/leuven/img3.ppm',
 	# 	 '/home/javen/javenlib/images/leuven/img4.ppm',
 	# 	 '/home/javen/javenlib/images/leuven/img5.ppm']
-	number_to_detect = 400
+	number_to_detect = 900
+	number_to_save = 800
 	sift = cv2.SIFT(number_to_detect)
-	kp_set_raw = np.zeros(shape=(len(img_path_list),number_to_detect,2),dtype=np.int)
+	kp_set_raw = np.zeros(shape=(len(img_path_list),number_to_save,2),dtype=np.int)
 	for img_count in range(len(img_path_list)):
 		img = plt.imread(img_path_list[img_count])
 		kp_object = sift.detect(img)
 		kp_coordinate = KeyPoint_convert_forOpencv2(kp_object)
-		while len(kp_coordinate)>400:
+		while len(kp_coordinate)>number_to_save:
 			kp_coordinate = np.delete(kp_coordinate,-1,axis=0)
 		# print 'kp_coordinate:',kp_coordinate.shape
 		kp_set_raw[img_count] = np.copy(kp_coordinate)
@@ -183,41 +184,42 @@ def get_kp_set_negative(kp_set_raw,dist_threshold=1000):
 	kp_set_negative = np.copy(new_test_data)
 	return kp_set_negative.astype(np.int)
 
-def get_kp_patch_set_positive(img_path_list,kp_set_positive):
+def get_kp_patch_set_positive(img_path_list,kp_set_positive,scale=32):
 	"""
 	根据所给的图像，以及positive kp的坐标取出positive patch的集合
 	:param img_path_list: 图像路径列表
 	:param kp_set_positive: positive kp集合
+	:param scale:该参数表示要取出的patch的大小,默认scale为32,也就是取出的patch几何大小为64*64
 	:return: 返回positive patch集合（由于函数中要进行kp是否可取patch的边界范围判断，所以可能得到的patch数目比positive kp的数目少）
 	"""
 	#无法取到patch的kp点的去除
 	rows_num,columns_num = plt.imread(img_path_list[0]).shape[0:2]
 	for i in range(len(kp_set_positive)-1,-1,-1):
-		if kp_set_positive[i,1] < 32 or kp_set_positive[i,1] > rows_num-32 or kp_set_positive[i,0] < 32 or kp_set_positive[i,0] > columns_num-32:
+		if kp_set_positive[i,1] < scale or kp_set_positive[i,1] > rows_num-scale or kp_set_positive[i,0] < scale or kp_set_positive[i,0] > columns_num-scale:
 			kp_set_positive = np.delete(kp_set_positive,i,axis=0)
 	# print 'kp_set_positive:',kp_set_positive.shape,kp_set_positive
 	#取出kp_set_positive所对应的patch集合
-	kp_patch_set_positive = np.zeros(shape=(1,64,64,3))
+	kp_patch_set_positive = np.zeros(shape=(1,scale*2,scale*2,3))
 	for img_count in range(len(img_path_list)):
 		img = plt.imread(img_path_list[img_count])/255.
 		for i in range(len(kp_set_positive)):
-			kp_patch_set_positive = np.append(kp_patch_set_positive,img[kp_set_positive[i,1]-32:kp_set_positive[i,1]+32,kp_set_positive[i,0]-32:kp_set_positive[i,0]+32,:].reshape(1,64,64,3),axis=0)
+			kp_patch_set_positive = np.append(kp_patch_set_positive,img[kp_set_positive[i,1]-scale:kp_set_positive[i,1]+scale,kp_set_positive[i,0]-scale:kp_set_positive[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
 	kp_patch_set_positive = np.delete(kp_patch_set_positive,0,axis=0)
 	# print kp_patch_set_positive.shape
 	return kp_patch_set_positive
 
-def get_kp_patch_set_negative(img_path_list,kp_set_negative):
+def get_kp_patch_set_negative(img_path_list,kp_set_negative,scale=32):
 	#无法取到patch的kp点的去除
 	rows_num,columns_num = plt.imread(img_path_list[0]).shape[0:2]
 	for i in range(len(kp_set_negative)-1,-1,-1):
-		if kp_set_negative[i,1] < 32 or kp_set_negative[i,1] > rows_num-32 or kp_set_negative[i,0] < 32 or kp_set_negative[i,0] > columns_num-32:
+		if kp_set_negative[i,1] < scale or kp_set_negative[i,1] > rows_num-scale or kp_set_negative[i,0] < scale or kp_set_negative[i,0] > columns_num-scale:
 			kp_set_negative = np.delete(kp_set_negative,i,axis=0)
 	#取出kp_set_negative所对应的patch集合
-	kp_patch_set_negative = np.zeros(shape=(1,64,64,3))
+	kp_patch_set_negative = np.zeros(shape=(1,scale*2,scale*2,3))
 	for img_count in range(len(img_path_list)):
 		img = plt.imread(img_path_list[img_count])/255.
 		for i in range(len(kp_set_negative)):
-			kp_patch_set_negative = np.append(kp_patch_set_negative,img[kp_set_negative[i,1]-32:kp_set_negative[i,1]+32,kp_set_negative[i,0]-32:kp_set_negative[i,0]+32,:].reshape(1,64,64,3),axis=0)
+			kp_patch_set_negative = np.append(kp_patch_set_negative,img[kp_set_negative[i,1]-scale:kp_set_negative[i,1]+scale,kp_set_negative[i,0]-scale:kp_set_negative[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
 	kp_patch_set_negative = np.delete(kp_patch_set_negative,0,axis=0)
 	return kp_patch_set_negative
 
@@ -228,7 +230,7 @@ def shuffle_data_and_label(train_data,train_label):
 	shuffled_train_label = train_label[x]
 	return (shuffled_train_data,shuffled_train_label)
 
-def rgb2gray_train_data(train_data):
+def rgb2gray_train_data(train_data,scale=32):
 	"""
 	将train_data从rgb模式转换为gray模式
 	:param train_data: rgb模式的train_data,其维度必须为(?,64,64,3)的形式
@@ -238,7 +240,7 @@ def rgb2gray_train_data(train_data):
 		print 'Error: 输入数据的维度必须满足(?,64,64,3)'
 		exit()
 	train_data_gray = np.dot(train_data[...,:3],[0.2989,0.5870,0.1140])
-	return train_data_gray.reshape(len(train_data),64,64,1)
+	return train_data_gray.reshape(len(train_data),scale*2,scale*2,1)
 
 def NMS_4_points_set(kp_set,dist_threshold=1100):
 	"""
@@ -359,11 +361,22 @@ def get_matrix_from_file(filename):
 	f.close()
 	return rotation_matrix
 
-def NMS_4_kp_set(kp_set,row_num,column_num,step=8,n_pixel=16,threshold=0.5):
+def NMS_4_kp_set(kp_set,row_num,column_num,step=8,n_pixel=16,threshold=0.5,scale=32):
+	"""
+	非局部最大值抑制,即去除局部区域里的冗余点,保留score最大的点
+	:param kp_set: 原来的kp_set数据
+	:param row_num: 图像参数行数
+	:param column_num: 图像参数列数
+	:param step: 扫描的步长
+	:param n_pixel: 定义区域的大小,默认为以16*2为边长的正方形
+	:param threshold: 抑制得出的点,需要经过第二层score的筛选,默认0.5,即没有进行进一步筛选
+	:param scale: 搭配之前提取kp的参数,定义扫描的区域范围
+	:return: 返回经过NMS之后的kp_set
+	"""
 	print 'before NMS:', len(kp_set)
 	kp_set_afterNMS_list = []
-	for i in range(32, row_num - 32, step):  # 扫描的步长需要调整
-		for j in range(32, column_num - 32, step):
+	for i in range(scale, row_num - scale, step):  # 扫描的步长需要调整
+		for j in range(scale, column_num - scale, step):
 			# print 'before drop:',len(kp_set)
 			point_temp = [0, 0, 0]
 			for k in range(len(kp_set) - 1, -1, -1):
@@ -583,10 +596,80 @@ def use_TILDE_optimized(img_path_list):
 	sess.close()
 	return kp_set_list
 
+#MSE版的use_TILDE,scale为8,不使用色彩信息
+def use_TILDE_scale10(img_path_list):
+	scale = 8
+	tf_x = tf.placeholder(tf.float32, [None, scale*2, scale*2, 1])  # 输入patch维度为64*64
+	tf_y = tf.placeholder(tf.int32, [None, 1])  # input y ,y代表score所以维度为1
+
+	########################################################################
+	conv1 = tf.layers.conv2d(
+		inputs=tf_x,  # (?,16,16,1)
+		filters=8,
+		kernel_size=5,
+		strides=1,
+		padding='same',
+		activation=tf.nn.relu
+	)  # -> (?, 16, 16, 8)
+
+	pool1 = tf.layers.max_pooling2d(
+		conv1,
+		pool_size=2,
+		strides=2,
+	)  # -> (?,8, 8, 8)
+
+	conv2 = tf.layers.conv2d(pool1, 16, 5, 1, 'same', activation=tf.nn.relu)  # -> (?,8, 8, 16)
+
+	pool2 = tf.layers.max_pooling2d(conv2, 2, 2)  # -> (?,4, 4, 16)
+
+	# conv3 = tf.layers.conv2d(pool2, 32, 3, 1, 'valid', activation=tf.nn.relu)  # -> (?,11, 11, 32)
+
+	# pool3 = tf.layers.max_pooling2d(conv3, 2, 2)    # -> (?,32, 32, 64)
+	#
+	flat = tf.reshape(pool2, [-1, 4*4*16])  # -> (?,256)
+
+	output = tf.layers.dense(flat, 1)  # output layer
+
+	sess = tf.Session()
+	saver = tf.train.Saver()
+	saver.restore(sess, './save_net/detector_TILDE_model_20180102_mse_100_0_0005')
+
+	# 使用列表将两个维度不相同的矩阵打包在一起return
+	kp_set_list = []
+	for img_count in range(len(img_path_list)):
+		img_test_rgb = plt.imread(img_path_list[img_count]) / 255.
+		img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
+		kp_set = np.zeros(shape=(0, 3))
+		# 对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
+		row_num = plt.imread(img_path_list[0]).shape[0]
+		column_num = plt.imread(img_path_list[0]).shape[1]
+		kp_set = []
+		count = 0
+		for i in range(scale, row_num - scale, 4):  # 扫描的步长需要调整
+			for j in range(scale, column_num - scale, 4):
+				patch = img_test_gray[i - scale:i + scale, j - scale:j + scale].reshape(1, scale*2, scale*2, 1)
+				output_predict = sess.run(output, feed_dict={tf_x: patch})
+				if output_predict[0, 0] >= 0.5:
+					count += 1
+					kp_set.append([j, i, output_predict[0, 0]])
+		print 'from image', img_count, 'kp count from cnn without NMS:', count
+		kp_set_afterNMS_list = NMS_4_kp_set(kp_set, row_num, column_num, step=8, n_pixel=32, threshold=0.75)
+		# kp_set_afterNMS_list = NMS_4_kp_set(kp_set_afterNMS_list, row_num, column_num, step=8, n_pixel=32,
+		# 									threshold=0.6)
+		# 将list转换为ndarray,并放入作为一个元素放入list中
+		kp_set_afterNMS_array = np.zeros(shape=(len(kp_set_afterNMS_list), 2), dtype=np.int)
+		for i in range(len(kp_set_afterNMS_list)):
+			kp_set_afterNMS_array[i] = np.copy(kp_set_afterNMS_list[i][0:2])
+		# print 'kp_set_afterNMS_array:',kp_set_afterNMS_array.shape,kp_set_afterNMS_array[0:3]
+		kp_set_list.append(kp_set_afterNMS_array)
+	# 释放gpu资源
+	sess.close()
+	return kp_set_list
+
 
 # img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
 #                  '/home/javen/javenlib/images/bikes/img2.ppm']
 # img = plt.imread(img_path_list[0])
 # print time.ctime()
-# kp = use_TILDE_optimized(img_path_list)
+# kp = use_TILDE_scale10(img_path_list)
 # print time.ctime()

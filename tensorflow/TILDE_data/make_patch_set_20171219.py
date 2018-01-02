@@ -14,9 +14,11 @@ image_classname_set = ['amos850_201609',
                        'amosLakeroad',
                        'amosSchool',
                        'leuven']
+
+scale =  8 #scale为patch的尺寸参数
 #将每组图提取出来的patch按照positive和negative拼接起来,变成两大类
-positive_sample = np.zeros(shape=(0,64,64,3))
-negative_sample = np.zeros(shape=(0,64,64,3))
+positive_sample = np.zeros(shape=(0,scale*2,scale*2,3))
+negative_sample = np.zeros(shape=(0,scale*2,scale*2,3))
 for i in range(len(image_classname_set)):
     positive_patch = np.load(image_classname_set[i]+'_positive_patches.npy')
     negative_patch = np.load(image_classname_set[i]+'_negative_patches.npy')
@@ -39,5 +41,5 @@ for i in range(len(train_data)):
 # print train_label.shape
 
 #将拼接完成的data和label保存
-np.save('train_data_20171219.npy',train_data)
-np.save('train_label_20171219.npy',train_label)
+np.save('train_data_20180102.npy',train_data)
+np.save('train_label_20180102.npy',train_label)
