@@ -242,26 +242,26 @@ def rgb2gray_train_data(train_data,scale=32):
 	train_data_gray = np.dot(train_data[...,:3],[0.2989,0.5870,0.1140])
 	return train_data_gray.reshape(len(train_data),scale*2,scale*2,1)
 
-def NMS_4_points_set(kp_set,dist_threshold=1100):
-	"""
-	对一个points set 进行NMS,即非局部最大值抑制,即将点集合中比较彼此很靠近的点堆中只保留其中一个,其实并没有保留最大值,只是保留了其中一个值而已,不算完全的NMS
-	:param kp_set: 需要进行NMS的点集
-	:param dist_threshold: 相似距离的冗余度阈值,当距离大于1100,可判断为可以保留的点
-	:return: 返回进过NMS过滤的点集
-	"""
-	# 进行非局部最大值抑制,即去除聚在一起的冗余的点,保留其中一个即可
-	flann = pyflann.FLANN()
-	new_test_data = np.copy(kp_set)
-	for i in range(len(kp_set)):
-		origin_data = np.copy(new_test_data)
-		test_data = np.copy(new_test_data)
-		matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 2,
-													  algorithm="kmeans", branching=32, iterations=7, checks=16)
-		for j in range(len(test_data) - 1, -1, -1):
-			if matched_distances[j, 1] < dist_threshold:
-				new_test_data = np.delete(test_data, j, axis=0)
-				break
-	return new_test_data
+# def NMS_4_points_set(kp_set,dist_threshold=1100):
+# 	"""
+# 	对一个points set 进行NMS,即非局部最大值抑制,即将点集合中比较彼此很靠近的点堆中只保留其中一个,其实并没有保留最大值,只是保留了其中一个值而已,不算完全的NMS
+# 	:param kp_set: 需要进行NMS的点集
+# 	:param dist_threshold: 相似距离的冗余度阈值,当距离大于1100,可判断为可以保留的点
+# 	:return: 返回进过NMS过滤的点集
+# 	"""
+# 	# 进行非局部最大值抑制,即去除聚在一起的冗余的点,保留其中一个即可
+# 	flann = pyflann.FLANN()
+# 	new_test_data = np.copy(kp_set)
+# 	for i in range(len(kp_set)):
+# 		origin_data = np.copy(new_test_data)
+# 		test_data = np.copy(new_test_data)
+# 		matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 2,
+# 													  algorithm="kmeans", branching=32, iterations=7, checks=16)
+# 		for j in range(len(test_data) - 1, -1, -1):
+# 			if matched_distances[j, 1] < dist_threshold:
+# 				new_test_data = np.delete(test_data, j, axis=0)
+# 				break
+# 	return new_test_data
 
 def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None):
 	flann = pyflann.FLANN()
@@ -393,6 +393,23 @@ def NMS_4_kp_set(kp_set,row_num,column_num,step=8,n_pixel=16,threshold=0.5,scale
 	print 'after NMS:', len(kp_set)
 	print 'kp got:',len(kp_set_afterNMS_list)
 	return kp_set_afterNMS_list
+
+def choose_kp_from_list(kp_set_afterNMS_list,quantity_to_choose=0):
+	kp_set_afterNMS_array = np.zeros(shape=(len(kp_set_afterNMS_list),3))
+	for i in range(len(kp_set_afterNMS_list)):
+		kp_set_afterNMS_array[i] = np.copy(kp_set_afterNMS_list[i])
+	# print kp_set_afterNMS_list[0:5]
+	# print kp_set_afterNMS_array[0:5]
+	kp_set_afterNMS_array = kp_set_afterNMS_array[kp_set_afterNMS_array[:,2].argsort()[-1::-1]]
+	# print kp_set_afterNMS_array[0:5]
+	if quantity_to_choose > len(kp_set_afterNMS_list):
+		print 'quantity to choose is too large! Maxmium quantity is ',len(kp_set_afterNMS_list)
+		return kp_set_afterNMS_array[:, 0:2].astype(np.int)
+	elif quantity_to_choose == 0:
+		return kp_set_afterNMS_array[:,0:2].astype(np.int)
+	else:
+		return kp_set_afterNMS_array[0:quantity_to_choose,0:2].astype(np.int)
+
 
 #MSE版的use_TILDE
 def use_TILDE(img_path_list):
@@ -598,6 +615,11 @@ def use_TILDE_optimized(img_path_list):
 
 #MSE版的use_TILDE,scale为8,不使用色彩信息
 def use_TILDE_scale10(img_path_list):
+	"""
+	使用训练好的CNN detector,返回值为带有score的kp点的集合,后续可以使用score从中挑选出一定数量的kp点
+	:param img_path: 需要检测的图像的path,多幅图同时检测
+	:return: 返回带有score的kp点集合
+	"""
 	scale = 8
 	tf_x = tf.placeholder(tf.float32, [None, scale*2, scale*2, 1])  # 输入patch维度为64*64
 	tf_y = tf.placeholder(tf.int32, [None, 1])  # input y ,y代表score所以维度为1
@@ -636,13 +658,13 @@ def use_TILDE_scale10(img_path_list):
 
 	# 使用列表将两个维度不相同的矩阵打包在一起return
 	kp_set_list = []
-	for img_count in range(len(img_path_list)):
-		img_test_rgb = plt.imread(img_path_list[img_count]) / 255.
+	for image_count in range(len(img_path_list)):
+		img_test_rgb = plt.imread(img_path_list[image_count]) / 255.
 		img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
 		kp_set = np.zeros(shape=(0, 3))
 		# 对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
-		row_num = plt.imread(img_path_list[0]).shape[0]
-		column_num = plt.imread(img_path_list[0]).shape[1]
+		row_num = plt.imread(img_path_list[image_count]).shape[0]
+		column_num = plt.imread(img_path_list[image_count]).shape[1]
 		kp_set = []
 		count = 0
 		for i in range(scale, row_num - scale, 4):  # 扫描的步长需要调整
@@ -652,18 +674,20 @@ def use_TILDE_scale10(img_path_list):
 				if output_predict[0, 0] >= 0.5:
 					count += 1
 					kp_set.append([j, i, output_predict[0, 0]])
-		print 'from image', img_count, 'kp count from cnn without NMS:', count
+		print 'kp count from cnn without NMS:', count
 		kp_set_afterNMS_list = NMS_4_kp_set(kp_set, row_num, column_num, step=8, n_pixel=32, threshold=0.75)
+		print 'NMS之后,保留:',len(kp_set_afterNMS_list),kp_set_afterNMS_list[0:2]
 		# kp_set_afterNMS_list = NMS_4_kp_set(kp_set_afterNMS_list, row_num, column_num, step=8, n_pixel=32,
 		# 									threshold=0.6)
-		# 将list转换为ndarray,并放入作为一个元素放入list中
-		kp_set_afterNMS_array = np.zeros(shape=(len(kp_set_afterNMS_list), 2), dtype=np.int)
-		for i in range(len(kp_set_afterNMS_list)):
-			kp_set_afterNMS_array[i] = np.copy(kp_set_afterNMS_list[i][0:2])
-		# print 'kp_set_afterNMS_array:',kp_set_afterNMS_array.shape,kp_set_afterNMS_array[0:3]
-		kp_set_list.append(kp_set_afterNMS_array)
+		# # 将list转换为ndarray,并放入作为一个元素放入list中
+		# kp_set_afterNMS_array = np.zeros(shape=(len(kp_set_afterNMS_list), 2), dtype=np.int)
+		# for i in range(len(kp_set_afterNMS_list)):
+		# 	kp_set_afterNMS_array[i] = np.copy(kp_set_afterNMS_list[i][0:2])
+		# # print 'kp_set_afterNMS_array:',kp_set_afterNMS_array.shape,kp_set_afterNMS_array[0:3]
+		kp_set_list.append(kp_set_afterNMS_list)
 	# 释放gpu资源
 	sess.close()
+	print '一次结束!'
 	return kp_set_list
 
 
@@ -672,4 +696,7 @@ def use_TILDE_scale10(img_path_list):
 # img = plt.imread(img_path_list[0])
 # print time.ctime()
 # kp = use_TILDE_scale10(img_path_list)
+# print len(kp),type(kp)
+# print len(kp[0]),len(kp[1])
+#
 # print time.ctime()
