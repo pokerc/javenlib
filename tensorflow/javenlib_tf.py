@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import cv2
 import pyflann
 import time
+import types
 
 def image_resize(image,rows,columns,toGray=True):
 	new_image = tf.image.resize_images(image,[rows,columns],method=1)
@@ -264,15 +265,14 @@ def rgb2gray_train_data(train_data,scale=32):
 # 	return new_test_data
 
 def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None):
-	if groundtruth_matrix != None:
-		print 'thank you!'
-		print 'kp_set1:',kp_set1[0:5]
+	if type(groundtruth_matrix) != types.NoneType:
+		print 'rotating...'
 		kp_set1_after_rotate = np.zeros(shape=(len(kp_set1),3))
 		for i in range(len(kp_set1)):
 			kp_set1_after_rotate[i] = groundtruth_matrix.dot(np.append(kp_set1[i],1))
-		print 'kp_set1_after rotate:',kp_set1_after_rotate[0:5]
+		kp_set1 = np.copy(kp_set1_after_rotate[:,:2])
 	else:
-		print 'No!'
+		print 'No rotation matrix! Going on...'
 	flann = pyflann.FLANN()
 	total_num = len(kp_set1)+len(kp_set2)
 	#首先在1中检测有没有与2重复的
@@ -283,7 +283,7 @@ def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None):
 	# print 'matched_indices:',matched_indices
 	# print 'matched_distances:',matched_distances
 	for i in range(len(matched_distances)):
-		if matched_distances[i] <= 1500:
+		if matched_distances[i] <= 36:
 			count1 += 1
 	#然后在2中检测有没有与1重复的
 	origin_data = np.copy(kp_set2)
@@ -293,11 +293,11 @@ def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None):
 	# print 'matched_indices:', matched_indices
 	# print 'matched_distances:', matched_distances
 	for i in range(len(matched_distances)):
-		if matched_distances[i] <= 1500:
+		if matched_distances[i] <= 36:
 			count2 += 1
 	print kp_set1.shape,kp_set2.shape
 	print 'count1:',count1,'count2:',count2
-	print 'accuracy:',1.*(count1+count2)/total_num
+	print 'quantity accuracy:',1.*(count1+count2)/total_num
 
 def match_accuracy(img1_kp_pos,img1_kp_des,img2_kp_pos,img2_kp_des,rotation_matrix):
 	"""
