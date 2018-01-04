@@ -264,6 +264,15 @@ def rgb2gray_train_data(train_data,scale=32):
 # 	return new_test_data
 
 def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None):
+	if groundtruth_matrix != None:
+		print 'thank you!'
+		print 'kp_set1:',kp_set1[0:5]
+		kp_set1_after_rotate = np.zeros(shape=(len(kp_set1),3))
+		for i in range(len(kp_set1)):
+			kp_set1_after_rotate[i] = groundtruth_matrix.dot(np.append(kp_set1[i],1))
+		print 'kp_set1_after rotate:',kp_set1_after_rotate[0:5]
+	else:
+		print 'No!'
 	flann = pyflann.FLANN()
 	total_num = len(kp_set1)+len(kp_set2)
 	#首先在1中检测有没有与2重复的
