@@ -45,5 +45,3 @@ imgb_kp_sift_obj,imgb_kp_sift_des = sift.compute(imgb,imgb_kp_sift_obj)
 # javenlib_tf.show_kp_set(img_path_list[0],imga_kp_cnn)
 
 
-javenlib_tf.quantity_test(imga_kp_sift,imgb_kp_sift,groundtruth_matrix=tranform_matrix)
-javenlib_tf.quantity_test(imga_kp_cnn,imgb_kp_cnn,groundtruth_matrix=tranform_matrix)

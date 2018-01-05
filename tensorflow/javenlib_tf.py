@@ -264,7 +264,7 @@ def rgb2gray_train_data(train_data,scale=32):
 # 				break
 # 	return new_test_data
 
-def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None):
+def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None,threshold=25):
 	if type(groundtruth_matrix) != types.NoneType:
 		print 'rotating...'
 		kp_set1_after_rotate = np.zeros(shape=(len(kp_set1),3))
@@ -283,7 +283,7 @@ def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None):
 	# print 'matched_indices:',matched_indices
 	# print 'matched_distances:',matched_distances
 	for i in range(len(matched_distances)):
-		if matched_distances[i] <= 36:
+		if matched_distances[i] <= threshold:
 			count1 += 1
 	#然后在2中检测有没有与1重复的
 	origin_data = np.copy(kp_set2)
@@ -293,7 +293,7 @@ def quantity_test(kp_set1,kp_set2,groundtruth_matrix=None):
 	# print 'matched_indices:', matched_indices
 	# print 'matched_distances:', matched_distances
 	for i in range(len(matched_distances)):
-		if matched_distances[i] <= 36:
+		if matched_distances[i] <= threshold:
 			count2 += 1
 	print kp_set1.shape,kp_set2.shape
 	print 'count1:',count1,'count2:',count2
@@ -668,7 +668,7 @@ def use_TILDE_scale10(img_path_list):
 	# 使用列表将两个维度不相同的矩阵打包在一起return
 	kp_set_list = []
 	for image_count in range(len(img_path_list)):
-		img_test_rgb = plt.imread(img_path_list[image_count]) / 255.
+		img_test_rgb = plt.imread(img_path_list[image_count]) / 1.
 		img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
 		kp_set = np.zeros(shape=(0, 3))
 		# 对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
