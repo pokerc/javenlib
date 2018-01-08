@@ -403,7 +403,46 @@ def NMS_4_kp_set(kp_set,row_num,column_num,step=8,n_pixel=16,threshold=0.5,scale
 	print 'kp got:',len(kp_set_afterNMS_list)
 	return kp_set_afterNMS_list
 
+def NonMaxSuppresion_4_kp_set(kp_set_list,threshold=25):
+	"""
+	新版NMS,根据score以及IOU来进行局部非最大值的抑制
+	:param kp_set_list:输入的kp点的集合
+	:param threshold:进行抑制的局部区域的大小设置,threshold=25表示在5个像素的范围内取最大值
+	:return:返回经过局部非最大值抑制的kp的集合
+	"""
+	#输入的kp_set的类型为python的list类型
+	#第一步,将kp_set转为ndarray类型,然后按照score从大到小进行排序
+	kp_set_array = np.zeros(shape=(len(kp_set_list),3))
+	for i in range(len(kp_set_list)):
+		kp_set_array[i] = np.copy(kp_set_list[i])
+	kp_set_array = kp_set_array[kp_set_array[:,2].argsort()]
+		#在转换会list方便操作
+	kp_set_list_sorted = []
+	for i in range(len(kp_set_array)):
+		kp_set_list_sorted.append([kp_set_array[i,0],kp_set_array[i,1],kp_set_array[i,2]])
+	# print kp_set_list_sorted[0:5],len(kp_set_list_sorted)
+	kp_set_list_afterNMS = []
+	#循环迭代的NMS核心
+	while len(kp_set_list_sorted) > 0:
+		kp_popout = kp_set_list_sorted[-1]
+		kp_set_list_afterNMS.append(kp_popout)
+		del kp_set_list_sorted[-1]
+		if len(kp_set_list_sorted) == 0:
+			break
+		for i in range(len(kp_set_list_sorted)-1,-1,-1):
+			if (kp_set_list_sorted[i][0]-kp_popout[0]) ** 2 + (kp_set_list_sorted[i][1]-kp_popout[1]) ** 2 < threshold:
+				del kp_set_list_sorted[i]
+	print 'kp_set_list_afterNMS',kp_set_list_afterNMS[0],len(kp_set_list_afterNMS)
+	return kp_set_list_afterNMS
+
 def choose_kp_from_list(kp_set_afterNMS_list,quantity_to_choose=0):
+	"""
+	从经过NMS之后的kp_set里面按照score挑出得分靠前的一定数量的kp
+	:param kp_set_afterNMS_list: 待选的原始kp_set,数据类型是list类型
+	:param quantity_to_choose: 需要取出的排名靠前的kp的数量
+	:return: 返回score前n名的kp点的信息
+	"""
+	#要使用numpy的argsort()首先要将list类型转化为numpy array类型
 	kp_set_afterNMS_array = np.zeros(shape=(len(kp_set_afterNMS_list),3))
 	for i in range(len(kp_set_afterNMS_list)):
 		kp_set_afterNMS_array[i] = np.copy(kp_set_afterNMS_list[i])
@@ -668,7 +707,9 @@ def use_TILDE_scale10(img_path_list):
 	# 使用列表将两个维度不相同的矩阵打包在一起return
 	kp_set_list = []
 	for image_count in range(len(img_path_list)):
-		img_test_rgb = plt.imread(img_path_list[image_count]) / 1.
+		img_test_rgb = plt.imread(img_path_list[image_count])
+		if img_test_rgb.mean() > 1:
+			img_test_rgb = np.copy(img_test_rgb / 255.)
 		img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
 		kp_set = np.zeros(shape=(0, 3))
 		# 对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
@@ -680,19 +721,13 @@ def use_TILDE_scale10(img_path_list):
 			for j in range(scale, column_num - scale, 4):
 				patch = img_test_gray[i - scale:i + scale, j - scale:j + scale].reshape(1, scale*2, scale*2, 1)
 				output_predict = sess.run(output, feed_dict={tf_x: patch})
-				if output_predict[0, 0] >= 0.5:
+				if output_predict[0, 0] >= 0.6:
 					count += 1
 					kp_set.append([j, i, output_predict[0, 0]])
 		print 'kp count from cnn without NMS:', count
-		kp_set_afterNMS_list = NMS_4_kp_set(kp_set, row_num, column_num, step=8, n_pixel=32, threshold=0.75)
-		print 'NMS之后,保留:',len(kp_set_afterNMS_list),kp_set_afterNMS_list[0:2]
-		# kp_set_afterNMS_list = NMS_4_kp_set(kp_set_afterNMS_list, row_num, column_num, step=8, n_pixel=32,
-		# 									threshold=0.6)
-		# # 将list转换为ndarray,并放入作为一个元素放入list中
-		# kp_set_afterNMS_array = np.zeros(shape=(len(kp_set_afterNMS_list), 2), dtype=np.int)
-		# for i in range(len(kp_set_afterNMS_list)):
-		# 	kp_set_afterNMS_array[i] = np.copy(kp_set_afterNMS_list[i][0:2])
-		# # print 'kp_set_afterNMS_array:',kp_set_afterNMS_array.shape,kp_set_afterNMS_array[0:3]
+		# kp_set_afterNMS_list = NMS_4_kp_set(kp_set, row_num, column_num, step=8, n_pixel=32, threshold=0.75)
+		kp_set_afterNMS_list = NonMaxSuppresion_4_kp_set(kp_set,threshold=25)
+		print 'NMS之后,保留:',len(kp_set_afterNMS_list),kp_set_afterNMS_list[-5:-1]
 		kp_set_list.append(kp_set_afterNMS_list)
 	# 释放gpu资源
 	sess.close()
@@ -705,7 +740,6 @@ def use_TILDE_scale10(img_path_list):
 # img = plt.imread(img_path_list[0])
 # print time.ctime()
 # kp = use_TILDE_scale10(img_path_list)
-# print len(kp),type(kp)
-# print len(kp[0]),len(kp[1])
+#
 #
 # print time.ctime()
