@@ -6,6 +6,63 @@ import cv2
 import pyflann
 import time
 import types
+import cmath
+
+def get_guassian_mask(sigma=0.6):
+	"""
+	计算高斯核
+	:param sigma:高斯分布的标准差,标注差越大,钟型曲线越扁
+	:return: 返回5*5的高斯模板矩阵
+	"""
+	mask_list = []
+	for x in range(-2,3,1):
+		for y in range(-2,3,1):
+			f = (1. / (2 * cmath.pi * (sigma ** 2))) * cmath.exp(-1. * (x ** 2 + y ** 2) / (2 * sigma ** 2))
+			mask_list.append([x,y,f.real])
+	mask_array = np.zeros(shape=(25,3))
+	for i in range(25):
+		mask_array[i] = np.copy(mask_list[i])
+	# print mask_array,mask_array[:,2].sum()
+	total = mask_array[:,2].sum()
+	mask_array[:,2] = mask_array[:,2]/total
+	# print mask_array
+	mask_0_6 = np.zeros(shape=(5,5))
+	count = 0
+	for i in range(5):
+		for j in range(5):
+			mask_0_6[i,j] = np.copy(mask_array[count,2])
+			count += 1
+	# print mask_0_6
+	return mask_0_6
+
+def guassian_conv_2d(img,mask):
+	"""
+	使用二维高斯模板矩阵对图像进行卷积模糊
+	:param img: 输入图像,数据类型最好为0-1的float
+	:param mask: 高斯模板矩阵
+	:return: 返回经过卷积模糊之后的图像
+	"""
+	# print img.shape
+	row_number = img.shape[0]
+	column_number = img.shape[1]
+	new_img = np.zeros(shape=(row_number+4,column_number+4,3))
+	new_img[2:-2,2:-2,:] = np.copy(img)
+	# print new_img.shape
+	# print new_img[-4:,-4:,0]
+	img_afterconv = np.zeros(shape=(row_number,column_number,3))
+	for x in range(2,row_number+2):
+		for y in range(2,column_number+2):
+			pixel_afterconv = np.zeros(shape=(3))
+			for i in range(-2,3,1):
+				for j in range(-2,3,1):
+					pixel_afterconv += mask[i+2,j+2]*new_img[x+i,y+j,:]
+			img_afterconv[x-2,y-2,:] = np.copy(pixel_afterconv)
+	# plt.subplot(1,2,1)
+	# plt.imshow(img)
+	# plt.subplot(1,2,2)
+	# plt.imshow(img_afterconv)
+	# plt.show()
+	return img_afterconv
 
 def image_resize(image,rows,columns,toGray=True):
 	new_image = tf.image.resize_images(image,[rows,columns],method=1)
