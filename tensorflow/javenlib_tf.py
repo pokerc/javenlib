@@ -8,7 +8,65 @@ import time
 import types
 import cmath
 
-def get_guassian_mask(sigma=0.6):
+def get_guassian_mask_1d(sigma=0.6):
+	"""
+	计算一维高斯模板矩阵
+	:param sigma:
+	:return:
+	"""
+	mask_list = []
+	for x in range(-2,3,1):
+		f = (1. / cmath.sqrt(2 * cmath.pi * (sigma ** 2))) * cmath.exp(-1. * (x ** 2) / (2 * sigma ** 2))
+		# print f.real
+		mask_list.append([f.real])
+	mask_array = np.zeros(shape=(5,1))
+	for i in range(5):
+		mask_array[i] = np.copy(mask_list[i])
+	total = mask_array.sum()
+	# print total
+	# print mask_array
+	mask_array = mask_array/total
+	# print mask_array
+	return mask_array
+
+def guassian_conv_1d(img,mask):
+	"""
+	使用两次一维高斯卷积(先水平卷积,再竖直卷积)来计算二维高斯卷积操作,提高计算速度
+	:param img: 待卷积模糊(平滑)的原始图像
+	:param mask: 一维卷积模板矩阵
+	:return: 返回经过卷积模糊(平滑)后的图像
+	"""
+	# print img.shape
+	row_number = img.shape[0]
+	column_number = img.shape[1]
+	new_img = np.zeros(shape=(row_number + 4, column_number + 4, 3))
+	new_img[2:-2, 2:-2, :] = np.copy(img)
+	# print new_img.shape
+	# print new_img[-4:,-4:,0]
+	img_afterconv = np.zeros(shape=(row_number, column_number, 3))
+	##首先在水平方向进行一维高斯卷积
+	for x in range(2, row_number + 2):
+		for y in range(2, column_number + 2):
+			pixel_afterconv = np.zeros(shape=(3))
+			for i in range(-2,3,1):
+				pixel_afterconv += mask[i+2]*new_img[x,y+i]
+			img_afterconv[x-2,y-2] = np.copy(pixel_afterconv)
+	new_img[2:-2, 2:-2, :] = np.copy(img_afterconv)
+	##然后在竖直方向进行一维高斯卷积
+	for x in range(2, row_number + 2):
+		for y in range(2, column_number + 2):
+			pixel_afterconv = np.zeros(shape=(3))
+			for j in range(-2,3,1):
+				pixel_afterconv += mask[j+2]*new_img[x+j,y]
+			img_afterconv[x-2,y-2] = np.copy(pixel_afterconv)
+	# plt.subplot(1,2,1)
+	# plt.imshow(img)
+	# plt.subplot(1,2,2)
+	# plt.imshow(img_afterconv)
+	# plt.show()
+	return img_afterconv
+
+def get_guassian_mask_2d(sigma=0.6):
 	"""
 	计算高斯核
 	:param sigma:高斯分布的标准差,标注差越大,钟型曲线越扁
