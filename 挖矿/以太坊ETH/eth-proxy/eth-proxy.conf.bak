@@ -1,0 +1,50 @@
+﻿#  服务器 Servers:
+#    自动 Server:      stratum-eth.antpool.com
+#    北京 CN-Server:   stratum-eth-b1.antpool.com  
+#    美国 US-Server:   stratum-eth-usa1.antpool.com  
+#    香港 HK-Server:   stratum-eth-hk1.antpool.com  
+#
+###
+
+COIN = "ETH"
+
+# 矿机连接本代理的8080端口 Host and port for your workers
+HOST = "0.0.0.0"
+PORT = 8080
+
+# 收款地址
+# Coin address 
+WALLET = "XXXXXX" 
+# 采矿前须设置这一行
+
+# 若要在矿工管理页按分矿工显示，须将该项设置为True
+# It's useful for individually monitoring and statistic
+ENABLE_WORKER_ID = True
+
+# 子账户
+# Sub-account
+MONITORING = True
+MONITORING_EMAIL = "你的挖矿子账户"
+
+# 主池地址 Main pool
+POOL_HOST = "stratum-eth.antpool.com"
+POOL_PORT = 8008
+
+# 备用矿池，建议设置 Failover pool
+POOL_FAILOVER_ENABLE = True
+
+POOL_HOST_FAILOVER1 = "stratum-eth-b1.antpool.com"
+POOL_PORT_FAILOVER1 = 8008
+
+POOL_HOST_FAILOVER2 = "stratum-eth-usa1.antpool.com"
+POOL_PORT_FAILOVER2 = 443
+
+POOL_HOST_FAILOVER3 = "stratum-eth-hk1.antpool.com"
+POOL_PORT_FAILOVER3 = 25
+
+
+# 启用或禁用日志 Logging
+LOG_TO_FILE = False
+
+# 启用或禁用调试 Enable debug
+DEBUG = False
