@@ -19,3 +19,7 @@
 
 10	查看dns情况：nmcli device show
 
+11	删除磁盘分区表 先fdisk -l 查看磁盘是/dev/sd(什么字母),例如/dev/sdc,然后fdisk /dev/sdc,然后根据菜单来对磁盘进行操作
+
+
+
