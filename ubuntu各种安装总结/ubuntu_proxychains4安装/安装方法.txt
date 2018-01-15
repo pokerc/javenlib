@@ -1,0 +1,4 @@
+解压后cd到文件夹中，然后
+sudo make install
+sudo make install-config
+然后用gedit打开 /usr/local/etc/proxychains.conf,添加socks5	127.0.0.1 1080

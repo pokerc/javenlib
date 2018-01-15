@@ -1,0 +1,6 @@
+1、解压包
+2、make
+3、make install 这一步注意看可执行文件被放在那个bin下面
+4、make install-config 这一步注意看配置文件proxychains.conf被放在那个etc下面了
+5、在/usr/local/etc/proxychains.conf文件的最后一行加入socks5 	127.0.0.1 1080即可 这里可能安装的时候放在/etc/proxychains.conf也说不定，要仔细观察
+6、测试使用命令proxychains4 pip install Cython 用pip安装一个软件看看

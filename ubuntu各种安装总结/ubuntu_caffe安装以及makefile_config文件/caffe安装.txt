@@ -1,0 +1,6 @@
+1、修改Makefile.config文件
+2、make all
+3、make test
+4、make runtest
+5、make pycaffe
+6、添加到python的路径中：export PYTHONPATH=/home/javen/caffe-master/python:$PYTHONPATH
