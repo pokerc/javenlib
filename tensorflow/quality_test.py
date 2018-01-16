@@ -24,13 +24,11 @@ imgb_kp_cnn_obj,imgb_kp_cnn_des = sift.compute(imgb,imgb_kp_cnn_obj)
 
 imga_kp_sift_obj = sift.detect(imga)
 imga_kp_sift = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj)
-# imga_kp_sift = javenlib_tf.NMS_4_points_set(imga_kp_sift)
 imga_kp_sift_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imga_kp_sift)
 imga_kp_sift_obj,imga_kp_sift_des = sift.compute(imga,imga_kp_sift_obj)
 
 imgb_kp_sift_obj = sift.detect(imgb)
 imgb_kp_sift = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj)
-# imgb_kp_sift = javenlib_tf.NMS_4_points_set(imgb_kp_sift)
 imgb_kp_sift_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imgb_kp_sift)
 imgb_kp_sift_obj,imgb_kp_sift_des = sift.compute(imgb,imgb_kp_sift_obj)
 

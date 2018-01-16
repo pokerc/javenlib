@@ -9,9 +9,9 @@ import cv2
 ##############################################################
 ##############################################################
 sift = cv2.SIFT(250)
-img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
-                 '/home/javen/javenlib/images/bikes/img2.ppm']
-tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/bikes/H1to2p')
+img_path_list = ['/home/javen/javenlib/images/wall/img1.ppm',
+                 '/home/javen/javenlib/images/wall/img6.ppm']
+tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/wall/H1to6p')
 imga = plt.imread(img_path_list[0])
 imgb = plt.imread(img_path_list[1])
 img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale10(img_path_list)
@@ -43,8 +43,8 @@ javenlib_tf.quantity_test(imga_kp_cnn,imgb_kp_cnn,groundtruth_matrix=tranform_ma
 # print 'cnn shape:',imga_kp_cnn.shape,imgb_kp_cnn.shape
 # javenlib_tf.match_accuracy(imga_kp_cnn,imga_kp_cnn_des,imgb_kp_cnn,imgb_kp_cnn_des,tranform_matrix)
 
-javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_sift)
-javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_cnn)
+# javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_sift)
+# javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_cnn)
 
 
 # ###########################################################################################
