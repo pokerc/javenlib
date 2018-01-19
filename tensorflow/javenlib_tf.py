@@ -849,12 +849,17 @@ def use_TILDE_scale10(img_path_list):
 	print '一次结束!'
 	return kp_set_list
 
+def get_pyramid_of_image(img):
+	img_scaleup1 = cv2.pyrUp(img)
+	img_scaleup2 = cv2.pyrUp(img_scaleup1)
+	img_scaledown1 = cv2.pyrDown(img)
+	img_scaledown2 = cv2.pyrDown(img_scaledown1)
+	print img_scaleup2.shape,img_scaleup1.shape,img.shape,img_scaledown1.shape,img_scaledown2.shape
+	img_pyramid_list = [img_scaledown2,img_scaledown1,img,img_scaleup1,img_scaleup2]
+	return img_pyramid_list
 
-# img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
-#                  '/home/javen/javenlib/images/bikes/img2.ppm']
-# img = plt.imread(img_path_list[0])
-# print time.ctime()
-# kp = use_TILDE_scale10(img_path_list)
-#
-#
-# print time.ctime()
+img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
+                 '/home/javen/javenlib/images/bikes/img2.ppm']
+img = plt.imread(img_path_list[0])/255.
+x = get_pyramid_of_image(img[:,:,0])
+print type(x[0])
