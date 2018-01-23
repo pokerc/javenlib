@@ -21,5 +21,6 @@
 
 11	删除磁盘分区表 先fdisk -l 查看磁盘是/dev/sd(什么字母),例如/dev/sdc,然后fdisk /dev/sdc,然后根据菜单来对磁盘进行操作
 
+12	查看本机的外网ip，使用命令 curl http://members.3322.org/dyndns/getip
 
 
