@@ -7,12 +7,12 @@ import cv2
 
 #测试use_TILDE函数
 sift = cv2.SIFT(250)
-img_path_list = ['/home/javen/javenlib/images/wall/img1.ppm',
-                 '/home/javen/javenlib/images/wall/img6.ppm']
-tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/wall/H1to6p')
+img_path_list = ['/home/javen/javenlib/images/bark/img1.ppm',
+                 '/home/javen/javenlib/images/bark/img2.ppm']
+tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/bark/H1to2p')
 imga = plt.imread(img_path_list[0])
 imgb = plt.imread(img_path_list[1])
-img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale10(img_path_list)
+img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale8_withpyramid(img_path_list)
 print 'cnn done!'
 imga_kp_cnn = javenlib_tf.choose_kp_from_list(img_kp_set_afternms_list[0],quantity_to_choose=250)
 imga_kp_cnn_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imga_kp_cnn)

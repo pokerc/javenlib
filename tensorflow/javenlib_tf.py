@@ -166,6 +166,14 @@ def show_kp_set(img_path,kp_set,pixel_size=5):
 	plt.imshow(new_img)
 	plt.show()
 
+def show_kp_set_listformat(img,kp_list,pixel_size=5):
+	img_toshow = np.copy(img)
+	for i in range(len(kp_list)):
+		img_toshow[int(kp_list[i][1])-pixel_size:int(kp_list[i][1])+pixel_size,int(kp_list[i][0])-pixel_size:int(kp_list[i][0])+pixel_size,0]=int(255*kp_list[i][2]/1.4)
+	plt.figure()
+	plt.imshow(img_toshow)
+	plt.show()
+
 def show_patch_set(patch_set,time_interval=0.5):
 	"""
 	显示patch集中的图像,一幅接一幅，时间间隔为0.5s，图像为rgb图
@@ -527,14 +535,14 @@ def NonMaxSuppresion_4_kp_set(kp_set_list,threshold=25):
 	"""
 	#输入的kp_set的类型为python的list类型
 	#第一步,将kp_set转为ndarray类型,然后按照score从大到小进行排序
-	kp_set_array = np.zeros(shape=(len(kp_set_list),3))
+	kp_set_array = np.zeros(shape=(len(kp_set_list),4))
 	for i in range(len(kp_set_list)):
 		kp_set_array[i] = np.copy(kp_set_list[i])
 	kp_set_array = kp_set_array[kp_set_array[:,2].argsort()]
 		#在转换会list方便操作
 	kp_set_list_sorted = []
 	for i in range(len(kp_set_array)):
-		kp_set_list_sorted.append([kp_set_array[i,0],kp_set_array[i,1],kp_set_array[i,2]])
+		kp_set_list_sorted.append([kp_set_array[i,0],kp_set_array[i,1],kp_set_array[i,2],kp_set_array[i,3]])
 	# print kp_set_list_sorted[0:5],len(kp_set_list_sorted)
 	kp_set_list_afterNMS = []
 	#循环迭代的NMS核心
@@ -777,7 +785,7 @@ def use_TILDE_optimized(img_path_list):
 	return kp_set_list
 
 #MSE版的use_TILDE,scale为8,不使用色彩信息
-def use_TILDE_scale10(img_path_list):
+def use_TILDE_scale8(img_path_list):
 	"""
 	使用训练好的CNN detector,返回值为带有score的kp点的集合,后续可以使用score从中挑选出一定数量的kp点
 	:param img_path: 需要检测的图像的path,多幅图同时检测
@@ -849,17 +857,148 @@ def use_TILDE_scale10(img_path_list):
 	print '一次结束!'
 	return kp_set_list
 
+#MSE版的use_TILDE,scale为8,不使用色彩信息,加入scale invariant处理(使用图像金字塔)
+def use_TILDE_scale8_withpyramid(img_path_list):
+	"""
+	使用训练好的CNN detector,返回值为带有score的kp点的集合,后续可以使用score从中挑选出一定数量的kp点,加入图像金字塔来适应scale-invariant
+	:param img_path: 需要检测的图像的path,多幅图同时检测
+	:return: 返回带有score的kp点集合
+	"""
+	scale = 8
+	tf_x = tf.placeholder(tf.float32, [None, scale*2, scale*2, 1])  # 输入patch维度为64*64
+	tf_y = tf.placeholder(tf.int32, [None, 1])  # input y ,y代表score所以维度为1
+
+	########################################################################
+	conv1 = tf.layers.conv2d(
+		inputs=tf_x,  # (?,16,16,1)
+		filters=8,
+		kernel_size=5,
+		strides=1,
+		padding='same',
+		activation=tf.nn.relu
+	)  # -> (?, 16, 16, 8)
+
+	pool1 = tf.layers.max_pooling2d(
+		conv1,
+		pool_size=2,
+		strides=2,
+	)  # -> (?,8, 8, 8)
+
+	conv2 = tf.layers.conv2d(pool1, 16, 5, 1, 'same', activation=tf.nn.relu)  # -> (?,8, 8, 16)
+
+	pool2 = tf.layers.max_pooling2d(conv2, 2, 2)  # -> (?,4, 4, 16)
+
+	# conv3 = tf.layers.conv2d(pool2, 32, 3, 1, 'valid', activation=tf.nn.relu)  # -> (?,11, 11, 32)
+
+	# pool3 = tf.layers.max_pooling2d(conv3, 2, 2)    # -> (?,32, 32, 64)
+	#
+	flat = tf.reshape(pool2, [-1, 4*4*16])  # -> (?,256)
+
+	output = tf.layers.dense(flat, 1)  # output layer
+
+	sess = tf.Session()
+	saver = tf.train.Saver()
+	saver.restore(sess, './save_net/detector_TILDE_model_20180102_mse_100_0_0005')
+
+	# 使用列表将两个维度不相同的矩阵打包在一起return
+	kp_set_list = []
+	for image_count in range(len(img_path_list)):
+		img_test_rgb = plt.imread(img_path_list[image_count])
+		if img_test_rgb.mean() > 1:
+			img_test_rgb = np.copy(img_test_rgb / 255.)
+		img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
+		#kp_set = np.zeros(shape=(0, 3))
+		print 'img_test_gray.shape:', img_test_gray.shape
+		#获得一个图片的5个scale的金字塔
+		img_test_gray_pyramid_list = get_pyramid_of_image(img_test_gray)
+		print img_test_gray_pyramid_list[0].shape,img_test_gray_pyramid_list[1].shape,img_test_gray_pyramid_list[2].shape,img_test_gray_pyramid_list[3].shape#,img_test_gray_pyramid_list[4].shape
+		# 对金字塔每个octave进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
+		kp_set = []
+		octave_factor=[4,2,1,0.5] #用来恢复原图坐标的比例因子
+		for octave_count in range(4):
+			row_num = img_test_gray_pyramid_list[octave_count].shape[0]
+			column_num = img_test_gray_pyramid_list[octave_count].shape[1]
+			count = 0
+			for i in range(scale, row_num - scale, 4):  # 扫描的步长需要调整
+				for j in range(scale, column_num - scale, 4):
+					patch = img_test_gray_pyramid_list[octave_count][i - scale:i + scale, j - scale:j + scale].reshape(1, scale*2, scale*2, 1)
+					output_predict = sess.run(output, feed_dict={tf_x: patch})
+					if output_predict[0, 0] >= 0.6:
+						count += 1
+						kp_set.append([j*octave_factor[octave_count], i*octave_factor[octave_count], output_predict[0, 0],octave_count])
+			print 'kp count from cnn without NMS:', 'octave:',octave_count,'count:',count
+		print 'total count:',len(kp_set)
+		# kp_set_afterNMS_list = NMS_4_kp_set(kp_set, row_num, column_num, step=8, n_pixel=32, threshold=0.75)
+		kp_set_afterNMS_list = NonMaxSuppresion_4_kp_set(kp_set,threshold=100)
+		print 'NMS之后,保留:',len(kp_set_afterNMS_list),kp_set_afterNMS_list[0:5]
+		kp_set_list.append(kp_set_afterNMS_list)
+	# 释放gpu资源
+	sess.close()
+	print '一次结束!'
+	return kp_set_list
+
 def get_pyramid_of_image(img):
-	img_scaleup1 = cv2.pyrUp(img)
-	img_scaleup2 = cv2.pyrUp(img_scaleup1)
-	img_scaledown1 = cv2.pyrDown(img)
-	img_scaledown2 = cv2.pyrDown(img_scaledown1)
+	"""
+	建立图像金字塔,由于达到两级上采样时其图像分辨率过大,所向上采样只用到一级,向下采样保留两级的下采样
+	:param img: 需要建立图像octave金字塔的原图像
+	:return: 返回建立好的金字塔list,list中的每个元素都是一幅图像矩阵
+	"""
+	row_num = img.shape[0]
+	column_num = img.shape[1]
+	print row_num,column_num
+	img_scaleup1 = cv2.pyrUp(img)	#.reshape(row_num*2,column_num*2,1)
+	img_scaleup2 = cv2.pyrUp(img_scaleup1)	#.reshape(row_num*4,column_num*4,1)
+	img_scaledown1 = cv2.pyrDown(img)	#.reshape(row_num/2,column_num/2,1)
+	img_scaledown2 = cv2.pyrDown(img_scaledown1)	#.reshape(row_num/4,column_num/4,1)
 	print img_scaleup2.shape,img_scaleup1.shape,img.shape,img_scaledown1.shape,img_scaledown2.shape
-	img_pyramid_list = [img_scaledown2,img_scaledown1,img,img_scaleup1,img_scaleup2]
+	img_pyramid_list = [np.expand_dims(img_scaledown2,axis=2),np.expand_dims(img_scaledown1,axis=2),img,np.expand_dims(img_scaleup1,axis=2)]
 	return img_pyramid_list
 
-img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
-                 '/home/javen/javenlib/images/bikes/img2.ppm']
-img = plt.imread(img_path_list[0])/255.
-x = get_pyramid_of_image(img[:,:,0])
-print type(x[0])
+def parse_kp_from_totallist(kp_set_list):
+	"""
+	将经过NMS之后合并到一起的kp_set按照octave_index分开存储到不同的list中去,以便用于在图像中显示观察
+	:param kp_set_list: 被混合的kp_set_list
+	:return: 分组过后的kp_set list
+	"""
+	total_count = len(kp_set_list)
+	# print total_count
+	octave0_kp_list = []
+	octave1_kp_list = []
+	octave2_kp_list = []
+	octave3_kp_list = []
+	for i in range(total_count):
+		if kp_set_list[i][3] == 0:
+			octave0_kp_list.append([kp_set_list[i][0]/4,kp_set_list[i][1]/4,kp_set_list[i][2],kp_set_list[i][3]])
+		elif kp_set_list[i][3] == 1:
+			octave1_kp_list.append([kp_set_list[i][0]/2, kp_set_list[i][1]/2, kp_set_list[i][2], kp_set_list[i][3]])
+		elif kp_set_list[i][3] == 2:
+			octave2_kp_list.append([kp_set_list[i][0], kp_set_list[i][1], kp_set_list[i][2], kp_set_list[i][3]])
+		elif kp_set_list[i][3] == 3:
+			octave3_kp_list.append([kp_set_list[i][0]*2, kp_set_list[i][1]*2, kp_set_list[i][2], kp_set_list[i][3]])
+	# print 'octave0_kp_list:',len(octave0_kp_list),len(octave1_kp_list),len(octave2_kp_list),len(octave3_kp_list)
+	octave_all_kp_list = [octave0_kp_list,octave1_kp_list,octave2_kp_list,octave3_kp_list]
+	return octave_all_kp_list
+
+
+img_path_list = ['/home/javen/javenlib/images/bark/img1.ppm',
+				 '/home/javen/javenlib/images/bark/img2.ppm']
+img1 = plt.imread(img_path_list[0])
+img2 = plt.imread(img_path_list[1])
+kp_set_list = use_TILDE_scale8_withpyramid(img_path_list)
+octave_all_kp_list = parse_kp_from_totallist(kp_set_list[0])
+print len(octave_all_kp_list),len(octave_all_kp_list[0])
+octave0_kp_list = octave_all_kp_list[0]
+octave1_kp_list = octave_all_kp_list[1]
+octave2_kp_list = octave_all_kp_list[2]
+octave3_kp_list = octave_all_kp_list[3]
+octave1_image = cv2.pyrDown(img1)
+octave0_image = cv2.pyrDown(octave1_image)
+octave2_image = np.copy(img1)
+octave3_image = cv2.pyrUp(img1)
+
+
+show_kp_set_listformat(octave0_image,octave0_kp_list)
+show_kp_set_listformat(octave1_image,octave1_kp_list)
+show_kp_set_listformat(octave2_image,octave2_kp_list)
+show_kp_set_listformat(octave3_image,octave3_kp_list)
+# print 'hello:',len(kp_set_list),len(kp_set_list[0]),len(kp_set_list[1])
