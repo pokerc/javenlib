@@ -8,31 +8,26 @@ import cmath
 
 
 
-mask = javenlib_tf.get_guassian_mask_1d(sigma=8)
-img = plt.imread('/home/javen/javenlib/images/lena/lena.tif')/255.
-# img_afterconv = javenlib_tf.guassian_conv_1d(img,mask)
-# print img_afterconv.shape
-# img_downsample = np.copy(img_afterconv[::2,::2])
-# print img_downsample.shape
-# plt.figure(1)
-# plt.imshow(img_afterconv)
-# plt.figure(2)
-# plt.imshow(img_downsample)
-# plt.show()
-img_down1 = cv2.pyrDown(img)
-img_down2 = cv2.pyrDown(img_down1)
-img_up1 = cv2.pyrUp(img)
-img_up2 = cv2.pyrUp(img_up1)
-print img_up2.shape,img_up1.shape,img.shape,img_down1.shape,img_down2.shape
-plt.subplot(1,3,1)
-plt.imshow(img_up2)
-plt.subplot(1,3,2)
-plt.imshow(img_up1)
-plt.subplot(1,3,3)
-plt.imshow(img)
-plt.show()
+imga = plt.imread('/home/javen/javenlib/images/bark/img1.ppm')
+imgb = plt.imread('/home/javen/javenlib/images/bark/img2.ppm')
+sift = cv2.SIFT(600)
+imga_kp_sift_obj = sift.detect(imga)
+print len(imga_kp_sift_obj)
+# print type(imga_kp_sift_obj),imga_kp_sift_obj[0].pt,imga_kp_sift_obj[0].pt[1],round(imga_kp_sift_obj[0].pt[0]),int(round(imga_kp_sift_obj[0].pt[1]))
+kp_list=javenlib_tf.KeyPoint_from_siftObjList_to_4dlist(imga_kp_sift_obj)
+print len(kp_list)
+kp_list_afterNMS = javenlib_tf.NonMaxSuppresion_4_kp_set(kp_list,threshold=100)
+print kp_list_afterNMS
+print len(kp_list_afterNMS)
+javenlib_tf.show_kp_set_listformat_FromDifOctave(imga,kp_list_afterNMS[0:250])
+# kp_list_afterNMS_chosen = javenlib_tf.choose_kp_from_list(kp_list_afterNMS,quantity_to_choose=250)
+# print len(kp_list_afterNMS_chosen)
+# print kp_list_afterNMS_chosen
+# for k in range(len(kp_list_afterNMS)):
+#     print kp_list_afterNMS[k]
+# javenlib_tf.show_kp_set_listformat_FromDifOctave(imga,kp_list_afterNMS)
+# imga_kp_sift = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj)
+# # imga_kp_sift_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imga_kp_sift)
+# imga_kp_sift_obj,imga_kp_sift_des = sift.compute(imga,imga_kp_sift_obj)
 
 
-# mask_1d = javenlib_tf.get_guassian_mask_1d(sigma=2)
-# img = plt.imread('/home/javen/javenlib/images/lena/lena.tif')/255.
-# javenlib_tf.guassian_conv_1d(img,mask_1d)
