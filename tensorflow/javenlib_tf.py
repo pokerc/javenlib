@@ -8,6 +8,103 @@ import time
 import types
 import cmath
 
+######################来自原javenlib.py里面的几个函数,主要是求patch重心angle的几个函数##########################
+
+#将43*43的gray image进行外方形与内切圆中间区域的置零操作的函数
+def middle_area_set_zero(img):
+	#该函数输入为43*43的图像矩阵，函数功能是将外部方形和其内切圆之间的区域置零后输出新的外部方形
+	img_inner_circle = np.copy(img)
+	for i in range(0,43):
+		for j in range(0,43):
+			if (i-21)**2+(j-21)**2 > (0.5*29*cmath.sqrt(2).real)**2:
+				img_inner_circle[i,j] = 0
+	return img_inner_circle
+
+#对进行置零之后的43*43的patch进行求重心angle的操作的函数
+def get_patch_angle(img):
+	#该函数得到的角度是图像重心与中心的连线偏离x轴的角度，后续进行逆向旋转的时候请注意是否需要加上负号作为旋转函数的参数
+	row_num = img.shape[0]
+	column_num = img.shape[1]
+#	print row_num,column_num,len(img.shape)
+	if len(img.shape) == 3:
+		img_mean = np.copy(img.mean(2))
+	else:
+		img_mean = np.copy(img)
+#	print img_mean.shape
+	sum_x = 0
+	sum_y = 0
+	sum_image = 0
+	for i in range(0,row_num):
+		for j in range(0,column_num):
+			sum_x += img_mean[i,j]*j
+			sum_y += img_mean[i,j]*i
+			sum_image += img_mean[i,j]
+	center_x = 1.0*sum_x/sum_image
+	center_y = 1.0*sum_y/sum_image
+#	print center_x,center_y
+	delta_x = center_x-(column_num-1)/2.0
+	delta_y = center_y-(row_num-1)/2.0
+	if delta_x != 0:
+		radian = cmath.atan(1.0*delta_y/delta_x)
+	if delta_x == 0 and delta_y == 0:
+		degree = 0
+	elif delta_x ==0 and delta_y > 0:
+		degree = 90
+	elif delta_x ==0 and delta_y < 0:
+		degree = -90
+	elif delta_x < 0 and delta_y < 0:
+		degree = -180+radian/cmath.pi*180.0
+	elif delta_x < 0 and delta_y >= 0:
+		degree = 180+radian/cmath.pi*180.0
+	else:    #delta_x > 0
+		degree = radian/cmath.pi*180.0
+	degree = degree.real
+#	print 'center degree:',degree
+	return degree
+
+#根据计算出的angle,对已经进行置零后的43*43的patch进行旋转操作的函数,方便后续取出里面的29*29的方形patch
+def image_rotate(img,degree):
+	#图像旋转函数，degree若大于0则表示顺时针旋转，反之表示逆时针旋转
+	row_num = img.shape[0]
+	column_num = img.shape[1]
+	radian = 1.0*degree/180.0*cmath.pi
+#	print 'radian:',radian
+	rotate_matrix = np.array([[cmath.cos(radian),-cmath.sin(radian),-0.5*(column_num-1)*cmath.cos(radian)+0.5*(row_num-1)*cmath.sin(radian)+0.5*(column_num-1)],
+							  [cmath.sin(radian),cmath.cos(radian),-0.5*(column_num-1)*cmath.sin(radian)-0.5*(row_num-1)*cmath.cos(radian)+0.5*(row_num-1)],
+							  [0,0,1]]).real
+#	print 'rotate_matrix:',rotate_matrix
+	old_position = np.zeros((3,1))
+	old_position[2] = 1
+	new_position = np.zeros((3,1))
+	if len(img.shape) == 3:
+		rotated_image = np.zeros((row_num,column_num,3))
+		for i in range(0,row_num):
+			for j in range(0,column_num):
+				old_position[0] = j
+				old_position[1] = i
+				new_position = np.around(np.dot(rotate_matrix,old_position))
+				if new_position[1]>=0 and new_position[1]<row_num and new_position[0]>=0 and new_position[0]<column_num:
+					rotated_image[int(new_position[1]),int(new_position[0]),:] = img[i,j,:]
+		for i in range(1,row_num-1):
+			for j in range(1,column_num-1):
+				if rotated_image[i,j,0] == 0:
+					rotated_image[i,j,0] = 0.25*(rotated_image[i-1,j,0]+rotated_image[i+1,j,0]+rotated_image[i,j-1,0]+rotated_image[i,j+1,0])
+					rotated_image[i,j,1] = 0.25*(rotated_image[i-1,j,1]+rotated_image[i+1,j,1]+rotated_image[i,j-1,1]+rotated_image[i,j+1,1])
+					rotated_image[i,j,2] = 0.25*(rotated_image[i-1,j,2]+rotated_image[i+1,j,2]+rotated_image[i,j-1,2]+rotated_image[i,j+1,2])
+	else:
+		rotated_image = np.zeros((row_num,column_num))
+		for i in range(0,row_num):
+			for j in range(0,column_num):
+				old_position[0] = j
+				old_position[1] = i
+				new_position = np.around( np.dot(rotate_matrix,old_position) )
+				if new_position[1]>=0 and new_position[1]<row_num and new_position[0]>=0 and new_position[0]<column_num:
+					rotated_image[int(new_position[1]),int(new_position[0])] = img[i,j]
+#	print rotated_image[:,:,0]
+	return rotated_image
+
+###################################################################################################
+
 def get_guassian_mask_1d(sigma=0.6):
 	"""
 	计算一维高斯模板矩阵
@@ -546,6 +643,7 @@ def get_matrix_from_file(filename):
 	f.close()
 	return rotation_matrix
 
+#扫描式NMS算法
 def NMS_4_kp_set(kp_set,row_num,column_num,step=8,n_pixel=16,threshold=0.5,scale=32):
 	"""
 	非局部最大值抑制,即去除局部区域里的冗余点,保留score最大的点
@@ -579,6 +677,7 @@ def NMS_4_kp_set(kp_set,row_num,column_num,step=8,n_pixel=16,threshold=0.5,scale
 	print 'kp got:',len(kp_set_afterNMS_list)
 	return kp_set_afterNMS_list
 
+#理论式NMS算法
 def NonMaxSuppresion_4_kp_set(kp_set_list,threshold=25):
 	"""
 	新版NMS,根据score以及IOU来进行局部非最大值的抑制
@@ -588,14 +687,14 @@ def NonMaxSuppresion_4_kp_set(kp_set_list,threshold=25):
 	"""
 	#输入的kp_set的类型为python的list类型
 	#第一步,将kp_set转为ndarray类型,然后按照score从大到小进行排序
-	kp_set_array = np.zeros(shape=(len(kp_set_list),4))
+	kp_set_array = np.zeros(shape=(len(kp_set_list),6))
 	for i in range(len(kp_set_list)):
 		kp_set_array[i] = np.copy(kp_set_list[i])
 	kp_set_array = kp_set_array[kp_set_array[:,2].argsort()]
 		#在转换会list方便操作
 	kp_set_list_sorted = []
 	for i in range(len(kp_set_array)):
-		kp_set_list_sorted.append([kp_set_array[i,0],kp_set_array[i,1],kp_set_array[i,2],kp_set_array[i,3]])
+		kp_set_list_sorted.append([kp_set_array[i,0],kp_set_array[i,1],kp_set_array[i,2],kp_set_array[i,3],kp_set_array[i,4],kp_set_array[i,5]])
 	# print kp_set_list_sorted[0:5],len(kp_set_list_sorted)
 	kp_set_list_afterNMS = []
 	#循环迭代的NMS核心
@@ -606,12 +705,13 @@ def NonMaxSuppresion_4_kp_set(kp_set_list,threshold=25):
 		if len(kp_set_list_sorted) == 0:
 			break
 		for i in range(len(kp_set_list_sorted)-1,-1,-1):
-			if (kp_set_list_sorted[i][0]-kp_popout[0]) ** 2 + (kp_set_list_sorted[i][1]-kp_popout[1]) ** 2 < threshold:
+			if (kp_set_list_sorted[i][0]-kp_popout[0]) ** 2 + (kp_set_list_sorted[i][1]-kp_popout[1]) ** 2 <= threshold:
 				del kp_set_list_sorted[i]
 	# print 'kp_set_list_afterNMS',kp_set_list_afterNMS[0],len(kp_set_list_afterNMS)
 	return kp_set_list_afterNMS
 
-def choose_kp_from_list(kp_set_afterNMS_list,quantity_to_choose=0):
+#从list中选出排名靠前的一定数量的kp,返回值只保留kp的坐标信息
+def choose_kp_from_list(kp_set_afterNMS_list,quantity_to_choose=250):
 	"""
 	从经过NMS之后的kp_set里面按照score挑出得分靠前的一定数量的kp
 	:param kp_set_afterNMS_list: 待选的原始kp_set,数据类型是list类型
@@ -633,6 +733,57 @@ def choose_kp_from_list(kp_set_afterNMS_list,quantity_to_choose=0):
 		return kp_set_afterNMS_array[:,0:2].astype(np.int)
 	else:
 		return kp_set_afterNMS_array[0:quantity_to_choose,0:2].astype(np.int)
+
+#从list中选出排名靠前的一定数量的kp,并且筛选时加入对应octave边界的筛选,为之后的patch提取做准备,返回值保留kp的位置信息,score信息和octave_index信息,去掉了对应octave的尺寸信息
+def choose_kp_from_list_careboundary(kp_set_afterNMS_list,quantity_to_choose=250,boundary_pixel=21):
+	count=0
+	kp_list_chosen=[]
+	i=0
+	octave_origin2sample_factor=[0.5,1,2]
+	while(count < quantity_to_choose):
+		#先要将origin中的坐标映射到octave中的坐标,再判断是否越界
+		if kp_set_afterNMS_list[i][1]*octave_origin2sample_factor[int(kp_set_afterNMS_list[i][3])]-boundary_pixel >=0 and kp_set_afterNMS_list[i][1]*octave_origin2sample_factor[int(kp_set_afterNMS_list[i][3])]+boundary_pixel<kp_set_afterNMS_list[i][4] and kp_set_afterNMS_list[i][0]*octave_origin2sample_factor[int(kp_set_afterNMS_list[i][3])]-boundary_pixel >=0 and kp_set_afterNMS_list[i][0]*octave_origin2sample_factor[int(kp_set_afterNMS_list[i][3])]+boundary_pixel<kp_set_afterNMS_list[i][5]:
+			kp_list_chosen.append([kp_set_afterNMS_list[i][0],kp_set_afterNMS_list[i][1],kp_set_afterNMS_list[i][2],kp_set_afterNMS_list[i][3]])
+			count += 1
+		i += 1
+	print 'count:',count,'i:',i
+	return kp_list_chosen
+
+#根据选出的kp,进行patch的提取并计算重心angle,返回值保留kp的位置信息,score信息和octave_index信息,angle信息,以及经过rotation的patch矩阵
+def get_kp_list_withRotatedPatch(img_path,kp_list_chosen):
+	img_origin = plt.imread(img_path)
+	img_gray = np.dot(img_origin,[0.2989,0.5870,0.1140])/255.
+	img_gray_octave1 = np.copy(img_gray)
+	img_gray_octave0 = cv2.pyrDown(img_gray_octave1)
+	img_gray_octave2 = cv2.pyrUp(img_gray_octave1)
+	# print img_gray.shape,type(img_gray)
+	# print img_gray_octave0.shape,img_gray_octave1.shape,img_gray_octave2.shape
+	# plt.figure(1)
+	# plt.imshow(img_origin)
+	# plt.figure(2)
+	# plt.imshow(img_gray_octave2,cmap='gray')
+	# plt.show()
+	octave_origin2sample_factor=[0.5,1,2]
+	total_count = len(kp_list_chosen)
+	for i in range(total_count):
+		#先取出行和列的坐标
+		octave_index = int(kp_list_chosen[i][3])
+		row = int(round(kp_list_chosen[i][1]*octave_origin2sample_factor[octave_index]))
+		column = int(round(kp_list_chosen[i][0]*octave_origin2sample_factor[octave_index]))
+		if kp_list_chosen[i][3] == 0:
+			patch = np.copy(img_gray_octave0[row-21:row+22,column-21:column+22])
+		elif kp_list_chosen[i][3] == 1:
+			patch = np.copy(img_gray_octave1[row - 21:row + 22, column - 21:column + 22])
+		elif kp_list_chosen[i][3] == 2:
+			patch = np.copy(img_gray_octave2[row - 21:row + 22, column - 21:column + 22])
+		print 'i:',i,'octave_index:',kp_list_chosen[i][3],'patch size:',patch.shape
+		#对43*43的patch进行重心的angle计算(方法:先进行置零操作然后计算angle)
+		patch_after_set_zero = middle_area_set_zero(patch)
+		degree = get_patch_angle(patch_after_set_zero)
+		#根据angle,对43*43的patch进行rotation操作
+		patch_after_set_zero_and_rotation = image_rotate(patch_after_set_zero,-1*degree)
+
+		#对旋转之后的43*43的patch进行取出其中29*29patch的操作
 
 
 #MSE版的use_TILDE
@@ -978,7 +1129,7 @@ def use_TILDE_scale8_withpyramid(img_path_list):
 					output_predict = sess.run(output, feed_dict={tf_x: patch})
 					if output_predict[0, 0] >= 0.6:
 						count += 1
-						kp_set.append([j*octave_factor[octave_count], i*octave_factor[octave_count], output_predict[0, 0],octave_count])
+						kp_set.append([j*octave_factor[octave_count], i*octave_factor[octave_count], output_predict[0, 0],octave_count,row_num,column_num])
 			print 'kp count from cnn without NMS:', 'octave:',octave_count,'count:',count
 		print 'total count:',len(kp_set)
 		# kp_set_afterNMS_list = NMS_4_kp_set(kp_set, row_num, column_num, step=8, n_pixel=32, threshold=0.75)
@@ -1033,26 +1184,41 @@ def parse_kp_from_totallist(kp_set_list):
 	return octave_all_kp_list
 
 
-# img_path_list = ['/home/javen/javenlib/images/bark/img1.ppm',
-# 				 '/home/javen/javenlib/images/bark/img2.ppm']
-# img1 = plt.imread(img_path_list[0])
-# img2 = plt.imread(img_path_list[1])
+img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
+				 '/home/javen/javenlib/images/bark/img2.ppm']
+img1 = plt.imread(img_path_list[0])
+img2 = plt.imread(img_path_list[1])
 # kp_set_list = use_TILDE_scale8_withpyramid(img_path_list)
-# octave_all_kp_list = parse_kp_from_totallist(kp_set_list[1][0:250])
-# print len(octave_all_kp_list),len(octave_all_kp_list[0])
-# octave0_kp_list = octave_all_kp_list[0]
-# octave1_kp_list = octave_all_kp_list[1]
-# octave2_kp_list = octave_all_kp_list[2]
-# octave1_image = cv2.pyrDown(img1)
-# octave0_image = cv2.pyrDown(octave1_image)
-# octave2_image = np.copy(img1)
-#
-#
-# # show_kp_set_listformat(octave0_image,octave0_kp_list)
-# # show_kp_set_listformat(octave1_image,octave1_kp_list)
-# # show_kp_set_listformat(octave2_image,octave2_kp_list)
-# # show_kp_set_listformat(octave3_image,octave3_kp_list)
-# # print 'hello:',len(kp_set_list),len(kp_set_list[0]),len(kp_set_list[1])
-# show_kp_set_listformat_FromDifOctave(img1,kp_set_list[0][0:250])
-# show_kp_set_listformat_FromDifOctave(img2,kp_set_list[1][0:250])
+# print len(kp_set_list)
+# print len(kp_set_list[0]),len(kp_set_list[1])
+# kp_list_chosen = choose_kp_from_list_careboundary(kp_set_list[0],quantity_to_choose=250,boundary_pixel=21)
+# print '考虑octave边界后选出的kp list:',len(kp_list_chosen)
+# print kp_list_chosen
+# get_kp_list_withRotatedPatch(img_path_list[0],kp_list_chosen)
+# show_kp_set_listformat(octave0_image,octave0_kp_list)
+# show_kp_set_listformat(octave1_image,octave1_kp_list)
+# show_kp_set_listformat(octave2_image,octave2_kp_list)
+# show_kp_set_listformat(octave3_image,octave3_kp_list)
+# print 'hello:',len(kp_set_list),len(kp_set_list[0]),len(kp_set_list[1])
 
+# img1_gray = np.dot(img1,[0.2989,0.5870,0.1140])/255.
+# patch = np.copy(img1_gray[450-21:450+22,480-21:480+22])
+# plt.figure(1)
+# plt.imshow(patch,cmap='gray')
+# patch_after_zero = middle_area_set_zero(patch)
+# print patch_after_zero.shape
+# plt.figure(2)
+# plt.imshow(patch_after_zero,cmap='gray')
+# plt.show()
+x = np.zeros(shape=(43,43))
+for i in range(43):
+	x[i,:] = i+1
+# x[38:,:8] = 100
+# print x
+degree = get_patch_angle(x)
+print 'degree:',degree
+x_after_rotation = image_rotate(x,degree)
+for j in range(43):
+	print x_after_rotation[j]
+degree2 = get_patch_angle(x_after_rotation)
+print degree2

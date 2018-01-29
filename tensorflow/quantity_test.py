@@ -9,9 +9,9 @@ import cv2
 ##############################################################
 ##############################################################
 sift = cv2.SIFT(500)
-img_path_list = ['/home/javen/javenlib/images/trees/img1.ppm',
-                 '/home/javen/javenlib/images/trees/img3.ppm']
-tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/trees/H1to3p')
+img_path_list = ['/home/javen/javenlib/images/bark/img1.ppm',
+                 '/home/javen/javenlib/images/bark/img2.ppm']
+tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/bark/H1to2p')
 imga = plt.imread(img_path_list[0])
 imgb = plt.imread(img_path_list[1])
 img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale8_withpyramid(img_path_list)
@@ -49,8 +49,8 @@ javenlib_tf.quantity_test(imga_kp_cnn,imgb_kp_cnn,groundtruth_matrix=tranform_ma
 # print 'cnn shape:',imga_kp_cnn.shape,imgb_kp_cnn.shape
 # javenlib_tf.match_accuracy(imga_kp_cnn,imga_kp_cnn_des,imgb_kp_cnn,imgb_kp_cnn_des,tranform_matrix)
 
-# javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_sift_chosen)
-# javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_cnn)
+javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_sift_chosen)
+javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_cnn,pixel_size=14)
 
 
 # ###########################################################################################
