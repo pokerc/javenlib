@@ -98,47 +98,72 @@ def image_rotate(img,degree):
 					rotated_image[i,j] = np.copy(img[old_position_row,old_position_column])
 	return rotated_image
 
-#根据计算出的angle,对已经进行置零后的43*43的patch进行旋转操作的函数,方便后续取出里面的29*29的方形patch
-def image_rotate_old(img,degree):
-	#图像旋转函数，degree若大于0则表示顺时针旋转，反之表示逆时针旋转
-	row_num = img.shape[0]
-	column_num = img.shape[1]
-	radian = 1.0*degree/180.0*cmath.pi
-#	print 'radian:',radian
-	rotate_matrix = np.array([[cmath.cos(radian),-cmath.sin(radian),-0.5*(column_num-1)*cmath.cos(radian)+0.5*(row_num-1)*cmath.sin(radian)+0.5*(column_num-1)],
-							  [cmath.sin(radian),cmath.cos(radian),-0.5*(column_num-1)*cmath.sin(radian)-0.5*(row_num-1)*cmath.cos(radian)+0.5*(row_num-1)],
-							  [0,0,1]]).real
-	rotate_matrix_reverse = np.linalg.inv(rotate_matrix)
-#	print 'rotate_matrix:',rotate_matrix
-	old_position = np.zeros((3,1))
-	old_position[2] = 1
-	new_position = np.zeros((3,1))
-	if len(img.shape) == 3:
-		rotated_image = np.zeros((row_num,column_num,3))
-		for i in range(0,row_num):
-			for j in range(0,column_num):
-				old_position[0] = j
-				old_position[1] = i
-				new_position = np.around(np.dot(rotate_matrix,old_position))
-				if new_position[1]>=0 and new_position[1]<row_num and new_position[0]>=0 and new_position[0]<column_num:
-					rotated_image[int(new_position[1]),int(new_position[0]),:] = img[i,j,:]
-		for i in range(1,row_num-1):
-			for j in range(1,column_num-1):
-				if rotated_image[i,j,0] == 0:
-					rotated_image[i,j,0] = 0.25*(rotated_image[i-1,j,0]+rotated_image[i+1,j,0]+rotated_image[i,j-1,0]+rotated_image[i,j+1,0])
-					rotated_image[i,j,1] = 0.25*(rotated_image[i-1,j,1]+rotated_image[i+1,j,1]+rotated_image[i,j-1,1]+rotated_image[i,j+1,1])
-					rotated_image[i,j,2] = 0.25*(rotated_image[i-1,j,2]+rotated_image[i+1,j,2]+rotated_image[i,j-1,2]+rotated_image[i,j+1,2])
+#利用caffe计算descriptor
+def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_name='pool2'):
+	#此函数输入的img需要是使用caffe.io.load_image()读取的数据
+	kp_num = len(kp_pos)
+#	print kp_num
+	caffe.set_mode_cpu()
+	model_def = '/home/javen/javenlib/lenet5_profiles/lenet.prototxt'
+	model_weights = '/home/javen/javenlib/lenet5_profiles/lenet_iter_10000.caffemodel'
+	net = caffe.Net(model_def,      # defines the structure of the model
+				model_weights,  # contains the trained weights
+				caffe.TEST)     # use test mode (e.g., don't perform dropout)
+	# load the mean ImageNet image (as distributed with Caffe) for subtraction
+	mu = np.load('/home/javen/javenlib/lenet5_profiles/ilsvrc_2012_mean.npy')
+	mu = mu.mean(1).mean(1).mean(0).reshape(1)  # average over pixels to obtain the mean (BGR) pixel values
+#	mu[0]=0
+	print 'mu shape:',mu.shape,mu
+#	print 'mean-subtracted values:', zip('BGR', mu)
+
+	# create transformer for the input called 'data'
+	transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
+
+	transformer.set_transpose('data', (2,0,1))  # move image channels to outermost dimension
+	transformer.set_mean('data', mu)            # subtract the dataset-mean value in each channel
+	transformer.set_raw_scale('data', 255)      # rescale from [0, 1] to [0, 255]
+#	transformer.set_channel_swap('data', (2,1,0))  # swap channels from RGB to BGR
+
+	# set the size of the input (we can skip this if we're happy
+	#  with the default; we can also change it later, e.g., for different batch sizes)
+	net.blobs['data'].reshape(kp_num,        # batch size
+								1,         # 3-channel (BGR) images
+							   28, 28)  # image size is 227x227
+	data_input = np.zeros((kp_num,1,28,28))
+	for i in range(0,kp_num):
+		outter_square = np.copy(img[kp_pos[i,1]-21:kp_pos[i,1]+21+1,kp_pos[i,0]-21:kp_pos[i,0]+21+1,:])
+#		if outter_square.shape[0]!=43 or outter_square.shape[1]!=43:
+#			print '位置是:',kp_pos[i]
+		#添加将中间区域置0的处理函数area_set_zero()
+		degree = get_center_direction(area_set_zero(outter_square))
+		rotated_outter_square = image_rotate(outter_square,-1*degree) #旋转后的43*43*3
+#		print outter_square[:,:,0],'\n',degree,'°','\n',rotated_outter_square[:,:,0]
+		inner_square = np.copy(rotated_outter_square[7:35+1,7:35+1,:].mean(2).reshape(29,29,1))
+#		print 'inner_square:',inner_square.shape,inner_square[:,:]
+		transformed_inner_square = transformer.preprocess('data',inner_square)
+#		print 'trans:',transformed_inner_square
+#		print 'inner square:',inner_square.shape,'\n','transformed inner square:',transformed_inner_square.shape
+		data_input[i,:,:,:] = transformed_inner_square
+	print data_input.shape
+
+	# copy the image data into the memory allocated for the net
+	net.blobs['data'].data[...] = data_input
+
+#	### perform classification
+	output = net.forward()
+#	print net.blobs['data'].data[499,0,:,:]
+#	output_pool2 = output['pool2'][0]
+	if layer_name == 'pool2':
+		kp_des = net.blobs['pool2'].data
+		kp_des = kp_des.reshape(kp_num,800)
+	elif layer_name == 'conv2':
+		kp_des = net.blobs['conv2'].data.reshape(kp_num,50*8*8)
+	elif layer_name == 'ip1':
+		kp_des = net.blobs['ip1'].data.reshape(kp_num,500)
 	else:
-		rotated_image = np.zeros((row_num,column_num))
-		for i in range(0,row_num):
-			for j in range(0,column_num):
-				old_position[0] = j
-				old_position[1] = i
-				new_position = np.around( np.dot(rotate_matrix,old_position) )
-				if new_position[1]>=0 and new_position[1]<row_num and new_position[0]>=0 and new_position[0]<column_num:
-					rotated_image[int(new_position[1]),int(new_position[0])] = img[i,j]
-#	print rotated_image[:,:,0]
-	return rotated_image
+		kp_des = net.blobs['ip2'].data.reshape(kp_num,10)
+	print kp_des.shape
+	return kp_des
 
 ###################################################################################################
 
@@ -786,7 +811,7 @@ def choose_kp_from_list_careboundary(kp_set_afterNMS_list,quantity_to_choose=250
 	print 'count:',count,'i:',i
 	return kp_list_chosen
 
-#根据选出的kp,进行patch的提取并计算重心angle,返回值保留kp的位置信息,score信息和octave_index信息,angle信息,以及经过rotation的29*29patch矩阵
+#根据选出的kp,进行patch的提取并计算重心angle,返回值保留kp的位置信息,score信息和octave_index信息,angle信息,以及经过rotation的28*28patch矩阵
 def get_kp_list_withRotatedPatch(img_path,kp_list_chosen):
 	img_origin = plt.imread(img_path)
 	img_gray = np.dot(img_origin,[0.2989,0.5870,0.1140])/255.
@@ -820,10 +845,10 @@ def get_kp_list_withRotatedPatch(img_path,kp_list_chosen):
 		#根据angle,对43*43的patch进行rotation操作
 		patch_after_set_zero_and_rotation = image_rotate(patch_after_set_zero,-1*degree)
 		#对旋转之后的43*43的patch进行取出其中29*29patch的操作
-		patch_29x29 = np.copy(patch_after_set_zero_and_rotation[7:36,7:36])
-		# print 'degree:',degree,patch_29x29.shape
+		patch_28x28 = np.copy(patch_after_set_zero_and_rotation[7:35,7:35])
+		# print 'degree:',degree,patch_28x28.shape
 		kp_list_chosen[i].append(degree)
-		kp_list_chosen[i].append(patch_29x29)
+		kp_list_chosen[i].append(patch_28x28)
 	return kp_list_chosen
 
 

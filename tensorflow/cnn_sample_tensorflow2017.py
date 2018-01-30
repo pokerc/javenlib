@@ -73,7 +73,7 @@ def plot_with_labels(lowDWeights, labels):
     plt.xlim(X.min(), X.max()); plt.ylim(Y.min(), Y.max()); plt.title('Visualize last layer'); plt.show(); plt.pause(0.01)
 
 plt.ion()
-for step in range(600):
+for step in range(10000):
     b_x, b_y = mnist.train.next_batch(BATCH_SIZE)
     _, loss_ = sess.run([train_op, loss], {tf_x: b_x, tf_y: b_y})
     if step % 50 == 0:
