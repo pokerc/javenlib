@@ -65,6 +65,7 @@ def get_patch_angle(img):
 #根据计算出的angle,对已经进行置零后的43*43的patch进行旋转操作的函数,方便后续取出里面的29*29的方形patch
 def image_rotate(img,degree):
 	#图像旋转函数，degree若大于0则表示顺时针旋转，反之表示逆时针旋转
+	#使用逆矩阵的方法,由new_position反向去求在原图中的位置,然后取到新图中去,这样可以避免在新图中出现黑色没有赋值到的空点
 	row_num = img.shape[0]
 	column_num = img.shape[1]
 	radian = 1.0*degree/180.0*cmath.pi
@@ -72,6 +73,42 @@ def image_rotate(img,degree):
 	rotate_matrix = np.array([[cmath.cos(radian),-cmath.sin(radian),-0.5*(column_num-1)*cmath.cos(radian)+0.5*(row_num-1)*cmath.sin(radian)+0.5*(column_num-1)],
 							  [cmath.sin(radian),cmath.cos(radian),-0.5*(column_num-1)*cmath.sin(radian)-0.5*(row_num-1)*cmath.cos(radian)+0.5*(row_num-1)],
 							  [0,0,1]]).real
+	rotate_matrix_reverse = np.linalg.inv(rotate_matrix)
+	if len(img.shape) == 3:
+		rotated_image = np.zeros((row_num, column_num, 3))
+		for i in range(row_num):
+			for j in range(column_num):
+				new_position = np.array([[j],[i],[1]])
+				old_position_mapped = np.dot(rotate_matrix_reverse,new_position)
+				old_position_row = int(round(old_position_mapped[1]))
+				old_position_column = int(round(old_position_mapped[0]))
+				# print 'new_position:',new_position,'old_position_mapped:',old_position_mapped,old_position_row,old_position_column
+				if old_position_row >= 0 and old_position_row < 43 and old_position_column >= 0 and old_position_column < 43:
+					rotated_image[i,j,:] = np.copy(img[old_position_row,old_position_column,:])
+	else:
+		rotated_image = np.zeros((row_num, column_num))
+		for i in range(row_num):
+			for j in range(column_num):
+				new_position = np.array([[j],[i],[1]])
+				old_position_mapped = np.dot(rotate_matrix_reverse,new_position)
+				old_position_row = int(round(old_position_mapped[1]))
+				old_position_column = int(round(old_position_mapped[0]))
+				# print 'new_position:',new_position,'old_position_mapped:',old_position_mapped,old_position_row,old_position_column
+				if old_position_row >= 0 and old_position_row < 43 and old_position_column >= 0 and old_position_column < 43:
+					rotated_image[i,j] = np.copy(img[old_position_row,old_position_column])
+	return rotated_image
+
+#根据计算出的angle,对已经进行置零后的43*43的patch进行旋转操作的函数,方便后续取出里面的29*29的方形patch
+def image_rotate_old(img,degree):
+	#图像旋转函数，degree若大于0则表示顺时针旋转，反之表示逆时针旋转
+	row_num = img.shape[0]
+	column_num = img.shape[1]
+	radian = 1.0*degree/180.0*cmath.pi
+#	print 'radian:',radian
+	rotate_matrix = np.array([[cmath.cos(radian),-cmath.sin(radian),-0.5*(column_num-1)*cmath.cos(radian)+0.5*(row_num-1)*cmath.sin(radian)+0.5*(column_num-1)],
+							  [cmath.sin(radian),cmath.cos(radian),-0.5*(column_num-1)*cmath.sin(radian)-0.5*(row_num-1)*cmath.cos(radian)+0.5*(row_num-1)],
+							  [0,0,1]]).real
+	rotate_matrix_reverse = np.linalg.inv(rotate_matrix)
 #	print 'rotate_matrix:',rotate_matrix
 	old_position = np.zeros((3,1))
 	old_position[2] = 1
@@ -749,7 +786,7 @@ def choose_kp_from_list_careboundary(kp_set_afterNMS_list,quantity_to_choose=250
 	print 'count:',count,'i:',i
 	return kp_list_chosen
 
-#根据选出的kp,进行patch的提取并计算重心angle,返回值保留kp的位置信息,score信息和octave_index信息,angle信息,以及经过rotation的patch矩阵
+#根据选出的kp,进行patch的提取并计算重心angle,返回值保留kp的位置信息,score信息和octave_index信息,angle信息,以及经过rotation的29*29patch矩阵
 def get_kp_list_withRotatedPatch(img_path,kp_list_chosen):
 	img_origin = plt.imread(img_path)
 	img_gray = np.dot(img_origin,[0.2989,0.5870,0.1140])/255.
@@ -776,14 +813,18 @@ def get_kp_list_withRotatedPatch(img_path,kp_list_chosen):
 			patch = np.copy(img_gray_octave1[row - 21:row + 22, column - 21:column + 22])
 		elif kp_list_chosen[i][3] == 2:
 			patch = np.copy(img_gray_octave2[row - 21:row + 22, column - 21:column + 22])
-		print 'i:',i,'octave_index:',kp_list_chosen[i][3],'patch size:',patch.shape
+		# print 'i:',i,'octave_index:',kp_list_chosen[i][3],'patch size:',patch.shape
 		#对43*43的patch进行重心的angle计算(方法:先进行置零操作然后计算angle)
 		patch_after_set_zero = middle_area_set_zero(patch)
 		degree = get_patch_angle(patch_after_set_zero)
 		#根据angle,对43*43的patch进行rotation操作
 		patch_after_set_zero_and_rotation = image_rotate(patch_after_set_zero,-1*degree)
-
 		#对旋转之后的43*43的patch进行取出其中29*29patch的操作
+		patch_29x29 = np.copy(patch_after_set_zero_and_rotation[7:36,7:36])
+		# print 'degree:',degree,patch_29x29.shape
+		kp_list_chosen[i].append(degree)
+		kp_list_chosen[i].append(patch_29x29)
+	return kp_list_chosen
 
 
 #MSE版的use_TILDE
@@ -1188,13 +1229,13 @@ img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
 				 '/home/javen/javenlib/images/bark/img2.ppm']
 img1 = plt.imread(img_path_list[0])
 img2 = plt.imread(img_path_list[1])
-# kp_set_list = use_TILDE_scale8_withpyramid(img_path_list)
-# print len(kp_set_list)
-# print len(kp_set_list[0]),len(kp_set_list[1])
-# kp_list_chosen = choose_kp_from_list_careboundary(kp_set_list[0],quantity_to_choose=250,boundary_pixel=21)
-# print '考虑octave边界后选出的kp list:',len(kp_list_chosen)
-# print kp_list_chosen
-# get_kp_list_withRotatedPatch(img_path_list[0],kp_list_chosen)
+kp_set_list = use_TILDE_scale8_withpyramid(img_path_list)
+print len(kp_set_list)
+print len(kp_set_list[0]),len(kp_set_list[1])
+kp_list_chosen = choose_kp_from_list_careboundary(kp_set_list[0],quantity_to_choose=250,boundary_pixel=21)
+print '考虑octave边界后选出的kp list:',len(kp_list_chosen)
+print kp_list_chosen
+kp_list_withRotatedPatch = get_kp_list_withRotatedPatch(img_path_list[0],kp_list_chosen)
 # show_kp_set_listformat(octave0_image,octave0_kp_list)
 # show_kp_set_listformat(octave1_image,octave1_kp_list)
 # show_kp_set_listformat(octave2_image,octave2_kp_list)
@@ -1209,16 +1250,23 @@ img2 = plt.imread(img_path_list[1])
 # print patch_after_zero.shape
 # plt.figure(2)
 # plt.imshow(patch_after_zero,cmap='gray')
+#
+# degree = get_patch_angle(patch_after_zero)
+# print 'degree:',degree
+# patch_after_zero_and_rotation = image_rotate(patch_after_zero,-1*degree)
+# plt.figure(3)
+# plt.imshow(patch_after_zero_and_rotation,cmap='gray')
 # plt.show()
-x = np.zeros(shape=(43,43))
-for i in range(43):
-	x[i,:] = i+1
-# x[38:,:8] = 100
+
+# x = np.zeros(shape=(43,43))
+# for i in range(43):
+# 	x[i,:] = 1
+# x[:8,38:] = 100
 # print x
-degree = get_patch_angle(x)
-print 'degree:',degree
-x_after_rotation = image_rotate(x,degree)
-for j in range(43):
-	print x_after_rotation[j]
-degree2 = get_patch_angle(x_after_rotation)
-print degree2
+# degree = get_patch_angle(x)
+# print 'degree:',degree
+# x_after_rotation = image_rotate(x,-1*degree)
+# for j in range(43):
+# 	print x_after_rotation[j]
+# degree2 = get_patch_angle(x_after_rotation)
+# print degree2
