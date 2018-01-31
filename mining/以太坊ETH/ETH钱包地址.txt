@@ -1,1 +1,6 @@
-3cc287a36919f250b37703e09de2b0db09b91f90
+1. geth软件钱包: 0x3cc287a36919f250b37703e09de2b0db09b91f90
+2. 手机jaxx钱包: 0xbe79157b894936702aff7c282a615cc3cabedeb2
+
+3. personal.unlockAccount("0x3cc287a36919f250b37703e09de2b0db09b91f90", "POKERc!cjp087319", 300)
+
+4. eth.sendTransaction({from: '0x3cc287a36919f250b37703e09de2b0db09b91f90', to: '0xbe79157b894936702aff7c282a615cc3cabedeb2', value: web3.toWei(0.25088936, "ether")})
