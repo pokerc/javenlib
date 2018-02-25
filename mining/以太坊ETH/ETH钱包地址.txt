@@ -1,6 +1,12 @@
-1. geth软件钱包: 0x3cc287a36919f250b37703e09de2b0db09b91f90
-2. 手机jaxx钱包: 0xbe79157b894936702aff7c282a615cc3cabedeb2
+1. geth软件钱包 (ETH): 0x3cc287a36919f250b37703e09de2b0db09b91f90
+2. 手机jaxx钱包 (ETH): 0xbe79157b894936702aff7c282a615cc3cabedeb2
+	        (BTC): 1AEQ8azGh3n9fMjEq6QoHMXTbfEgKyzt4D
+		(ETC): 0x425d9021cee47f6da44dd946500b868b235b4e58
+		(LTC): LX7NiAGHG66V17R5u46nyZPE4qRJ165wxS
+		(ZEC): t1Y2CnBbbLRH6YpGL1b9LEtpsvdxUuGqegb
 
-3. personal.unlockAccount("0x3cc287a36919f250b37703e09de2b0db09b91f90", "POKERc!cjp087319", 300)
+3. electrum-xvg软件钱包 (XVG): D7Yt4EwK4wbP4juw6amFnNYoxpidRK6Jv6
 
-4. eth.sendTransaction({from: '0x3cc287a36919f250b37703e09de2b0db09b91f90', to: '0xbe79157b894936702aff7c282a615cc3cabedeb2', value: web3.toWei(0.25088936, "ether")})
+
+
+
