@@ -1181,7 +1181,7 @@ def use_TILDE_scale8_withpyramid(img_path_list):
 		print 'img_test_gray.shape:', img_test_gray.shape
 		#获得一个图片的3个scale的金字塔
 		img_test_gray_pyramid_list = get_pyramid_of_image(img_test_gray)
-		print img_test_gray_pyramid_list[0].shape,img_test_gray_pyramid_list[1].shape,img_test_gray_pyramid_list[2].shape#,img_test_gray_pyramid_list[3].shape#,img_test_gray_pyramid_list[4].shape
+		print '三个scale的像素：',img_test_gray_pyramid_list[0].shape,img_test_gray_pyramid_list[1].shape,img_test_gray_pyramid_list[2].shape#,img_test_gray_pyramid_list[3].shape#,img_test_gray_pyramid_list[4].shape
 		# 对金字塔每个octave进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
 		kp_set = []
 		octave_factor=[2,1,0.5] #用来恢复原图坐标的比例因子
@@ -1197,7 +1197,7 @@ def use_TILDE_scale8_withpyramid(img_path_list):
 						count += 1
 						kp_set.append([j*octave_factor[octave_count], i*octave_factor[octave_count], output_predict[0, 0],octave_count,row_num,column_num])
 			print 'kp count from cnn without NMS:', 'octave:',octave_count,'count:',count
-		print 'total count:',len(kp_set)
+		print 'NMS之前 total count:',len(kp_set)
 		# kp_set_afterNMS_list = NMS_4_kp_set(kp_set, row_num, column_num, step=8, n_pixel=32, threshold=0.75)
 		kp_set_afterNMS_list = NonMaxSuppresion_4_kp_set(kp_set,threshold=25)
 		print 'NMS之后,保留:',len(kp_set_afterNMS_list),kp_set_afterNMS_list[0:5]
@@ -1251,16 +1251,17 @@ def parse_kp_from_totallist(kp_set_list):
 
 
 img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
-				 '/home/javen/javenlib/images/bark/img2.ppm']
+				 '/home/javen/javenlib/images/bikes/img2.ppm']
 img1 = plt.imread(img_path_list[0])
 img2 = plt.imread(img_path_list[1])
 kp_set_list = use_TILDE_scale8_withpyramid(img_path_list)
 print len(kp_set_list)
 print len(kp_set_list[0]),len(kp_set_list[1])
 kp_list_chosen = choose_kp_from_list_careboundary(kp_set_list[0],quantity_to_choose=250,boundary_pixel=21)
-print '考虑octave边界后选出的kp list:',len(kp_list_chosen)
+print '考虑octave边界后选出的kp list:',len(kp_list_chosen),kp_list_chosen[0]
 print kp_list_chosen
 kp_list_withRotatedPatch = get_kp_list_withRotatedPatch(img_path_list[0],kp_list_chosen)
+print '取出的28*28patch的kp点：',len(kp_list_withRotatedPatch[0]),kp_list_withRotatedPatch[0][5].shape,kp_list_withRotatedPatch[0]
 # show_kp_set_listformat(octave0_image,octave0_kp_list)
 # show_kp_set_listformat(octave1_image,octave1_kp_list)
 # show_kp_set_listformat(octave2_image,octave2_kp_list)
