@@ -1,7 +1,0 @@
-1. "*"号一般的用法称作通配符，和正则表达式是不一样的概念
-2. "\"后接[enter]可以转入下一行继续输入，"\"代表转义的意思
-3. 命令行下：Crtl+c代表终止目前的命令 Ctrl+s代表暂停屏幕的输出 Ctrl+Q代表恢复屏幕输出 Crtl+U代表删除整行命令 Crtl+Z代表暂停目前的命令
-4. shell中获取上条命令所创建的进程pid，使用processid=$!
-5. 当shell脚本执行出现 "异常/bin/sh^M: bad interpreter"时，是由于gedit在编辑时将文本格式保存为了windows系统下的dos格式，需要将其更改为linux系统下的unix格式。更改方法是使用vi或者vim，然后用 ":set ff=unix"，解决问题。
-6. shell脚本中查看某个知道名字的程序的pid可以使用指令 pidof "./ethminer",返回值使用$?获得，返回0代表查找到，返回1代表没找到，没有这个进程的存在。（实例见mining/auto4mountain.sh）
-7. 在bash中将后台的进程调到前台显示它的输出(暂时没找到方法)

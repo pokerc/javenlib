@@ -1,3 +1,0 @@
-1. sudo apt-get install openssh-server #安装ssh的server版本，client版本一般ubuntu会自带安装
-2. ps -ef | grep ssh #如果看到了sshd说明已经启动，如果没有启动，使用 (sudo) /etc/init.d/ssh start来启动
-3. 默认就可以用了，如果想配置(例如改端口什么的)，则修改 /etc/ssh/sshd_config

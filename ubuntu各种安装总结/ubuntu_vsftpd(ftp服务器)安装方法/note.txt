@@ -1,6 +1,0 @@
-1. sudo apt-get install vsftpd #安装vsftpd
-2. sudo gedit /etc/vsftpd.conf 然后将write_enable=YES前面的注释去掉。 #启用ftp的上传服务
-
-然后就可以使用了
-默认只开启下载服务，无法上传，write_enable取消注释之后就可以使用上传服务了
-

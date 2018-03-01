@@ -1,5 +1,0 @@
-1.root 用户的home目录是/root
-2.普通用户的目录是/home/javen
-3./usr曾经是user的缩写，然而现在是unix system resource，即unix系统资源的缩写
-4.apt安装后的位置一般在/usr/bin,/usr/include,/usr/lib等位置，可以使用dpkg -L 加包名来查看位置
-5.pip安装后的位置一般在/usr/local/lib/python2.7/dist-packages/ ， 而pip本身自带的包会在/usr/lib/python2.7/dist-packages/，可以使用pip show --files 加包名来查看位置

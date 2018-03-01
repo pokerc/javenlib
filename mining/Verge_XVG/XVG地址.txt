@@ -1,2 +1,0 @@
-xvg钱包使用软件钱包 electrum-xvg,需要加proxychains4代理打开
-D7Yt4EwK4wbP4juw6amFnNYoxpidRK6Jv6

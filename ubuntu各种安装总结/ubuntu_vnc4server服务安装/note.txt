@@ -1,6 +1,0 @@
-1. sudo apt-get update && sudo apt-get upgrade
-2. sudo apt-get install ubuntu-desktop gnome-panel gnome-settings-daemon metacity nautilus gnome-terminal
-3. sudo apt-get install vnc4server
-4. 配置~/.vnc/xstartup文件,文件具体内容参见本文件夹中的备份xstartup文件(各电脑情况会有所不同)
-4. 启动命令  vncserver -geometry 1366x768 :99	关闭命令 vncserver -kill :99
-

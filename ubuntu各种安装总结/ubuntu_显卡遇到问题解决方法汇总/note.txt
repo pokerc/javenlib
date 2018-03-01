@@ -1,2 +1,0 @@
-1. 当出现登录界面，但是没办法进行输入时，也就是输入没有响应的时候，就重新安装一下desktop,使用命令 sudo apt-get install ubuntu-desktop
-2. 其他一般出现system run in low graphic mode的时候，就是显卡驱动出了问题，直接卸载重装。
