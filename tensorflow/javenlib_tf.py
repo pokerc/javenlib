@@ -7,6 +7,7 @@ import pyflann
 import time
 import types
 import cmath
+from tensorflow.examples.tutorials.mnist import input_data
 
 ######################来自原javenlib.py里面的几个函数,主要是求patch重心angle的几个函数##########################
 
@@ -98,72 +99,6 @@ def image_rotate(img,degree):
 					rotated_image[i,j] = np.copy(img[old_position_row,old_position_column])
 	return rotated_image
 
-#利用caffe计算descriptor
-def lenet5_compute(img,kp_pos,size_outter_square=43,size_inner_square=29,layer_name='pool2'):
-	#此函数输入的img需要是使用caffe.io.load_image()读取的数据
-	kp_num = len(kp_pos)
-#	print kp_num
-	caffe.set_mode_cpu()
-	model_def = '/home/javen/javenlib/lenet5_profiles/lenet.prototxt'
-	model_weights = '/home/javen/javenlib/lenet5_profiles/lenet_iter_10000.caffemodel'
-	net = caffe.Net(model_def,      # defines the structure of the model
-				model_weights,  # contains the trained weights
-				caffe.TEST)     # use test mode (e.g., don't perform dropout)
-	# load the mean ImageNet image (as distributed with Caffe) for subtraction
-	mu = np.load('/home/javen/javenlib/lenet5_profiles/ilsvrc_2012_mean.npy')
-	mu = mu.mean(1).mean(1).mean(0).reshape(1)  # average over pixels to obtain the mean (BGR) pixel values
-#	mu[0]=0
-	print 'mu shape:',mu.shape,mu
-#	print 'mean-subtracted values:', zip('BGR', mu)
-
-	# create transformer for the input called 'data'
-	transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
-
-	transformer.set_transpose('data', (2,0,1))  # move image channels to outermost dimension
-	transformer.set_mean('data', mu)            # subtract the dataset-mean value in each channel
-	transformer.set_raw_scale('data', 255)      # rescale from [0, 1] to [0, 255]
-#	transformer.set_channel_swap('data', (2,1,0))  # swap channels from RGB to BGR
-
-	# set the size of the input (we can skip this if we're happy
-	#  with the default; we can also change it later, e.g., for different batch sizes)
-	net.blobs['data'].reshape(kp_num,        # batch size
-								1,         # 3-channel (BGR) images
-							   28, 28)  # image size is 227x227
-	data_input = np.zeros((kp_num,1,28,28))
-	for i in range(0,kp_num):
-		outter_square = np.copy(img[kp_pos[i,1]-21:kp_pos[i,1]+21+1,kp_pos[i,0]-21:kp_pos[i,0]+21+1,:])
-#		if outter_square.shape[0]!=43 or outter_square.shape[1]!=43:
-#			print '位置是:',kp_pos[i]
-		#添加将中间区域置0的处理函数area_set_zero()
-		degree = get_center_direction(area_set_zero(outter_square))
-		rotated_outter_square = image_rotate(outter_square,-1*degree) #旋转后的43*43*3
-#		print outter_square[:,:,0],'\n',degree,'°','\n',rotated_outter_square[:,:,0]
-		inner_square = np.copy(rotated_outter_square[7:35+1,7:35+1,:].mean(2).reshape(29,29,1))
-#		print 'inner_square:',inner_square.shape,inner_square[:,:]
-		transformed_inner_square = transformer.preprocess('data',inner_square)
-#		print 'trans:',transformed_inner_square
-#		print 'inner square:',inner_square.shape,'\n','transformed inner square:',transformed_inner_square.shape
-		data_input[i,:,:,:] = transformed_inner_square
-	print data_input.shape
-
-	# copy the image data into the memory allocated for the net
-	net.blobs['data'].data[...] = data_input
-
-#	### perform classification
-	output = net.forward()
-#	print net.blobs['data'].data[499,0,:,:]
-#	output_pool2 = output['pool2'][0]
-	if layer_name == 'pool2':
-		kp_des = net.blobs['pool2'].data
-		kp_des = kp_des.reshape(kp_num,800)
-	elif layer_name == 'conv2':
-		kp_des = net.blobs['conv2'].data.reshape(kp_num,50*8*8)
-	elif layer_name == 'ip1':
-		kp_des = net.blobs['ip1'].data.reshape(kp_num,500)
-	else:
-		kp_des = net.blobs['ip2'].data.reshape(kp_num,10)
-	print kp_des.shape
-	return kp_des
 
 ###################################################################################################
 
@@ -1142,6 +1077,7 @@ def use_TILDE_scale8_withpyramid(img_path_list):
 	:param img_path: 需要检测的图像的path,多幅图同时检测
 	:return: 返回带有score的kp点集合
 	"""
+
 	scale = 8
 	tf_x = tf.placeholder(tf.float32, [None, scale*2, scale*2, 1])  # 输入patch维度为(?,16,16,1)
 	tf_y = tf.placeholder(tf.int32, [None, 1])  # input y ,y代表score所以维度为1
@@ -1174,6 +1110,7 @@ def use_TILDE_scale8_withpyramid(img_path_list):
 
 	output = tf.layers.dense(flat, 1)  # output layer
 
+	# graph1 = tf.Graph()
 	sess = tf.Session()
 	saver = tf.train.Saver()
 	saver.restore(sess, './save_net/detector_TILDE_model_20180102_mse_100_0_0005')
@@ -1259,26 +1196,149 @@ def parse_kp_from_totallist(kp_set_list):
 	octave_all_kp_list = [octave0_kp_list,octave1_kp_list,octave2_kp_list]
 	return octave_all_kp_list
 
+def use_CNN_descriptor_generator(kp_set_list):
+	"""
+	通过CNN对输入的kp_set根据其28*28patch算出其descriptor,并附加在kp_set_list中然后输出
+	输入的kp_set_list的结构为每一个kp点格式为[j,i,score,octave_index,angle,28*28patch_ndarray]
+	输出的kp_set_list的结构在每个kp点后面附加了求出的descriptor
+	:param kp_set_list_in:
+	:return:
+	"""
 
+	mnist = input_data.read_data_sets('./MNIST_data', one_hot=True)
+	train_images = mnist.train.images.reshape(55000, 28, 28, 1)
+	train_labels = mnist.train.labels
+	test_images = mnist.test.images.reshape(10000, 28, 28, 1)
+	test_labels = mnist.test.labels
+	print '训练数据和测试数据的shape：', train_images.shape, train_labels.shape, test_images.shape, test_labels.shape
+	# plt.imshow(train_images[0].reshape(28,28),cmap='gray')
+	# plt.show()
+
+	# 构建网络结构
+	# 读取准备好的数据,mnist数据集本身就经过了预处理所以不再需要做与处理了
+	train_x = np.copy(train_images)
+	train_y = np.copy(train_labels)
+
+	#为了避免两个graph造成的冲突,创建一个新的graph不再使用默认的graph,然后结合with来完成session的计算任务
+	g1 = tf.Graph()
+	with g1.as_default():
+		tf_x = tf.placeholder(tf.float32, [None, 28, 28, 1])  # 输入patch维度为28*28
+		tf_y = tf.placeholder(tf.int32, [None, 10])  # input y ,y代表预测标签所以维度为10
+
+		########################################################################
+		conv1 = tf.layers.conv2d(
+			inputs=tf_x,  # (?,28,28,1)
+			filters=32,
+			kernel_size=5,
+			strides=1,
+			padding='same',  # same为保持原size,valid为去除边界size会变小
+			activation=tf.nn.relu
+		)  # -> (?, 28, 28, 32)
+
+		pool1 = tf.layers.max_pooling2d(
+			conv1,
+			pool_size=2,
+			strides=2,
+		)  # -> (?,14, 14, 32)
+
+		conv2 = tf.layers.conv2d(pool1, 64, 5, 1, 'same', activation=tf.nn.relu)  # -> (?,14, 14, 64)
+
+		pool2 = tf.layers.max_pooling2d(conv2, 2, 2)  # -> (?,7, 7, 64)
+
+		flat = tf.reshape(pool2, [-1, 7 * 7 * 64])  # -> (?,7*7*64)
+
+		full_connect1 = tf.layers.dense(flat, 512)  # -> (?,512)
+
+		output = tf.layers.dense(full_connect1, 10)  # output layer (?,10)
+
+	# 输出构建的网络结构的各层的维度情况
+	print conv1
+	print pool1
+	print conv2
+	print pool2
+	print flat
+	print full_connect1
+	print output
+
+	#将训练好的模型加载进来
+	sess = tf.Session(graph=g1)
+	with sess:
+		saver = tf.train.Saver()
+		saver.restore(sess,'./save_net_descriptor_generator/descriptor_generator_model_20180302_softmax_10circle_LR0_0005')
+
+		#计算输入kp_set_list中每个kp的28*28patch所对应的descriptor
+		count = len(kp_set_list)
+		# print 'use CNN 中的count:',count,kp_set_list_in[0][5].shape
+		for i in range(count):
+			patch = np.copy(kp_set_list[i][5])
+			descriptor = sess.run(flat,feed_dict={tf_x:patch.reshape(1,28,28,1)})
+			# print 'descriptor shape:',descriptor.shape,descriptor.reshape(512).shape
+			kp_set_list[i].append(descriptor)
+
+		# # 测试训练集准确率
+		# count = 0
+		# total_num = 55000
+		# for i in range(total_num):
+		# 	output_predict = sess.run(output, feed_dict={tf_x: train_x[i].reshape(1, 28, 28, 1)})
+		# 	# print 'step:',i,'output_predict',output_predict.shape,output_predict
+		# 	if np.argmax(output_predict) == np.argmax(train_y[i]):
+		# 		count += 1
+		# print '训练集准确率:', 1. * count / total_num
+        #
+		# # 测试测试集准确率
+		# count = 0
+		# total_num = 10000
+		# for i in range(total_num):
+		# 	output_predict = sess.run(output, feed_dict={tf_x: test_images[i].reshape(1, 28, 28, 1)})
+		# 	# print 'step:',i,'output_predict',output_predict.shape,output_predict
+		# 	if np.argmax(output_predict) == np.argmax(test_labels[i]):
+		# 		count += 1
+		# print '测试集准确率:', 1. * count / total_num
+	sess.close()
+	return kp_set_list
+
+def kp_list_2_pos_des_array(kp_set_list):
+	"""
+	将得到的kp_set的list进行提取,抽出其中的position矩阵和descriptor矩阵
+	:param kp_set_list: kp_set_list的格式为[j,i,score,octave_index,angle,28*28patcharray,descriptor]
+	:return:
+	"""
+	count = len(kp_set_list)
+	print 'kp list [6] shape:',kp_set_list[0][6].shape
+	des_size = kp_set_list[0][6].shape[1]
+	print 'des_size:',des_size
+	position_array = np.zeros(shape=(count,2),dtype=np.int)
+	descriptor_array = np.zeros(shape=(count,des_size))
+	for i in range(count):
+		position_array[i,0] = kp_set_list[i][0]
+		position_array[i,1] = kp_set_list[i][1]
+		descriptor_array[i] = np.copy(kp_set_list[i][6].reshape(des_size))
+	# print position_array[0:2]
+	# print descriptor_array.shape
+	return [position_array,descriptor_array]
+
+
+###################################################################################
+###################################################################################
+###################################################################################
 # img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
 # 				 '/home/javen/javenlib/images/bikes/img2.ppm']
 # img1 = plt.imread(img_path_list[0])
 # img2 = plt.imread(img_path_list[1])
-# kp_set_list = use_TILDE_scale8_withpyramid(img_path_list)
+# kp_set_list = use_TILDE_scale8_withpyramid(img_path_list) #包含两幅图的kp_set
 # print len(kp_set_list)
 # print len(kp_set_list[0]),len(kp_set_list[1])
-# kp_list_chosen = choose_kp_from_list_careboundary(kp_set_list[0],quantity_to_choose=250,boundary_pixel=21)
-# print '考虑octave边界后选出的kp list:',len(kp_list_chosen),kp_list_chosen[0]
-# print kp_list_chosen
-# kp_list_withRotatedPatch = get_kp_list_withRotatedPatch(img_path_list[0],kp_list_chosen)
-# # print '取出的28*28patch的kp点：',len(kp_list_withRotatedPatch[0]),kp_list_withRotatedPatch[0][5].shape,kp_list_withRotatedPatch[0]
-# plt.figure(1)
-# plt.imshow(kp_list_withRotatedPatch[0][5],cmap='gray')
-# plt.figure(2)
-# plt.imshow(kp_list_withRotatedPatch[1][5],cmap='gray')
-# plt.figure(3)
-# plt.imshow(kp_list_withRotatedPatch[2][5],cmap='gray')
-# plt.show()
+# kp_list_chosenIMG1 = choose_kp_from_list_careboundary(kp_set_list[0],quantity_to_choose=250,boundary_pixel=21)
+# print '考虑octave边界后选出的kp list:',len(kp_list_chosenIMG1),kp_list_chosenIMG1[0]
+# print kp_list_chosenIMG1
+# kp_list_withRotatedPatchIMG1 = get_kp_list_withRotatedPatch(img_path_list[0],kp_list_chosenIMG1)
+# print '取出28*28patch后的结构:',kp_list_withRotatedPatchIMG1[0]
+# kp_list_withDescriptorIMG1 = use_CNN_descriptor_generator(kp_list_withRotatedPatchIMG1)
+# print 'kp_list_withDescriptorIMG1:',len(kp_list_withDescriptorIMG1),kp_list_withDescriptorIMG1[0][6].shape,kp_list_withRotatedPatchIMG1[0][5].shape
+# pos,des = kp_list_2_pos_des_array(kp_list_withDescriptorIMG1)
+# print pos.shape,des.shape
+# print pos
+# print des
 
 # show_kp_set_listformat(octave0_image,octave0_kp_list)
 # show_kp_set_listformat(octave1_image,octave1_kp_list)
