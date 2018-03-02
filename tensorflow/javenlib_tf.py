@@ -1143,7 +1143,7 @@ def use_TILDE_scale8_withpyramid(img_path_list):
 	:return: 返回带有score的kp点集合
 	"""
 	scale = 8
-	tf_x = tf.placeholder(tf.float32, [None, scale*2, scale*2, 1])  # 输入patch维度为64*64
+	tf_x = tf.placeholder(tf.float32, [None, scale*2, scale*2, 1])  # 输入patch维度为(?,16,16,1)
 	tf_y = tf.placeholder(tf.int32, [None, 1])  # input y ,y代表score所以维度为1
 
 	########################################################################
@@ -1260,25 +1260,26 @@ def parse_kp_from_totallist(kp_set_list):
 	return octave_all_kp_list
 
 
-img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
-				 '/home/javen/javenlib/images/bikes/img2.ppm']
-img1 = plt.imread(img_path_list[0])
-img2 = plt.imread(img_path_list[1])
-kp_set_list = use_TILDE_scale8_withpyramid(img_path_list)
-print len(kp_set_list)
-print len(kp_set_list[0]),len(kp_set_list[1])
-kp_list_chosen = choose_kp_from_list_careboundary(kp_set_list[0],quantity_to_choose=250,boundary_pixel=21)
-print '考虑octave边界后选出的kp list:',len(kp_list_chosen),kp_list_chosen[0]
-print kp_list_chosen
-kp_list_withRotatedPatch = get_kp_list_withRotatedPatch(img_path_list[0],kp_list_chosen)
-# print '取出的28*28patch的kp点：',len(kp_list_withRotatedPatch[0]),kp_list_withRotatedPatch[0][5].shape,kp_list_withRotatedPatch[0]
-plt.figure(1)
-plt.imshow(kp_list_withRotatedPatch[0][5],cmap='gray')
-plt.figure(2)
-plt.imshow(kp_list_withRotatedPatch[1][5],cmap='gray')
-plt.figure(3)
-plt.imshow(kp_list_withRotatedPatch[2][5],cmap='gray')
-plt.show()
+# img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
+# 				 '/home/javen/javenlib/images/bikes/img2.ppm']
+# img1 = plt.imread(img_path_list[0])
+# img2 = plt.imread(img_path_list[1])
+# kp_set_list = use_TILDE_scale8_withpyramid(img_path_list)
+# print len(kp_set_list)
+# print len(kp_set_list[0]),len(kp_set_list[1])
+# kp_list_chosen = choose_kp_from_list_careboundary(kp_set_list[0],quantity_to_choose=250,boundary_pixel=21)
+# print '考虑octave边界后选出的kp list:',len(kp_list_chosen),kp_list_chosen[0]
+# print kp_list_chosen
+# kp_list_withRotatedPatch = get_kp_list_withRotatedPatch(img_path_list[0],kp_list_chosen)
+# # print '取出的28*28patch的kp点：',len(kp_list_withRotatedPatch[0]),kp_list_withRotatedPatch[0][5].shape,kp_list_withRotatedPatch[0]
+# plt.figure(1)
+# plt.imshow(kp_list_withRotatedPatch[0][5],cmap='gray')
+# plt.figure(2)
+# plt.imshow(kp_list_withRotatedPatch[1][5],cmap='gray')
+# plt.figure(3)
+# plt.imshow(kp_list_withRotatedPatch[2][5],cmap='gray')
+# plt.show()
+
 # show_kp_set_listformat(octave0_image,octave0_kp_list)
 # show_kp_set_listformat(octave1_image,octave1_kp_list)
 # show_kp_set_listformat(octave2_image,octave2_kp_list)
