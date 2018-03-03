@@ -7,9 +7,9 @@ import cv2
 
 #测试use_TILDE函数
 sift = cv2.SIFT(250)
-img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
-                 '/home/javen/javenlib/images/bikes/img2.ppm']
-tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/bikes/H1to2p')
+img_path_list = ['/home/javen/javenlib/images/wall/img1.ppm',
+                 '/home/javen/javenlib/images/wall/img6.ppm']
+tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/wall/H1to6p')
 imga = plt.imread(img_path_list[0])
 imgb = plt.imread(img_path_list[1])
 # img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale8_withpyramid(img_path_list)
