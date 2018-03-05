@@ -242,7 +242,8 @@ def KeyPoint_reverse_convert_forOpencv2(keypoints):
 	"""
 	kp_list = []
 	for i in range(len(keypoints)):
-		kp_obj = cv2.KeyPoint(keypoints[i,0],keypoints[i,1],_size=3.58366942406)
+		# print 'keypoints[i][0]:',keypoints[i][0],keypoints[i][1]
+		kp_obj = cv2.KeyPoint(keypoints[i][0],keypoints[i][1],_size=3.58366942406)
 		kp_list.append(kp_obj)
 	return kp_list
 
@@ -755,6 +756,8 @@ def get_kp_list_withRotatedPatch(img_path,kp_list_chosen):
 		img_origin = img_origin/255.
 	#将img_origin进行从rgb转化为gray的预处理
 	img_gray = np.dot(img_origin,[0.2989,0.5870,0.1140])
+	#做减去均值的预处理来抵抗illumination变化的影响
+	img_gray = img_gray - img_gray.mean()
 	img_gray_octave1 = np.copy(img_gray)
 	img_gray_octave0 = cv2.pyrDown(img_gray_octave1)
 	img_gray_octave2 = cv2.pyrUp(img_gray_octave1)
@@ -786,6 +789,7 @@ def get_kp_list_withRotatedPatch(img_path,kp_list_chosen):
 		patch_after_set_zero_and_rotation = image_rotate(patch_after_set_zero,-1*degree)
 		#对旋转之后的43*43的patch进行取出其中29*29patch的操作
 		patch_29x29 = np.copy(patch_after_set_zero_and_rotation[7:36,7:36])
+		# patch_28x28 = np.copy(patch_after_set_zero_and_rotation[7:35, 7:35])
 		#将29*29patch转化为28*28patch,具体操作是去掉中心的一行和一列
 		patch_28x28 = np.delete(patch_29x29,14,axis=0)
 		patch_28x28 = np.delete(patch_28x28,14,axis=1)
@@ -1059,7 +1063,7 @@ def use_TILDE_scale8(img_path_list):
 				output_predict = sess.run(output, feed_dict={tf_x: patch})
 				if output_predict[0, 0] >= 0.6:
 					count += 1
-					kp_set.append([j, i, output_predict[0, 0],2])
+					kp_set.append([j, i, output_predict[0, 0],1,row_num,column_num])
 		print 'kp count from cnn without NMS:', count
 		# kp_set_afterNMS_list = NMS_4_kp_set(kp_set, row_num, column_num, step=8, n_pixel=32, threshold=0.75)
 		kp_set_afterNMS_list = NonMaxSuppresion_4_kp_set(kp_set,threshold=25)
@@ -1301,7 +1305,7 @@ def kp_list_2_pos_des_array(kp_set_list):
 	"""
 	将得到的kp_set的list进行提取,抽出其中的position矩阵和descriptor矩阵
 	:param kp_set_list: kp_set_list的格式为[j,i,score,octave_index,angle,28*28patcharray,descriptor]
-	:return:
+	:return:返回pos和des两个numpy矩阵
 	"""
 	count = len(kp_set_list)
 	print 'kp list [6] shape:',kp_set_list[0][6].shape
@@ -1316,6 +1320,14 @@ def kp_list_2_pos_des_array(kp_set_list):
 	# print position_array[0:2]
 	# print descriptor_array.shape
 	return [position_array,descriptor_array]
+
+def extract_kp_pos_array_from_kp_set_list(kp_set_list):
+	count = len(kp_set_list)
+	kp_pos_array = np.zeros(shape=(count,2),dtype=np.int)
+	for i in range(count):
+		kp_pos_array[i,0] = int(kp_set_list[i][0])
+		kp_pos_array[i,1] = int(kp_set_list[i][1])
+	return kp_pos_array
 
 
 ###################################################################################
