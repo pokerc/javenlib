@@ -20,8 +20,14 @@ train_images = mnist.train.images.reshape(55000,28,28,1)
 train_labels = mnist.train.labels
 test_images = mnist.test.images.reshape(10000,28,28,1)
 test_labels = mnist.test.labels
+print 'mean value:',train_images.mean()
+meanvalue = train_images.mean()
+train_images = train_images - meanvalue
 print '训练数据和测试数据的shape：',train_images.shape,train_labels.shape,test_images.shape,test_labels.shape
+# plt.figure(1)
 # plt.imshow(train_images[0].reshape(28,28),cmap='gray')
+# plt.figure(2)
+# plt.imshow((train_images[0]-meanvalue).reshape(28,28),cmap='gray')
 # plt.show()
 
 #构建网络结构
@@ -114,4 +120,4 @@ print '测试集准确率:',1.*count/total_num
 
 #将训练好的模型保存
 saver = tf.train.Saver()
-saver.save(sess,'./save_net_descriptor_generator/descriptor_generator_model_20180302_softmax_10circle_LR0_0005')
+saver.save(sess,'./save_net_descriptor_generator/descriptor_generator_model_20180306_softmax_10circle_LR0_0005')

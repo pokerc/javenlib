@@ -1322,6 +1322,11 @@ def kp_list_2_pos_des_array(kp_set_list):
 	return [position_array,descriptor_array]
 
 def extract_kp_pos_array_from_kp_set_list(kp_set_list):
+	"""
+	将得到的kp_set_list进行提取,只取出其中的position矩阵
+	:param kp_set_list:
+	:return:
+	"""
 	count = len(kp_set_list)
 	kp_pos_array = np.zeros(shape=(count,2),dtype=np.int)
 	for i in range(count):
@@ -1329,6 +1334,22 @@ def extract_kp_pos_array_from_kp_set_list(kp_set_list):
 		kp_pos_array[i,1] = int(kp_set_list[i][1])
 	return kp_pos_array
 
+def transform_from_array_2_list(kp_pos_array,row_num,column_num):
+	"""
+	将position矩阵转换成可以用与CNN des计算的kp_list
+	:param kp_pos_array:
+	:param row_num:
+	:param column_num:
+	:return:
+	"""
+	kp_list = []
+	count = kp_pos_array.shape[0]
+	for i in range(count):
+		y = kp_pos_array[i,1]
+		x = kp_pos_array[i,0]
+		if x-21 >= 0 and x+21 < column_num and y-21 >= 0 and y+21 < row_num:
+			kp_list.append([kp_pos_array[i,0],kp_pos_array[i,1],0.8,1])
+	return kp_list
 
 ###################################################################################
 ###################################################################################
