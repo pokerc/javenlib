@@ -247,6 +247,17 @@ def KeyPoint_reverse_convert_forOpencv2(keypoints):
 		kp_list.append(kp_obj)
 	return kp_list
 
+def KeyPoint_reverse_convert_forORB(keypoints):
+	kp_list = []
+	for i in range(len(keypoints)):
+		# print 'keypoints[i][0]:',keypoints[i][0],keypoints[i][1]
+		if keypoints[i][4] < 0:
+			kp_obj = cv2.KeyPoint(keypoints[i][0], keypoints[i][1], _size=31,_angle=360+keypoints[i][4],_response=keypoints[i][2],_octave=0,_class_id=-1)
+		else:
+			kp_obj = cv2.KeyPoint(keypoints[i][0], keypoints[i][1], _size=31, _angle=keypoints[i][4],_response=keypoints[i][2], _octave=0, _class_id=-1)
+		kp_list.append(kp_obj)
+	return kp_list
+
 def KeyPoint_from_siftObjList_to_4dlist(kp_set_siftObjList):
 	"""
 	此函数用来将sift检测到的object list类型的kp_set转化为4维的list类型的kp_set
