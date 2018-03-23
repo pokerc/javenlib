@@ -14,6 +14,7 @@ img_path_list = ['/home/javen/javenlib/images/bark/img1.ppm',
 tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/bark/H1to2p')
 imga = plt.imread(img_path_list[0])
 imgb = plt.imread(img_path_list[1])
+
 img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale8_withpyramid(img_path_list)
 print 'cnn done!'
 imga_kp_cnn = javenlib_tf.choose_kp_from_list(img_kp_set_afternms_list[0],quantity_to_choose=250)

@@ -467,7 +467,7 @@ def get_kp_set_negative(kp_set_raw,dist_threshold=1000):
 	kp_set_negative = np.copy(new_test_data)
 	return kp_set_negative.astype(np.int)
 
-def get_kp_patch_set_positive(img_path_list,kp_set_positive,scale=32):
+def get_kp_patch_set_positive(img_path_list,kp_set_positive,scale=8):
 	"""
 	根据所给的图像，以及positive kp的坐标取出positive patch的集合
 	:param img_path_list: 图像路径列表
@@ -484,14 +484,16 @@ def get_kp_patch_set_positive(img_path_list,kp_set_positive,scale=32):
 	#取出kp_set_positive所对应的patch集合
 	kp_patch_set_positive = np.zeros(shape=(1,scale*2,scale*2,3))
 	for img_count in range(len(img_path_list)):
-		img = plt.imread(img_path_list[img_count])/255.
+		# img = plt.imread(img_path_list[img_count])/255. #二选一从原图提取patch就使用这一行,否则使用下面两行
+		img = plt.imread(img_path_list[img_count])
+		img_laplacian = cv2.Laplacian(img,ddepth=0,ksize=1)/255.
 		for i in range(len(kp_set_positive)):
-			kp_patch_set_positive = np.append(kp_patch_set_positive,img[kp_set_positive[i,1]-scale:kp_set_positive[i,1]+scale,kp_set_positive[i,0]-scale:kp_set_positive[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
+			kp_patch_set_positive = np.append(kp_patch_set_positive,img_laplacian[kp_set_positive[i,1]-scale:kp_set_positive[i,1]+scale,kp_set_positive[i,0]-scale:kp_set_positive[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
 	kp_patch_set_positive = np.delete(kp_patch_set_positive,0,axis=0)
 	# print kp_patch_set_positive.shape
 	return kp_patch_set_positive
 
-def get_kp_patch_set_negative(img_path_list,kp_set_negative,scale=32):
+def get_kp_patch_set_negative(img_path_list,kp_set_negative,scale=8):
 	#无法取到patch的kp点的去除
 	rows_num,columns_num = plt.imread(img_path_list[0]).shape[0:2]
 	for i in range(len(kp_set_negative)-1,-1,-1):
@@ -500,9 +502,11 @@ def get_kp_patch_set_negative(img_path_list,kp_set_negative,scale=32):
 	#取出kp_set_negative所对应的patch集合
 	kp_patch_set_negative = np.zeros(shape=(1,scale*2,scale*2,3))
 	for img_count in range(len(img_path_list)):
-		img = plt.imread(img_path_list[img_count])/255.
+		# img = plt.imread(img_path_list[img_count])/255.
+		img = plt.imread(img_path_list[img_count])
+		img_laplacian = cv2.Laplacian(img, ddepth=0, ksize=1) / 255.
 		for i in range(len(kp_set_negative)):
-			kp_patch_set_negative = np.append(kp_patch_set_negative,img[kp_set_negative[i,1]-scale:kp_set_negative[i,1]+scale,kp_set_negative[i,0]-scale:kp_set_negative[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
+			kp_patch_set_negative = np.append(kp_patch_set_negative,img_laplacian[kp_set_negative[i,1]-scale:kp_set_negative[i,1]+scale,kp_set_negative[i,0]-scale:kp_set_negative[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
 	kp_patch_set_negative = np.delete(kp_patch_set_negative,0,axis=0)
 	return kp_patch_set_negative
 
@@ -1054,11 +1058,16 @@ def use_TILDE_scale8(img_path_list):
 	sess = tf.Session()
 	saver = tf.train.Saver()
 	saver.restore(sess, './save_net/detector_TILDE_model_20180102_mse_100_0_0005')
+	# saver.restore(sess, './save_net/detector_TILDE_model_20180323_mse_500_0_0005')  # 使用laplacian做输入patch检测
 
 	# 使用列表将两个维度不相同的矩阵打包在一起return
 	kp_set_list = []
 	for image_count in range(len(img_path_list)):
 		img_test_rgb = plt.imread(img_path_list[image_count])
+		# img_test_rgb = np.copy(cv2.Laplacian(img_test_rgb,ddepth=0,ksize=1))
+		# plt.figure(1)
+		# plt.imshow(img_test_rgb)
+		# plt.show()
 		if img_test_rgb.mean() > 1:
 			img_test_rgb = np.copy(img_test_rgb / 255.)
 		img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
@@ -1128,7 +1137,8 @@ def use_TILDE_scale8_withpyramid(img_path_list):
 	# graph1 = tf.Graph()
 	sess = tf.Session()
 	saver = tf.train.Saver()
-	saver.restore(sess, './save_net/detector_TILDE_model_20180102_mse_100_0_0005')
+	# saver.restore(sess, './save_net/detector_TILDE_model_20180102_mse_100_0_0005')
+	saver.restore(sess, './save_net/detector_TILDE_model_20180323_mse_500_0_0005') #使用laplacian做输入patch检测
 
 	# 使用列表将两个维度不相同的矩阵打包在一起return
 	kp_set_list = []

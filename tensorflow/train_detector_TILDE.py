@@ -206,8 +206,8 @@ sess = tf.Session()
 #MSE版本,scale为8,patch size为16*16,新网络
 #读取准备好的未打乱的train数据
 scale = 8
-train_data = np.load('/home/javen/javenlib/tensorflow/TILDE_data/train_data_20180102.npy')
-train_label = np.load('/home/javen/javenlib/tensorflow/TILDE_data/train_label_20180102.npy')
+train_data = np.load('/home/javen/javenlib/tensorflow/TILDE_data/train_data_20180323_laplacian.npy')
+train_label = np.load('/home/javen/javenlib/tensorflow/TILDE_data/train_label_20180323_laplacian.npy')
 #对数据进行打乱操作
 train_data,train_label = javenlib_tf.shuffle_data_and_label(train_data,train_label) #(?,16,16,3)
 #将rgb数据转化为gray
@@ -272,7 +272,13 @@ print 'train_x:',train_x.shape
 total_num = train_x.shape[0] #训练数据的总条数
 batch_size = 50 #每次输入训练的数据条数
 steps_in_onecircle = total_num/batch_size #一次训练集全迭代需要的循环次数
-for step in range(100*steps_in_onecircle):
+for step in range(500*steps_in_onecircle):
+    if step < 500:
+        LR = 0.005
+    elif step < 1000:
+        LR = 0.001
+    else:
+        LR = 0.0005
     data_batch = np.copy(train_x[batch_size * (step % steps_in_onecircle):batch_size * (step % steps_in_onecircle) + batch_size])
     label_batch = np.copy(train_y[batch_size*(step%steps_in_onecircle):batch_size*(step%steps_in_onecircle)+batch_size])
     loss_before = sess.run(loss, feed_dict={tf_x:data_batch, tf_y:label_batch})
@@ -285,14 +291,16 @@ for step in range(100*steps_in_onecircle):
 count = 0
 for i in range(total_num):
     output_predict = sess.run(output,feed_dict={tf_x:train_x[i].reshape(1,scale*2,scale*2,1)})
-    print 'step:',i,'output_predict',output_predict.shape
+    # print 'step:',i,'output_predict',output_predict.shape
     if (output_predict>=0.5 and train_y[i]==1) or (output_predict<=0.5 and train_y[i]==0):
         count += 1
+    else:
+        print 'output_predict:',output_predict,'train_y:',train_y[i]
 print '准确率:',1.*count/total_num
 
 # #将训练好的模型保存
 # saver = tf.train.Saver()
-# saver.save(sess,'./save_net/detector_TILDE_model_20180102_mse_100_0_0005')
+# saver.save(sess,'./save_net/detector_TILDE_model_20180323_mse_500_0_0005')
 
 
 ################################################################################

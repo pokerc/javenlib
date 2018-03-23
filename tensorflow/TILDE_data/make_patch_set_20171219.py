@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import cv2
 import pyflann
 
+#将各个图片集所提取出来的patch拼接成一个patch矩阵作为训练集
 image_classname_set = ['amos850_201609',
                        'amos8887_201606',
                        'amos17603_201704',
@@ -20,8 +21,8 @@ scale =  8 #scale为patch的尺寸参数
 positive_sample = np.zeros(shape=(0,scale*2,scale*2,3))
 negative_sample = np.zeros(shape=(0,scale*2,scale*2,3))
 for i in range(len(image_classname_set)):
-    positive_patch = np.load(image_classname_set[i]+'_positive_patches.npy')
-    negative_patch = np.load(image_classname_set[i]+'_negative_patches.npy')
+    positive_patch = np.load(image_classname_set[i]+'_positive_patches_laplacian.npy')
+    negative_patch = np.load(image_classname_set[i]+'_negative_patches_laplacian.npy')
     # print 'positive:',positive_patch.shape
     # print 'negative:',negative_patch.shape
     positive_sample = np.append(positive_sample,positive_patch,axis=0)
@@ -41,5 +42,5 @@ for i in range(len(train_data)):
 # print train_label.shape
 
 #将拼接完成的data和label保存
-np.save('train_data_20180102.npy',train_data)
-np.save('train_label_20180102.npy',train_label)
+np.save('train_data_20180323_laplacian.npy',train_data)
+np.save('train_label_20180323_laplacian.npy',train_label)

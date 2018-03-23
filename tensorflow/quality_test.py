@@ -34,6 +34,9 @@ tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/
 # 							  [0,0,1]]).real
 
 
+# print imga.shape,imga.mean()
+imga_laplacian = cv2.Laplacian(imga,ddepth=0,ksize=1)
+imgb_laplacian = cv2.Laplacian(imgb,ddepth=0,ksize=1)
 
 #(1) 理论式NMS + 无scale处理 + SIFT求descriptor(128维)
 img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale8(img_path_list)
