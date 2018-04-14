@@ -8,21 +8,37 @@ import cmath
 
 #测试use_TILDE函数
 sift = cv2.SIFT(250)
-img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
-                 '/home/javen/javenlib/images/bikes/img2.ppm']
-imga = plt.imread(img_path_list[0])
-imgb = plt.imread(img_path_list[1])
+# for count in range(159):
+#     if(count < 10):
+#         s1 = '000000000' + str(count)
+#     elif(count < 100):
+#         s1 = '00000000' + str(count)
+#     else:
+#         s1 = '0000000' + str(count)
+#     if (count+1 < 10):
+#         s2 = '000000000' + str(count+1)
+#     elif (count+1 < 100):
+#         s2 = '00000000' + str(count+1)
+#     else:
+#         s2 = '0000000' + str(count+1)
+#     print 's1:',s1
+#     print 's2:',s2
+img_path_list = ['/home/javen/javenlib/images/kitti_campus_gray/0000000150.png',
+                 '/home/javen/javenlib/images/kitti_campus_gray/0000000151.png']
+imga = cv2.imread(img_path_list[0])
+imgb = cv2.imread(img_path_list[1])
 
-if imga.mean() < 1:
-    imgc = np.copy(np.dot(imga*255.0,[0.2989,0.5870,0.1140]))
-    imga = np.copy(imgc.round().astype(np.uint8))
-    imgc = np.copy(np.dot(imgb*255.0,[0.2989,0.5870,0.1140]))
-    imgb = np.copy(imgc.round().astype(np.uint8))
+# if imga.mean() < 1:
+#     imgc = np.copy(np.dot(imga*255.0,[0.2989,0.5870,0.1140]))
+#     imga = np.copy(imgc.round().astype(np.uint8))
+#     imgc = np.copy(np.dot(imgb*255.0,[0.2989,0.5870,0.1140]))
+#     imgb = np.copy(imgc.round().astype(np.uint8))
 
 
 #变化矩阵载入,两种方法,已知的和自己计算的
-#第一种,已知的
-tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/bikes/H1to2p')
+# #第一种,已知的
+# tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/bikes/H1to3p')
+
 # #第二种,使用计算得到的变换矩阵
 # degree = -30
 # radian = 1.0*degree/180.0*cmath.pi
@@ -33,10 +49,17 @@ tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/
 # 							  [cmath.sin(radian),cmath.cos(radian),-0.5*(column_num-1)*cmath.sin(radian)-0.5*(row_num-1)*cmath.cos(radian)+0.5*(row_num-1)],
 # 							  [0,0,1]]).real
 
+# #第三种,amos数据集的homography
+# tranform_matrix = np.array([[1,0,0],
+#                             [0,1,0],
+#                             [0,0,1]])
 
-# print imga.shape,imga.mean()
-imga_laplacian = cv2.Laplacian(imga,ddepth=0,ksize=1)
-imgb_laplacian = cv2.Laplacian(imgb,ddepth=0,ksize=1)
+#第四种,kitti数据集的homography
+tranform_matrix = javenlib_tf.get_homography_from2picture(img_path_list)
+
+# # print imga.shape,imga.mean()
+# imga_laplacian = cv2.Laplacian(imga,ddepth=0,ksize=1)
+# imgb_laplacian = cv2.Laplacian(imgb,ddepth=0,ksize=1)
 
 #(1) 理论式NMS + 无scale处理 + SIFT求descriptor(128维)
 img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale8(img_path_list)

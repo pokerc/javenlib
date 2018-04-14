@@ -289,7 +289,7 @@ def show_kp_set(img_path,kp_set,pixel_size=5):
 	:param kp_set: 检测到的特征点的坐标集合
 	:return:
 	"""
-	new_img = np.copy(plt.imread(img_path))
+	new_img = np.copy(cv2.imread(img_path))
 	for i in range(len(kp_set)):
 		new_img[kp_set[i,1]-pixel_size:kp_set[i,1]+pixel_size,kp_set[i,0]-pixel_size:kp_set[i,0]+pixel_size,0] = 255
 	plt.figure()
@@ -373,11 +373,11 @@ def get_kp_set_raw(img_path_list):
 	# 	 '/home/javen/javenlib/images/leuven/img4.ppm',
 	# 	 '/home/javen/javenlib/images/leuven/img5.ppm']
 	number_to_detect = 900
-	number_to_save = 800
+	number_to_save = 200
 	sift = cv2.SIFT(number_to_detect)
 	kp_set_raw = np.zeros(shape=(len(img_path_list),number_to_save,2),dtype=np.int)
 	for img_count in range(len(img_path_list)):
-		img = plt.imread(img_path_list[img_count])
+		img = cv2.imread(img_path_list[img_count])
 		kp_object = sift.detect(img)
 		kp_coordinate = KeyPoint_convert_forOpencv2(kp_object)
 		while len(kp_coordinate)>number_to_save:
@@ -397,7 +397,8 @@ def get_kp_set_positive(kp_set_raw,dist_threshold=18):
 	print 'kp_set_raw:',kp_set_raw.shape
 	flann = pyflann.FLANN()
 	new_test_data = np.copy(kp_set_raw[0])
-	for step in range(4):
+	step_count = 4
+	for step in range(step_count):
 		test_data = np.copy(new_test_data)
 		origin_data = kp_set_raw[step+1]
 		matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 1,
@@ -437,7 +438,8 @@ def get_kp_set_negative(kp_set_raw,dist_threshold=1000):
 	print 'kp_set_raw:',kp_set_raw.shape
 	flann = pyflann.FLANN()
 	new_test_data = np.copy(kp_set_raw[0])
-	for step in range(4):
+	step_count = 4
+	for step in range(step_count):
 		test_data = np.copy(new_test_data)
 		origin_data = kp_set_raw[step+1]
 		matched_indices, matched_distances = flann.nn(origin_data.astype(np.float64), test_data.astype(np.float64), 1,
@@ -486,9 +488,9 @@ def get_kp_patch_set_positive(img_path_list,kp_set_positive,scale=8):
 	for img_count in range(len(img_path_list)):
 		# img = plt.imread(img_path_list[img_count])/255. #二选一从原图提取patch就使用这一行,否则使用下面两行
 		img = plt.imread(img_path_list[img_count])
-		img_laplacian = cv2.Laplacian(img,ddepth=0,ksize=1)/255.
+		# img_laplacian = cv2.Laplacian(img,ddepth=0,ksize=1)/255.
 		for i in range(len(kp_set_positive)):
-			kp_patch_set_positive = np.append(kp_patch_set_positive,img_laplacian[kp_set_positive[i,1]-scale:kp_set_positive[i,1]+scale,kp_set_positive[i,0]-scale:kp_set_positive[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
+			kp_patch_set_positive = np.append(kp_patch_set_positive,img[kp_set_positive[i,1]-scale:kp_set_positive[i,1]+scale,kp_set_positive[i,0]-scale:kp_set_positive[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
 	kp_patch_set_positive = np.delete(kp_patch_set_positive,0,axis=0)
 	# print kp_patch_set_positive.shape
 	return kp_patch_set_positive
@@ -504,9 +506,9 @@ def get_kp_patch_set_negative(img_path_list,kp_set_negative,scale=8):
 	for img_count in range(len(img_path_list)):
 		# img = plt.imread(img_path_list[img_count])/255.
 		img = plt.imread(img_path_list[img_count])
-		img_laplacian = cv2.Laplacian(img, ddepth=0, ksize=1) / 255.
+		# img_laplacian = cv2.Laplacian(img, ddepth=0, ksize=1) / 255.
 		for i in range(len(kp_set_negative)):
-			kp_patch_set_negative = np.append(kp_patch_set_negative,img_laplacian[kp_set_negative[i,1]-scale:kp_set_negative[i,1]+scale,kp_set_negative[i,0]-scale:kp_set_negative[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
+			kp_patch_set_negative = np.append(kp_patch_set_negative,img[kp_set_negative[i,1]-scale:kp_set_negative[i,1]+scale,kp_set_negative[i,0]-scale:kp_set_negative[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
 	kp_patch_set_negative = np.delete(kp_patch_set_negative,0,axis=0)
 	return kp_patch_set_negative
 
@@ -655,6 +657,41 @@ def get_matrix_from_file(filename):
 		rotation_matrix[i,2] = float(x[2])
 	f.close()
 	return rotation_matrix
+
+def get_homography_from2picture(img_path_list):
+	MIN_MATCH_COUNT = 10
+	img1 = cv2.imread(img_path_list[0])  # queryImage
+	img2 = cv2.imread(img_path_list[1])  # trainImage
+
+	# Initiate SIFT detector
+	sift = cv2.SIFT()
+
+	# find the keypoints and descriptors with SIFT
+	kp1, des1 = sift.detectAndCompute(img1, None)
+	kp2, des2 = sift.detectAndCompute(img2, None)
+
+	FLANN_INDEX_KDTREE = 0
+	index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+	search_params = dict(checks=50)
+
+	flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+	matches = flann.knnMatch(des1, des2, k=2)
+
+	# store all the good matches as per Lowe's ratio test.
+	good = []
+	for m, n in matches:
+		if m.distance < 0.7 * n.distance:
+			good.append(m)
+
+	# print len(good)
+
+	if len(good) > MIN_MATCH_COUNT:
+		src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+		dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+
+		M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+	return M
 
 #扫描式NMS算法
 def NMS_4_kp_set(kp_set,row_num,column_num,step=8,n_pixel=16,threshold=0.5,scale=32):
@@ -1058,7 +1095,7 @@ def use_TILDE_scale8(img_path_list):
 	sess = tf.Session()
 	saver = tf.train.Saver()
 	saver.restore(sess, './save_net/detector_TILDE_model_20180102_mse_100_0_0005')
-	# saver.restore(sess, './save_net/detector_TILDE_model_20180323_mse_500_0_0005')  # 使用laplacian做输入patch检测
+	# saver.restore(sess, './save_net/detector_TILDE_model_20180408_mse_500_0_0005')  # 使用laplacian做输入patch检测
 
 	# 使用列表将两个维度不相同的矩阵打包在一起return
 	kp_set_list = []
@@ -1070,7 +1107,10 @@ def use_TILDE_scale8(img_path_list):
 		# plt.show()
 		if img_test_rgb.mean() > 1:
 			img_test_rgb = np.copy(img_test_rgb / 255.)
-		img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
+		if(len(img_test_rgb.shape) == 3):
+			img_test_gray = tf.image.rgb_to_grayscale(img_test_rgb).eval(session=sess)
+		else:
+			img_test_gray = np.copy(img_test_rgb)
 		kp_set = np.zeros(shape=(0, 3))
 		# 对图片进行扫描,用训练好的TILDE网络来判断某一个点是不是具有可重复性的kp
 		row_num = plt.imread(img_path_list[image_count]).shape[0]

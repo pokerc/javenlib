@@ -9,19 +9,19 @@ import cv2
 ##############################################################
 ##############################################################
 sift = cv2.SIFT(500)
-img_path_list = ['/home/javen/javenlib/images/bark/img1.ppm',
-                 '/home/javen/javenlib/images/bark/img2.ppm']
-tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/bark/H1to2p')
+img_path_list = ['/home/javen/javenlib/images/bikes/img1.ppm',
+                 '/home/javen/javenlib/images/bikes/img2.ppm']
+tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/bikes/H1to2p')
 imga = plt.imread(img_path_list[0])
 imgb = plt.imread(img_path_list[1])
 
-img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale8_withpyramid(img_path_list)
+img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale8(img_path_list)
 print 'cnn done!'
-imga_kp_cnn = javenlib_tf.choose_kp_from_list(img_kp_set_afternms_list[0],quantity_to_choose=250)
+imga_kp_cnn = javenlib_tf.choose_kp_from_list_careboundary(img_kp_set_afternms_list[0],quantity_to_choose=250)
 # imga_kp_cnn_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imga_kp_cnn)
 # imga_kp_cnn_obj,imga_kp_cnn_des = sift.compute(imga,imga_kp_cnn_obj)
 
-imgb_kp_cnn = javenlib_tf.choose_kp_from_list(img_kp_set_afternms_list[1],quantity_to_choose=250)
+imgb_kp_cnn = javenlib_tf.choose_kp_from_list_careboundary(img_kp_set_afternms_list[1],quantity_to_choose=250)
 # imgb_kp_cnn_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imgb_kp_cnn)
 # imgb_kp_cnn_obj,imgb_kp_cnn_des = sift.compute(imgb,imgb_kp_cnn_obj)
 

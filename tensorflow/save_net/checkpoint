@@ -1,2 +1,2 @@
-model_checkpoint_path: "detector_TILDE_model_20180323_mse_500_0_0005"
-all_model_checkpoint_paths: "detector_TILDE_model_20180323_mse_500_0_0005"
+model_checkpoint_path: "detector_TILDE_model_20180408_mse_500_0_0005"
+all_model_checkpoint_paths: "detector_TILDE_model_20180408_mse_500_0_0005"
