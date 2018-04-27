@@ -7,7 +7,7 @@ import cv2
 import cmath
 
 #测试use_TILDE函数
-sift = cv2.SIFT(250)
+sift = cv2.SIFT(1000)
 # for count in range(159):
 #     if(count < 10):
 #         s1 = '000000000' + str(count)
@@ -23,8 +23,8 @@ sift = cv2.SIFT(250)
 #         s2 = '0000000' + str(count+1)
 #     print 's1:',s1
 #     print 's2:',s2
-img_path_list = ['/home/javen/javenlib/images/kitti_campus_gray/0000000150.png',
-                 '/home/javen/javenlib/images/kitti_campus_gray/0000000151.png']
+img_path_list = ['/home/javen/javenlib/images/kitti_city_gray_0014/0000000202.png',
+                 '/home/javen/javenlib/images/kitti_city_gray_0014/0000000203.png']
 imga = cv2.imread(img_path_list[0])
 imgb = cv2.imread(img_path_list[1])
 
@@ -56,6 +56,7 @@ imgb = cv2.imread(img_path_list[1])
 
 #第四种,kitti数据集的homography
 tranform_matrix = javenlib_tf.get_homography_from2picture(img_path_list)
+print tranform_matrix
 
 # # print imga.shape,imga.mean()
 # imga_laplacian = cv2.Laplacian(imga,ddepth=0,ksize=1)
@@ -64,13 +65,13 @@ tranform_matrix = javenlib_tf.get_homography_from2picture(img_path_list)
 #(1) 理论式NMS + 无scale处理 + SIFT求descriptor(128维)
 img_kp_set_afternms_list = javenlib_tf.use_TILDE_scale8(img_path_list)
 print 'cnn done!'
-imga_kp_cnn = javenlib_tf.choose_kp_from_list_careboundary(img_kp_set_afternms_list[0],quantity_to_choose=250)
+imga_kp_cnn = javenlib_tf.choose_kp_from_list_careboundary(img_kp_set_afternms_list[0],quantity_to_choose=1000)
 imga_kp_cnn = javenlib_tf.extract_kp_pos_array_from_kp_set_list(imga_kp_cnn)
 imga_kp_cnn_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imga_kp_cnn)
 print 'imga_kp_cnn_obj:',len(imga_kp_cnn_obj),imga_kp_cnn_obj[0].pt,imga_kp_cnn_obj[0].size
 imga_kp_cnn_obj,imga_kp_cnn_des = sift.compute(imga,imga_kp_cnn_obj)
 
-imgb_kp_cnn = javenlib_tf.choose_kp_from_list_careboundary(img_kp_set_afternms_list[1],quantity_to_choose=250)
+imgb_kp_cnn = javenlib_tf.choose_kp_from_list_careboundary(img_kp_set_afternms_list[1],quantity_to_choose=1000)
 imgb_kp_cnn = javenlib_tf.extract_kp_pos_array_from_kp_set_list(imgb_kp_cnn)
 imgb_kp_cnn_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imgb_kp_cnn)
 imgb_kp_cnn_obj,imgb_kp_cnn_des = sift.compute(imgb,imgb_kp_cnn_obj)
@@ -196,7 +197,8 @@ javenlib_tf.match_accuracy(imga_kp_cnn,imga_kp_cnn_des,imgb_kp_cnn,imgb_kp_cnn_d
 # #显示检测到的kp_set
 # javenlib_tf.show_kp_set(img_path_list[0],imga_kp_sift)
 # javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_sift)
-# javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_cnn)
 # javenlib_tf.show_kp_set(img_path_list[0],imga_kp_cnn)
+# javenlib_tf.show_kp_set(img_path_list[1],imgb_kp_cnn)
+
 
 

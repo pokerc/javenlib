@@ -206,19 +206,20 @@ sess = tf.Session()
 #MSE版本,scale为8,patch size为16*16,新网络
 #读取准备好的未打乱的train数据
 scale = 8
-train_data = np.load('/home/javen/javenlib/tensorflow/TILDE_data/train_data_20180408.npy')
-train_label = np.load('/home/javen/javenlib/tensorflow/TILDE_data/train_label_20180408.npy')
+train_data = np.load('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_city_gray_0014/train_data_20180419.npy')
+train_label = np.load('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_city_gray_0014/train_label_20180419.npy')
 #对数据进行打乱操作
 train_data,train_label = javenlib_tf.shuffle_data_and_label(train_data,train_label) #(?,16,16,3)
-#将rgb数据转化为gray
-train_data = javenlib_tf.rgb2gray_train_data(train_data,scale=8) #(?,16,16,1)
+# #将rgb数据转化为gray
+# train_data = javenlib_tf.rgb2gray_train_data(train_data,scale=8) #(?,16,16,1)
+
 #将数据类型转换为float32和int32
 # print train_data.dtype
 # print train_label.dtype
 
 train_x = np.copy(train_data)
 train_y = np.copy(train_label)
-# print train_x.shape,train_y.shape
+print train_x.shape,train_y.shape
 
 tf_x = tf.placeholder(tf.float32, [None, scale*2,scale*2,1]) #输入patch维度为16*16
 tf_y = tf.placeholder(tf.int32, [None, 1])            # input y ,y代表score所以维度为1
@@ -272,7 +273,7 @@ print 'train_x:',train_x.shape
 total_num = train_x.shape[0] #训练数据的总条数
 batch_size = 50 #每次输入训练的数据条数
 steps_in_onecircle = total_num/batch_size #一次训练集全迭代需要的循环次数
-for step in range(500*steps_in_onecircle):
+for step in range(10*steps_in_onecircle):
     if step < 500:
         LR = 0.005
     elif step < 1000:
@@ -299,8 +300,8 @@ for i in range(total_num):
 print '准确率:',1.*count/total_num
 
 #将训练好的模型保存
-# saver = tf.train.Saver()
-# saver.save(sess,'./save_net/detector_TILDE_model_20180408_mse_500_0_0005')
+saver = tf.train.Saver()
+saver.save(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0014')
 
 
 ################################################################################

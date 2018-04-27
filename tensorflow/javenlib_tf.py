@@ -372,7 +372,7 @@ def get_kp_set_raw(img_path_list):
 	# 	 '/home/javen/javenlib/images/leuven/img3.ppm',
 	# 	 '/home/javen/javenlib/images/leuven/img4.ppm',
 	# 	 '/home/javen/javenlib/images/leuven/img5.ppm']
-	number_to_detect = 900
+	number_to_detect = 800
 	number_to_save = 200
 	sift = cv2.SIFT(number_to_detect)
 	kp_set_raw = np.zeros(shape=(len(img_path_list),number_to_save,2),dtype=np.int)
@@ -397,7 +397,7 @@ def get_kp_set_positive(kp_set_raw,dist_threshold=18):
 	print 'kp_set_raw:',kp_set_raw.shape
 	flann = pyflann.FLANN()
 	new_test_data = np.copy(kp_set_raw[0])
-	step_count = 4
+	step_count = 2
 	for step in range(step_count):
 		test_data = np.copy(new_test_data)
 		origin_data = kp_set_raw[step+1]
@@ -438,7 +438,7 @@ def get_kp_set_negative(kp_set_raw,dist_threshold=1000):
 	print 'kp_set_raw:',kp_set_raw.shape
 	flann = pyflann.FLANN()
 	new_test_data = np.copy(kp_set_raw[0])
-	step_count = 4
+	step_count = 2
 	for step in range(step_count):
 		test_data = np.copy(new_test_data)
 		origin_data = kp_set_raw[step+1]
@@ -509,6 +509,50 @@ def get_kp_patch_set_negative(img_path_list,kp_set_negative,scale=8):
 		# img_laplacian = cv2.Laplacian(img, ddepth=0, ksize=1) / 255.
 		for i in range(len(kp_set_negative)):
 			kp_patch_set_negative = np.append(kp_patch_set_negative,img[kp_set_negative[i,1]-scale:kp_set_negative[i,1]+scale,kp_set_negative[i,0]-scale:kp_set_negative[i,0]+scale,:].reshape(1,scale*2,scale*2,3),axis=0)
+	kp_patch_set_negative = np.delete(kp_patch_set_negative,0,axis=0)
+	return kp_patch_set_negative
+
+def get_kp_patch_set_positive_gray(img_path_list,kp_set_positive,scale=8):
+	"""
+	根据所给的图像，以及positive kp的坐标取出positive patch的集合
+	:param img_path_list: 图像路径列表
+	:param kp_set_positive: positive kp集合
+	:param scale:该参数表示要取出的patch的大小,默认scale为32,也就是取出的patch几何大小为64*64
+	:return: 返回positive patch集合（由于函数中要进行kp是否可取patch的边界范围判断，所以可能得到的patch数目比positive kp的数目少）
+	"""
+	#无法取到patch的kp点的去除
+	rows_num,columns_num = plt.imread(img_path_list[0]).shape[0:2]
+	for i in range(len(kp_set_positive)-1,-1,-1):
+		if kp_set_positive[i,1] < scale or kp_set_positive[i,1] > rows_num-scale or kp_set_positive[i,0] < scale or kp_set_positive[i,0] > columns_num-scale:
+			kp_set_positive = np.delete(kp_set_positive,i,axis=0)
+	# print 'kp_set_positive:',kp_set_positive.shape,kp_set_positive
+	#取出kp_set_positive所对应的patch集合
+	kp_patch_set_positive = np.zeros(shape=(1,scale*2,scale*2,1))
+	for img_count in range(len(img_path_list)):
+		# img = plt.imread(img_path_list[img_count])/255. #二选一从原图提取patch就使用这一行,否则使用下面两行
+		img = plt.imread(img_path_list[img_count])
+		# print 'img.shape:',img.shape,img.mean()
+		# img_laplacian = cv2.Laplacian(img,ddepth=0,ksize=1)/255.
+		for i in range(len(kp_set_positive)):
+			kp_patch_set_positive = np.append(kp_patch_set_positive,img[kp_set_positive[i,1]-scale:kp_set_positive[i,1]+scale,kp_set_positive[i,0]-scale:kp_set_positive[i,0]+scale].reshape(1,scale*2,scale*2,1),axis=0)
+	kp_patch_set_positive = np.delete(kp_patch_set_positive,0,axis=0)
+	# print kp_patch_set_positive.shape
+	return kp_patch_set_positive
+
+def get_kp_patch_set_negative_gray(img_path_list,kp_set_negative,scale=8):
+	#无法取到patch的kp点的去除
+	rows_num,columns_num = plt.imread(img_path_list[0]).shape[0:2]
+	for i in range(len(kp_set_negative)-1,-1,-1):
+		if kp_set_negative[i,1] < scale or kp_set_negative[i,1] > rows_num-scale or kp_set_negative[i,0] < scale or kp_set_negative[i,0] > columns_num-scale:
+			kp_set_negative = np.delete(kp_set_negative,i,axis=0)
+	#取出kp_set_negative所对应的patch集合
+	kp_patch_set_negative = np.zeros(shape=(1,scale*2,scale*2,1))
+	for img_count in range(len(img_path_list)):
+		# img = plt.imread(img_path_list[img_count])/255.
+		img = plt.imread(img_path_list[img_count])
+		# img_laplacian = cv2.Laplacian(img, ddepth=0, ksize=1) / 255.
+		for i in range(len(kp_set_negative)):
+			kp_patch_set_negative = np.append(kp_patch_set_negative,img[kp_set_negative[i,1]-scale:kp_set_negative[i,1]+scale,kp_set_negative[i,0]-scale:kp_set_negative[i,0]+scale].reshape(1,scale*2,scale*2,1),axis=0)
 	kp_patch_set_negative = np.delete(kp_patch_set_negative,0,axis=0)
 	return kp_patch_set_negative
 
@@ -636,7 +680,7 @@ def match_accuracy(img1_kp_pos,img1_kp_des,img2_kp_pos,img2_kp_des,rotation_matr
 		transformed_kp_4_test_kp = rotation_matrix.dot(np.append(matched_kp_4_test_kp, 1))
 		# print 'transformed_kp_4_test_kp:',transformed_kp_4_test_kp
 		if ((test_kp[i][0] - transformed_kp_4_test_kp[0]) ** 2 + (
-			test_kp[i][1] - transformed_kp_4_test_kp[1]) ** 2) <= 25:
+			test_kp[i][1] - transformed_kp_4_test_kp[1]) ** 2) <= 36:
 			match_count += 1
 	print 'match_count:', match_count
 	print 'match accuracy:', 1.0 * match_count / kp_num
@@ -672,7 +716,7 @@ def get_homography_from2picture(img_path_list):
 
 	FLANN_INDEX_KDTREE = 0
 	index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
-	search_params = dict(checks=50)
+	search_params = dict(checks=150)
 
 	flann = cv2.FlannBasedMatcher(index_params, search_params)
 
@@ -789,13 +833,16 @@ def choose_kp_from_list_careboundary(kp_set_afterNMS_list,quantity_to_choose=250
 	count=0
 	kp_list_chosen=[]
 	i=0
+	number_reserved = len(kp_set_afterNMS_list)
 	octave_origin2sample_factor=[0.5,1,2]
-	while(count < quantity_to_choose):
+	# print 'heiha:',len(kp_set_afterNMS_list),kp_set_afterNMS_list[0]
+	while(count < quantity_to_choose and number_reserved > 0):
 		#先要将origin中的坐标映射到octave中的坐标,再判断是否越界
 		if kp_set_afterNMS_list[i][1]*octave_origin2sample_factor[int(kp_set_afterNMS_list[i][3])]-boundary_pixel >=0 and kp_set_afterNMS_list[i][1]*octave_origin2sample_factor[int(kp_set_afterNMS_list[i][3])]+boundary_pixel<kp_set_afterNMS_list[i][4] and kp_set_afterNMS_list[i][0]*octave_origin2sample_factor[int(kp_set_afterNMS_list[i][3])]-boundary_pixel >=0 and kp_set_afterNMS_list[i][0]*octave_origin2sample_factor[int(kp_set_afterNMS_list[i][3])]+boundary_pixel<kp_set_afterNMS_list[i][5]:
 			kp_list_chosen.append([kp_set_afterNMS_list[i][0],kp_set_afterNMS_list[i][1],kp_set_afterNMS_list[i][2],kp_set_afterNMS_list[i][3]])
 			count += 1
 		i += 1
+		number_reserved -= 1
 	print 'count:',count,'i:',i
 	return kp_list_chosen
 
@@ -1094,8 +1141,15 @@ def use_TILDE_scale8(img_path_list):
 
 	sess = tf.Session()
 	saver = tf.train.Saver()
-	saver.restore(sess, './save_net/detector_TILDE_model_20180102_mse_100_0_0005')
+	# saver.restore(sess, './save_net/detector_TILDE_model_20180102_mse_100_0_0005') #使用amos数据集训练的CNN
+	# saver.restore(sess, './save_net/detector_TILDE_model_20180416_mse_10_0_0005_kitti_city_gray') #使用kitti_city_gray数据集训练的CNN
+	# saver.restore(sess, './save_net/detector_TILDE_model_20180416_mse_10_0_0005_kitti_city_gray_and_amos') #使用kitti_city_gray和amos数据集训练的CNN
 	# saver.restore(sess, './save_net/detector_TILDE_model_20180408_mse_500_0_0005')  # 使用laplacian做输入patch检测
+	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0009')  # 使用kitti_city_gray_0009数据集训练的CNN
+	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0093')  # 使用kitti_city_gray_0093数据集训练的CNN
+	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0095')  # 使用kitti_city_gray_0095数据集训练的CNN
+	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0104')  # 使用kitti_city_gray_0104数据集训练的CNN
+	saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0014')  # 使用kitti_city_gray_0014数据集训练的CNN
 
 	# 使用列表将两个维度不相同的矩阵打包在一起return
 	kp_set_list = []
