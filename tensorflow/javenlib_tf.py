@@ -674,7 +674,9 @@ def match_accuracy(img1_kp_pos,img1_kp_des,img2_kp_pos,img2_kp_des,rotation_matr
 	print 'kp_num:', kp_num
 	matched_index, matched_distance = flann.nn(origin_kp_des, test_kp_des, 1)
 	match_count = 0
+	kp_num = matched_index.shape[0]
 	for i in range(kp_num):
+		# print i,'ok',origin_kp.shape,matched_index.shape[0],origin_kp_des.shape,test_kp_des.shape
 		matched_kp_4_test_kp = origin_kp[matched_index[i]]
 		# print 'matched_kp_4_test_kp:',matched_kp_4_test_kp
 		transformed_kp_4_test_kp = rotation_matrix.dot(np.append(matched_kp_4_test_kp, 1))
@@ -1142,14 +1144,15 @@ def use_TILDE_scale8(img_path_list):
 	sess = tf.Session()
 	saver = tf.train.Saver()
 	# saver.restore(sess, './save_net/detector_TILDE_model_20180102_mse_100_0_0005') #使用amos数据集训练的CNN
-	# saver.restore(sess, './save_net/detector_TILDE_model_20180416_mse_10_0_0005_kitti_city_gray') #使用kitti_city_gray数据集训练的CNN
+	# saver.restore(sess, './save_net/detector_TILDE_model_20180416_mse_10_0_0005_kitti_city_gray') #使用kitti_city_gray_0005数据集训练的CNN
 	# saver.restore(sess, './save_net/detector_TILDE_model_20180416_mse_10_0_0005_kitti_city_gray_and_amos') #使用kitti_city_gray和amos数据集训练的CNN
 	# saver.restore(sess, './save_net/detector_TILDE_model_20180408_mse_500_0_0005')  # 使用laplacian做输入patch检测
 	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0009')  # 使用kitti_city_gray_0009数据集训练的CNN
 	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0093')  # 使用kitti_city_gray_0093数据集训练的CNN
 	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0095')  # 使用kitti_city_gray_0095数据集训练的CNN
-	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0104')  # 使用kitti_city_gray_0104数据集训练的CNN
-	saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0014')  # 使用kitti_city_gray_0014数据集训练的CNN
+	saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0104')  # 使用kitti_city_gray_0104数据集训练的CNN
+	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0014')  # 使用kitti_city_gray_0014数据集训练的CNN
+	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_residential_gray_0061')  # 使用kitti_residential_gray_0061数据集训练的CNN
 
 	# 使用列表将两个维度不相同的矩阵打包在一起return
 	kp_set_list = []
@@ -1175,7 +1178,7 @@ def use_TILDE_scale8(img_path_list):
 			for j in range(scale, column_num - scale, 4):
 				patch = img_test_gray[i - scale:i + scale, j - scale:j + scale].reshape(1, scale*2, scale*2, 1)
 				output_predict = sess.run(output, feed_dict={tf_x: patch})
-				if output_predict[0, 0] >= 0.6:
+				if output_predict[0, 0] >= 0.5:
 					count += 1
 					kp_set.append([j, i, output_predict[0, 0],1,row_num,column_num])
 		print 'kp count from cnn without NMS:', count

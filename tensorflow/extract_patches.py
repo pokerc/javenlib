@@ -6,13 +6,13 @@ import cv2
 import pyflann
 import javenlib_tf
 
-image_classname = 'kitti_city_gray_0014'
+image_classname = 'kitti_residential_gray_0061'
 image_type = 'png'
-tag = 'begin_149_'
+tag = 'begin_198_'
 #提取图片集合中的positive patches和negative patches
-img_path_list = ['/home/javen/javenlib/images/'+image_classname+'/0000000149.'+image_type,
-		 		 '/home/javen/javenlib/images/'+image_classname+'/0000000150.'+image_type,
-		 		 '/home/javen/javenlib/images/'+image_classname+'/0000000151.'+image_type]
+img_path_list = ['/home/javen/javenlib/images/'+image_classname+'/0000000198.'+image_type,
+		 		 '/home/javen/javenlib/images/'+image_classname+'/0000000199.'+image_type,
+		 		 '/home/javen/javenlib/images/'+image_classname+'/0000000200.'+image_type]
 		 # '/home/javen/javenlib/images/'+image_classname+'/0000000003.'+image_type,
 		 # '/home/javen/javenlib/images/'+image_classname+'/0000000004.'+image_type]
 
@@ -25,7 +25,8 @@ print 'kp_patch_set_positive:',kp_patch_set_positive.shape
 # javenlib_tf.show_patch_set(kp_patch_set_positive,0.3)
 # javenlib_tf.show_kp_set(img_path_list[4],kp_set_positive,pixel_size=8)
 #保存positive patch集合
-np.save('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_city_gray_0014/'+tag+image_classname+'_positive_patches.npy',kp_patch_set_positive)
+# np.save('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_city_gray_0014/'+tag+image_classname+'_positive_patches.npy',kp_patch_set_positive)
+np.save('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_residential_gray_0061/'+tag+image_classname+'_positive_patches.npy',kp_patch_set_positive)
 # np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+image_classname+'_positive_patches_laplacian.npy',kp_patch_set_positive)
 
 kp_set_negative = javenlib_tf.get_kp_set_negative(kp_set_raw,dist_threshold=1000)
@@ -35,7 +36,8 @@ print 'kp_patch_set_negative:',kp_patch_set_negative.shape
 # javenlib_tf.show_patch_set(kp_patch_set_negative)
 # javenlib_tf.show_kp_set(img_path_list[4],kp_set_negative,pixel_size=10)
 #保存negative patch集合
-np.save('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_city_gray_0014/'+tag+image_classname+'_negative_patches.npy',kp_patch_set_negative)
+# np.save('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_city_gray_0014/'+tag+image_classname+'_negative_patches.npy',kp_patch_set_negative)
+np.save('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_residential_gray_0061/'+tag+image_classname+'_negative_patches.npy',kp_patch_set_negative)
 # np.save('/home/javen/javenlib/tensorflow/TILDE_data/'+image_classname+'_negative_patches_laplacian.npy',kp_patch_set_negative)
 
 # new_test_data = np.copy(kp_set_negative)

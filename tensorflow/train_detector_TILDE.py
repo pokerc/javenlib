@@ -206,8 +206,8 @@ sess = tf.Session()
 #MSE版本,scale为8,patch size为16*16,新网络
 #读取准备好的未打乱的train数据
 scale = 8
-train_data = np.load('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_city_gray_0014/train_data_20180419.npy')
-train_label = np.load('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_city_gray_0014/train_label_20180419.npy')
+train_data = np.load('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_residential_gray_0061/train_data_20180419.npy')
+train_label = np.load('/home/javen/javenlib/tensorflow/TILDE_data/20180419_kitti_residential_gray_0061/train_label_20180419.npy')
 #对数据进行打乱操作
 train_data,train_label = javenlib_tf.shuffle_data_and_label(train_data,train_label) #(?,16,16,3)
 # #将rgb数据转化为gray
@@ -301,7 +301,7 @@ print '准确率:',1.*count/total_num
 
 #将训练好的模型保存
 saver = tf.train.Saver()
-saver.save(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0014')
+saver.save(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_residential_gray_0061')
 
 
 ################################################################################

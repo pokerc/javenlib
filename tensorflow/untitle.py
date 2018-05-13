@@ -84,3 +84,151 @@ from tensorflow.examples.tutorials.mnist import input_data
 # javenlib_tf.show_kp_set(b_path,kp2,10)
 # print a.shape
 
+def get_homography_from2picture_sift(img_path_list):
+	MIN_MATCH_COUNT = 10
+	img1 = cv2.imread(img_path_list[0])  # queryImage
+	img2 = cv2.imread(img_path_list[1])  # trainImage
+
+	# Initiate SIFT detector
+	sift = cv2.SIFT()
+
+	# find the keypoints and descriptors with SIFT
+	kp1, des1 = sift.detectAndCompute(img1, None)
+	kp2, des2 = sift.detectAndCompute(img2, None)
+
+	FLANN_INDEX_KDTREE = 0
+	index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+	search_params = dict(checks=150)
+
+	flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+	matches = flann.knnMatch(des1, des2, k=2)
+
+	# store all the good matches as per Lowe's ratio test.
+	good = []
+	for m, n in matches:
+		if m.distance < 0.7 * n.distance:
+			good.append(m)
+
+	# print len(good)
+
+	if len(good) > MIN_MATCH_COUNT:
+		src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+		dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+
+		M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+	return M
+
+def get_homography_from2picture_surf(img_path_list):
+	MIN_MATCH_COUNT = 10
+	img1 = cv2.imread(img_path_list[0])  # queryImage
+	img2 = cv2.imread(img_path_list[1])  # trainImage
+
+	# Initiate SIFT detector
+	sift = cv2.SURF()
+
+	# find the keypoints and descriptors with SIFT
+	kp1, des1 = sift.detectAndCompute(img1, None)
+	kp2, des2 = sift.detectAndCompute(img2, None)
+	# print 'surf!!!',des1.shape,des1.dtype
+	FLANN_INDEX_KDTREE = 0
+	index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+	search_params = dict(checks=150)
+
+	flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+	matches = flann.knnMatch(des1, des2, k=2)
+
+	# store all the good matches as per Lowe's ratio test.
+	good = []
+	for m, n in matches:
+		if m.distance < 0.7 * n.distance:
+			good.append(m)
+
+	# print len(good)
+
+	if len(good) > MIN_MATCH_COUNT:
+		src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+		dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+
+		M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+	return M
+
+def get_homography_from2picture_orb(img_path_list):
+	MIN_MATCH_COUNT = 10
+	img1 = cv2.imread(img_path_list[0])  # queryImage
+	img2 = cv2.imread(img_path_list[1])  # trainImage
+
+	# Initiate SIFT detector
+	sift = cv2.ORB()
+
+	# find the keypoints and descriptors with SIFT
+	kp1, des1 = sift.detectAndCompute(img1, None)
+	kp2, des2 = sift.detectAndCompute(img2, None)
+	des1 = des1.astype(np.float32)
+	des2 = des2.astype(np.float32)
+	# print 'orb!!!',des1.shape,des2.shape,type(des1),des1.dtype
+	FLANN_INDEX_KDTREE = 0
+	index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+	search_params = dict(checks=150)
+
+	flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+	matches = flann.knnMatch(des1, des2, k=2)
+
+	# store all the good matches as per Lowe's ratio test.
+	good = []
+	for m, n in matches:
+		if m.distance < 0.7 * n.distance:
+			good.append(m)
+
+	# print len(good)
+
+	if len(good) > MIN_MATCH_COUNT:
+		src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+		dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+
+		M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+	return M
+
+sift = cv2.SIFT(nfeatures=250)
+surf = cv2.SURF()
+orb = cv2.ORB(nfeatures=250)
+
+
+img = cv2.imread('/home/javen/javenlib/images/kitti_residential_gray_0061/0000000201.png')
+# plt.imshow(img)
+# plt.show()
+kp_sift,des_sift = sift.detectAndCompute(img,None)
+kp_sift = javenlib_tf.KeyPoint_convert_forOpencv2(kp_sift)
+print len(kp_sift),des_sift.shape
+kp_surf_obj,des_surf = surf.detectAndCompute(img,None)
+kp_surf = javenlib_tf.KeyPoint_convert_forOpencv2(kp_surf_obj)
+print kp_surf.shape,des_surf.shape
+# surf.extended=True
+des_surf,des_surf = surf.compute(img,kp_surf_obj[0:500])
+print des_surf.shape
+# print len(kp_surf),des_surf.shape
+# kp_orb,des_orb = orb.detectAndCompute(img,None)
+# kp_orb = javenlib_tf.KeyPoint_convert_forOpencv2(kp_orb)
+# print len(kp_orb),des_orb.shape
+#
+# print kp_orb.shape
+# javenlib_tf.show_kp_set('/home/javen/javenlib/images/kitti_residential_gray_0061/0000000201.png',kp_sift)
+# javenlib_tf.show_kp_set('/home/javen/javenlib/images/kitti_residential_gray_0061/0000000201.png',kp_surf)
+# javenlib_tf.show_kp_set('/home/javen/javenlib/images/kitti_residential_gray_0061/0000000201.png',kp_orb)
+
+img_path_list = ['/home/javen/javenlib/images/leuven/img1.ppm',
+				 '/home/javen/javenlib/images/leuven/img3.ppm']
+tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/leuven/H1to3p')
+m_sift = get_homography_from2picture_sift(img_path_list)
+print m_sift
+m_surf = get_homography_from2picture_surf(img_path_list)
+print m_surf
+m_orb  = get_homography_from2picture_orb(img_path_list)
+print m_orb
+
+print '\n'
+print m_sift-tranform_matrix
+print m_surf-tranform_matrix
+print m_orb-tranform_matrix
