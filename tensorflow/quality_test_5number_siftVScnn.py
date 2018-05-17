@@ -7,11 +7,11 @@ import cv2
 import cmath
 
 #测试use_TILDE函数
-sift_50 = cv2.SIFT(50)
-sift_100 = cv2.SIFT(100)
-sift_250 = cv2.SIFT(250)
-sift_500 = cv2.SIFT(500)
-sift_1000 = cv2.SIFT(1000)
+sift_50 = cv2.xfeatures2d.SIFT_create(50)
+sift_100 = cv2.xfeatures2d.SIFT_create(100)
+sift_250 = cv2.xfeatures2d.SIFT_create(250)
+sift_500 = cv2.xfeatures2d.SIFT_create(500)
+sift_1000 = cv2.xfeatures2d.SIFT_create(1000)
 # for count in range(159):
 #     if(count < 10):
 #         s1 = '000000000' + str(count)

@@ -8,11 +8,12 @@ import cmath
 
 #测试use_TILDE函数
 sift = cv2.xfeatures2d.SIFT_create()
-sift_50 = cv2.ORB_create(50)
-sift_100 = cv2.ORB_create(100)
-sift_250 = cv2.ORB_create(250)
-sift_500 = cv2.ORB_create(500)
-sift_1000 = cv2.ORB_create(1000)
+
+sift_50 = cv2.KAZE_create(extended=True,threshold=0.024)
+sift_100 = cv2.KAZE_create(extended=True,threshold=0.020)
+sift_250 = cv2.KAZE_create(extended=True,threshold=0.012)
+sift_500 = cv2.KAZE_create(extended=True,threshold=0.008)
+sift_1000 = cv2.KAZE_create(extended=True,threshold=0.004)
 # for count in range(159):
 #     if(count < 10):
 #         s1 = '000000000' + str(count)
@@ -28,8 +29,8 @@ sift_1000 = cv2.ORB_create(1000)
 #         s2 = '0000000' + str(count+1)
 #     print 's1:',s1
 #     print 's2:',s2
-img_path_list = ['/home/javen/javenlib/images/kitti_city_gray_0104/0000000230.png',
-                 '/home/javen/javenlib/images/kitti_city_gray_0104/0000000231.png']
+img_path_list = ['/home/javen/javenlib/images/kitti_city_gray_0005/0000000010.png',
+                 '/home/javen/javenlib/images/kitti_city_gray_0005/0000000011.png']
 imga = cv2.imread(img_path_list[0])
 imgb = cv2.imread(img_path_list[1])
 
@@ -84,14 +85,15 @@ imgb_kp_cnn_obj_50 = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imgb_kp_cnn
 imgb_kp_cnn_obj_50,imgb_kp_cnn_des_50 = sift.compute(imgb,imgb_kp_cnn_obj_50)
 
 imga_kp_sift_obj_50 = sift_50.detect(imga)
-imga_kp_sift_50 = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj_50)
+print 'length:',len(imga_kp_sift_obj_50)
+imga_kp_sift_50 = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj_50[0:50])
 # imga_kp_sift_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imga_kp_sift)
-imga_kp_sift_obj_50,imga_kp_sift_des_50 = sift_50.compute(imga,imga_kp_sift_obj_50)
-
+imga_kp_sift_obj_50,imga_kp_sift_des_50 = sift_50.compute(imga,imga_kp_sift_obj_50[0:50])
+print imga_kp_sift_50.shape,imga_kp_sift_des_50.shape
 imgb_kp_sift_obj_50 = sift_50.detect(imgb)
-imgb_kp_sift_50 = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj_50)
+imgb_kp_sift_50 = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj_50[0:50])
 # imgb_kp_sift_obj = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imgb_kp_sift)
-imgb_kp_sift_obj_50,imgb_kp_sift_des_50 = sift_50.compute(imgb,imgb_kp_sift_obj_50)
+imgb_kp_sift_obj_50,imgb_kp_sift_des_50 = sift_50.compute(imgb,imgb_kp_sift_obj_50[0:50])
 
 ############ 100
 imga_kp_cnn_100 = javenlib_tf.choose_kp_from_list_careboundary(img_kp_set_afternms_list[0],quantity_to_choose=100)
@@ -105,12 +107,12 @@ imgb_kp_cnn_obj_100 = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imgb_kp_cn
 imgb_kp_cnn_obj_100,imgb_kp_cnn_des_100 = sift.compute(imgb,imgb_kp_cnn_obj_100)
 
 imga_kp_sift_obj_100 = sift_100.detect(imga)
-imga_kp_sift_100 = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj_100)
-imga_kp_sift_obj_100,imga_kp_sift_des_100 = sift_100.compute(imga,imga_kp_sift_obj_100)
+imga_kp_sift_100 = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj_100[0:100])
+imga_kp_sift_obj_100,imga_kp_sift_des_100 = sift_100.compute(imga,imga_kp_sift_obj_100[0:100])
 
 imgb_kp_sift_obj_100 = sift_100.detect(imgb)
-imgb_kp_sift_100 = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj_100)
-imgb_kp_sift_obj_100,imgb_kp_sift_des_100 = sift_100.compute(imgb,imgb_kp_sift_obj_100)
+imgb_kp_sift_100 = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj_100[0:100])
+imgb_kp_sift_obj_100,imgb_kp_sift_des_100 = sift_100.compute(imgb,imgb_kp_sift_obj_100[0:100])
 
 ############### 250
 imga_kp_cnn_250 = javenlib_tf.choose_kp_from_list_careboundary(img_kp_set_afternms_list[0],quantity_to_choose=250)
@@ -124,12 +126,12 @@ imgb_kp_cnn_obj_250 = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imgb_kp_cn
 imgb_kp_cnn_obj_250,imgb_kp_cnn_des_250 = sift.compute(imgb,imgb_kp_cnn_obj_250)
 
 imga_kp_sift_obj_250 = sift_250.detect(imga)
-imga_kp_sift_250 = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj_250)
-imga_kp_sift_obj_250,imga_kp_sift_des_250 = sift_250.compute(imga,imga_kp_sift_obj_250)
+imga_kp_sift_250 = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj_250[0:250])
+imga_kp_sift_obj_250,imga_kp_sift_des_250 = sift_250.compute(imga,imga_kp_sift_obj_250[0:250])
 
 imgb_kp_sift_obj_250 = sift_250.detect(imgb)
-imgb_kp_sift_250 = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj_250)
-imgb_kp_sift_obj_250,imgb_kp_sift_des_250 = sift_250.compute(imgb,imgb_kp_sift_obj_250)
+imgb_kp_sift_250 = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj_250[0:250])
+imgb_kp_sift_obj_250,imgb_kp_sift_des_250 = sift_250.compute(imgb,imgb_kp_sift_obj_250[0:250])
 
 ############# 500
 imga_kp_cnn_500 = javenlib_tf.choose_kp_from_list_careboundary(img_kp_set_afternms_list[0],quantity_to_choose=500)
@@ -143,12 +145,12 @@ imgb_kp_cnn_obj_500 = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imgb_kp_cn
 imgb_kp_cnn_obj_500,imgb_kp_cnn_des_500 = sift.compute(imgb,imgb_kp_cnn_obj_500)
 
 imga_kp_sift_obj_500 = sift_500.detect(imga)
-imga_kp_sift_500 = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj_500)
-imga_kp_sift_obj_500,imga_kp_sift_des_500 = sift_500.compute(imga,imga_kp_sift_obj_500)
+imga_kp_sift_500 = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj_500[0:500])
+imga_kp_sift_obj_500,imga_kp_sift_des_500 = sift_500.compute(imga,imga_kp_sift_obj_500[0:500])
 
 imgb_kp_sift_obj_500 = sift_500.detect(imgb)
-imgb_kp_sift_500 = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj_500)
-imgb_kp_sift_obj_500,imgb_kp_sift_des_500 = sift_500.compute(imgb,imgb_kp_sift_obj_500)
+imgb_kp_sift_500 = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj_500[0:500])
+imgb_kp_sift_obj_500,imgb_kp_sift_des_500 = sift_500.compute(imgb,imgb_kp_sift_obj_500[0:500])
 
 ############## 1000
 imga_kp_cnn_1000 = javenlib_tf.choose_kp_from_list_careboundary(img_kp_set_afternms_list[0],quantity_to_choose=1000)
@@ -162,12 +164,12 @@ imgb_kp_cnn_obj_1000 = javenlib_tf.KeyPoint_reverse_convert_forOpencv2(imgb_kp_c
 imgb_kp_cnn_obj_1000,imgb_kp_cnn_des_1000 = sift.compute(imgb,imgb_kp_cnn_obj_1000)
 
 imga_kp_sift_obj_1000 = sift_1000.detect(imga)
-imga_kp_sift_1000 = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj_1000)
-imga_kp_sift_obj_1000,imga_kp_sift_des_1000 = sift_1000.compute(imga,imga_kp_sift_obj_1000)
+imga_kp_sift_1000 = javenlib_tf.KeyPoint_convert_forOpencv2(imga_kp_sift_obj_1000[0:1000])
+imga_kp_sift_obj_1000,imga_kp_sift_des_1000 = sift_1000.compute(imga,imga_kp_sift_obj_1000[0:1000])
 
 imgb_kp_sift_obj_1000 = sift_1000.detect(imgb)
-imgb_kp_sift_1000 = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj_1000)
-imgb_kp_sift_obj_1000,imgb_kp_sift_des_1000 = sift_1000.compute(imgb,imgb_kp_sift_obj_1000)
+imgb_kp_sift_1000 = javenlib_tf.KeyPoint_convert_forOpencv2(imgb_kp_sift_obj_1000[0:1000])
+imgb_kp_sift_obj_1000,imgb_kp_sift_des_1000 = sift_1000.compute(imgb,imgb_kp_sift_obj_1000[0:1000])
 
 
 
@@ -204,6 +206,3 @@ print img_path_list[0]
 
 
 
-# [[ 1.01450388e+00  2.57453377e-02  2.07999705e+00]
-#  [-5.43184955e-03  1.01984141e+00 -3.25257112e+00]
-#  [-1.89905296e-07  2.01316115e-05  1.00000000e+00]]

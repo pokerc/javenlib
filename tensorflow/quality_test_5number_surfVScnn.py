@@ -7,13 +7,13 @@ import cv2
 import cmath
 
 #测试use_TILDE函数
-sift = cv2.SIFT()
+sift = cv2.xfeatures2d.SIFT_create()
 
-sift_50 = cv2.SURF()
-sift_100 = cv2.SURF()
-sift_250 = cv2.SURF()
-sift_500 = cv2.SURF()
-sift_1000 = cv2.SURF()
+sift_50 = cv2.xfeatures2d.SURF_create(hessianThreshold=16000,extended=True)
+sift_100 = cv2.xfeatures2d.SURF_create(hessianThreshold=10000,extended=True)
+sift_250 = cv2.xfeatures2d.SURF_create(hessianThreshold=4500,extended=True)
+sift_500 = cv2.xfeatures2d.SURF_create(hessianThreshold=2000,extended=True)
+sift_1000 = cv2.xfeatures2d.SURF_create(hessianThreshold=900,extended=True)
 # for count in range(159):
 #     if(count < 10):
 #         s1 = '000000000' + str(count)
@@ -29,8 +29,8 @@ sift_1000 = cv2.SURF()
 #         s2 = '0000000' + str(count+1)
 #     print 's1:',s1
 #     print 's2:',s2
-img_path_list = ['/home/javen/javenlib/images/kitti_city_gray_0104/0000000230.png',
-                 '/home/javen/javenlib/images/kitti_city_gray_0104/0000000231.png']
+img_path_list = ['/home/javen/javenlib/images/kitti_city_gray_0009/0000000193.png',
+                 '/home/javen/javenlib/images/kitti_city_gray_0009/0000000194.png']
 imga = cv2.imread(img_path_list[0])
 imgb = cv2.imread(img_path_list[1])
 

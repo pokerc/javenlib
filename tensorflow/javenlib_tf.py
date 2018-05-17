@@ -374,7 +374,7 @@ def get_kp_set_raw(img_path_list):
 	# 	 '/home/javen/javenlib/images/leuven/img5.ppm']
 	number_to_detect = 800
 	number_to_save = 200
-	sift = cv2.SIFT(number_to_detect)
+	sift = cv2.xfeatures2d.SIFT_create(number_to_detect)
 	kp_set_raw = np.zeros(shape=(len(img_path_list),number_to_save,2),dtype=np.int)
 	for img_count in range(len(img_path_list)):
 		img = cv2.imread(img_path_list[img_count])
@@ -710,7 +710,7 @@ def get_homography_from2picture(img_path_list):
 	img2 = cv2.imread(img_path_list[1])  # trainImage
 
 	# Initiate SIFT detector
-	sift = cv2.SIFT()
+	sift = cv2.xfeatures2d.SIFT_create()
 
 	# find the keypoints and descriptors with SIFT
 	kp1, des1 = sift.detectAndCompute(img1, None)
@@ -1147,10 +1147,10 @@ def use_TILDE_scale8(img_path_list):
 	# saver.restore(sess, './save_net/detector_TILDE_model_20180416_mse_10_0_0005_kitti_city_gray') #使用kitti_city_gray_0005数据集训练的CNN
 	# saver.restore(sess, './save_net/detector_TILDE_model_20180416_mse_10_0_0005_kitti_city_gray_and_amos') #使用kitti_city_gray和amos数据集训练的CNN
 	# saver.restore(sess, './save_net/detector_TILDE_model_20180408_mse_500_0_0005')  # 使用laplacian做输入patch检测
-	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0009')  # 使用kitti_city_gray_0009数据集训练的CNN
+	saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0009')  # 使用kitti_city_gray_0009数据集训练的CNN
 	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0093')  # 使用kitti_city_gray_0093数据集训练的CNN
 	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0095')  # 使用kitti_city_gray_0095数据集训练的CNN
-	saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0104')  # 使用kitti_city_gray_0104数据集训练的CNN
+	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0104')  # 使用kitti_city_gray_0104数据集训练的CNN
 	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_city_gray_0014')  # 使用kitti_city_gray_0014数据集训练的CNN
 	# saver.restore(sess,'./save_net/detector_TILDE_model_20180419_mse_10_0_0005_kitti_residential_gray_0061')  # 使用kitti_residential_gray_0061数据集训练的CNN
 
