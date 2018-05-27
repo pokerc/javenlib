@@ -84,13 +84,13 @@ from tensorflow.examples.tutorials.mnist import input_data
 # javenlib_tf.show_kp_set(b_path,kp2,10)
 # print a.shape
 
-def get_homography_from2picture_sift(img_path_list):
+def get_homography_from2picture_sift(img_path_list,numberToDetect = 100):
 	MIN_MATCH_COUNT = 10
 	img1 = cv2.imread(img_path_list[0])  # queryImage
 	img2 = cv2.imread(img_path_list[1])  # trainImage
 
 	# Initiate SIFT detector
-	sift = cv2.xfeatures2d.SIFT_create()
+	sift = cv2.xfeatures2d.SIFT_create(nfeatures=numberToDetect)
 
 	# find the keypoints and descriptors with SIFT
 	kp1, des1 = sift.detectAndCompute(img1, None)
@@ -191,16 +191,17 @@ def get_homography_from2picture_orb(img_path_list):
 		M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 	return M
 
-sift = cv2.xfeatures2d.SIFT_create(nfeatures=250)
-surf = cv2.xfeatures2d.SURF_create()
-orb = cv2.ORB_create(nfeatures=250)
-kaze = cv2.KAZE_create()
+# sift = cv2.xfeatures2d.SIFT_create(nfeatures=250)
+# surf = cv2.xfeatures2d.SURF_create()
+# orb = cv2.ORB_create(nfeatures=250)
+# kaze = cv2.KAZE_create()
+#
+#
+# img = cv2.imread('/home/javen/javenlib/images/kitti_city_gray_0005/0000000002.png')
+# surf2 = cv2.xfeatures2d.SURF_create(hessianThreshold=2000,extended=True)
+# kp_surf2,des_surf2 = surf2.detectAndCompute(img,None)
+# print 'surf2 length:',len(kp_surf2),des_surf2.shape
 
-
-img = cv2.imread('/home/javen/javenlib/images/kitti_city_gray_0005/0000000002.png')
-surf2 = cv2.xfeatures2d.SURF_create(hessianThreshold=2000,extended=True)
-kp_surf2,des_surf2 = surf2.detectAndCompute(img,None)
-print 'surf2 length:',len(kp_surf2),des_surf2.shape
 # kaze = cv2.KAZE_create(extended=True,threshold=0.026)
 # kp_kaze,des_kaze = kaze.detectAndCompute(img,None)
 # print 'kaze length:',len(kp_kaze),des_kaze.shape
@@ -225,17 +226,40 @@ print 'surf2 length:',len(kp_surf2),des_surf2.shape
 # # javenlib_tf.show_kp_set('/home/javen/javenlib/images/kitti_residential_gray_0061/0000000201.png',kp_surf)
 # # javenlib_tf.show_kp_set('/home/javen/javenlib/images/kitti_residential_gray_0061/0000000201.png',kp_orb)
 #
-# img_path_list = ['/home/javen/javenlib/images/leuven/img1.ppm',
-# 				 '/home/javen/javenlib/images/leuven/img3.ppm']
-# tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/leuven/H1to3p')
-# m_sift = get_homography_from2picture_sift(img_path_list)
-# print m_sift
+img_path_list = ['/home/javen/javenlib/images/wall/img1.ppm',
+				 '/home/javen/javenlib/images/wall/img6.ppm']
+tranform_matrix = javenlib_tf.get_matrix_from_file('/home/javen/javenlib/images/wall/H1to6p')
+# m_sift_50 = get_homography_from2picture_sift(img_path_list,numberToDetect=50)
+# print m_sift_50
+# m_sift_100 = get_homography_from2picture_sift(img_path_list,numberToDetect=100)
+# print m_sift_100
+# m_sift_250 = get_homography_from2picture_sift(img_path_list,numberToDetect=250)
+# print m_sift_250
+# m_sift_500 = get_homography_from2picture_sift(img_path_list,numberToDetect=500)
+# print m_sift_500
+m_sift_1000 = get_homography_from2picture_sift(img_path_list,numberToDetect=1000)
+print m_sift_1000
 # m_surf = get_homography_from2picture_surf(img_path_list)
 # print m_surf
 # m_orb  = get_homography_from2picture_orb(img_path_list)
 # print m_orb
 #
-# print '\n'
-# print m_sift-tranform_matrix
+print '差：','\n'
+# print m_sift_50-tranform_matrix
+# print m_sift_100-tranform_matrix
+# print m_sift_250-tranform_matrix
+# print m_sift_500-tranform_matrix
+print m_sift_1000-tranform_matrix
+
+# diff_50 = m_sift_50-tranform_matrix
+# diff_100 = m_sift_100-tranform_matrix
+# diff_250 = m_sift_250-tranform_matrix
+# diff_500 = m_sift_500-tranform_matrix
+diff_1000 = m_sift_1000-tranform_matrix
+
 # print m_surf-tranform_matrix
 # print m_orb-tranform_matrix
+
+a = np.array([[-2,0,0],[0,-3,0],[0,0,-4]])
+print a**2,sum(sum(a**2))
+print 'sum(sum(diff_50**2))','sum(sum(diff_100**2))','sum(sum(diff_250**2))','sum(sum(diff_500**2))',sum(sum(diff_1000**2))

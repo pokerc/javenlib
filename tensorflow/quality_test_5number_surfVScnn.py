@@ -29,8 +29,8 @@ sift_1000 = cv2.xfeatures2d.SURF_create(hessianThreshold=900,extended=True)
 #         s2 = '0000000' + str(count+1)
 #     print 's1:',s1
 #     print 's2:',s2
-img_path_list = ['/home/javen/javenlib/images/kitti_city_gray_0009/0000000193.png',
-                 '/home/javen/javenlib/images/kitti_city_gray_0009/0000000194.png']
+img_path_list = ['/home/javen/javenlib/images/kitti_city_gray_0005/0000000001.png',
+                 '/home/javen/javenlib/images/kitti_city_gray_0005/0000000002.png']
 imga = cv2.imread(img_path_list[0])
 imgb = cv2.imread(img_path_list[1])
 

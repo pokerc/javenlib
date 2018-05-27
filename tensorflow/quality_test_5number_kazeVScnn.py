@@ -9,8 +9,8 @@ import cmath
 #测试use_TILDE函数
 sift = cv2.xfeatures2d.SIFT_create()
 
-sift_50 = cv2.KAZE_create(extended=True,threshold=0.024)
-sift_100 = cv2.KAZE_create(extended=True,threshold=0.020)
+sift_50 = cv2.KAZE_create(extended=True,threshold=0.022)
+sift_100 = cv2.KAZE_create(extended=True,threshold=0.018)
 sift_250 = cv2.KAZE_create(extended=True,threshold=0.012)
 sift_500 = cv2.KAZE_create(extended=True,threshold=0.008)
 sift_1000 = cv2.KAZE_create(extended=True,threshold=0.004)
@@ -29,8 +29,8 @@ sift_1000 = cv2.KAZE_create(extended=True,threshold=0.004)
 #         s2 = '0000000' + str(count+1)
 #     print 's1:',s1
 #     print 's2:',s2
-img_path_list = ['/home/javen/javenlib/images/kitti_city_gray_0005/0000000010.png',
-                 '/home/javen/javenlib/images/kitti_city_gray_0005/0000000011.png']
+img_path_list = ['/home/javen/javenlib/images/kitti_city_gray_0104/0000000230.png',
+                 '/home/javen/javenlib/images/kitti_city_gray_0104/0000000231.png']
 imga = cv2.imread(img_path_list[0])
 imgb = cv2.imread(img_path_list[1])
 
